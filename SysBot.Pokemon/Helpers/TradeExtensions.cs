@@ -162,7 +162,8 @@ namespace SysBot.Pokemon
             }
 
             pk = TrashBytes(pk);
-            
+            pk.SetDynamaxLevel();
+
 
             var la = new LegalityAnalysis(pk);
             var enc = la.EncounterMatch;

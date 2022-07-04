@@ -18,7 +18,6 @@ namespace SysBot.Pokemon.WinForms
 
         public BotController()
         {
-            
             InitializeComponent();
             var opt = (BotControlCommand[])Enum.GetValues(typeof(BotControlCommand));
 
@@ -89,7 +88,58 @@ namespace SysBot.Pokemon.WinForms
             var lastTime = bot.LastTime;
             if (!b.IsRunning)
             {
+                if (b.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                {
+                    
+                        var tradechan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(872611393222897694).Result;
+                        if (tradechan.Name.Contains("✅"))
+                        {
+
+                            var role = tradechan.Guild.EveryoneRole;
+                            await tradechan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
+                            await tradechan.ModifyAsync(prop => prop.Name = tradechan.Name.Replace("✅", "❌"));
+                            var offembed = new EmbedBuilder();
+                            offembed.AddField("Empoleon Bot Announcement", "Gen 8 Trade Bot is Offline");
+                            await tradechan.SendMessageAsync(embed: offembed.Build());
+                        }
+                  
+                }
+
+           
+                if (b.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH)
+                {
+                    
+                        var raidchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(872611744521007155).Result;
+                        if (raidchan.Name != "empoleons-shiny-dens❌")
+                        {
+                            await raidchan.ModifyAsync(prop => prop.Name = "empoleons-shiny-dens❌");
+                            var offembed = new EmbedBuilder();
+                            offembed.AddField("Empoleon Bot Announcement", "Shiny Max Den Bot is Offline");
+                            await raidchan.SendMessageAsync(embed: offembed.Build());
+                        }
+                   
+                }
+                if (b.Bot.Config.NextRoutineType == PokeRoutineType.OnlineLairBot)
+                {
+                    
+                        var lairchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(872611744521007155).Result;
+                        if (lairchan.Name != "empoleons-max-adventures❌")
+                        {
+                            await lairchan.ModifyAsync(prop => prop.Name = "empoleons-max-adventures❌");
+                            var offembed = new EmbedBuilder();
+                            offembed.AddField("Empoleon Bot Announcement", "Max Adventures Bot is Offline");
+                            await lairchan.SendMessageAsync(embed: offembed.Build());
+                        }
+                  
+                }
                 
+                    var wtpchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(955486906777468949).Result;
+                if (wtpchan.Name.Contains("✅"))
+                {
+                    await wtpchan.ModifyAsync(x => x.Name = wtpchan.Name.Replace("✅", "❌"));
+                    await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
+                    WTPSB.WTPsource.Cancel();
+                }
                 PB_Lamp.BackColor = System.Drawing.Color.Transparent;
                 return;
             }
@@ -161,20 +211,104 @@ namespace SysBot.Pokemon.WinForms
                 case BotControlCommand.Stop: bot.Stop(); break;
                 case BotControlCommand.Resume: bot.Resume(); break;
                 case BotControlCommand.Restart:
-                    {
-                        var prompt = WinFormsUtil.Prompt(MessageBoxButtons.YesNo, "Are you sure you want to restart the connection?");
-                        if (prompt != DialogResult.Yes)
-                            return;
+                {
+                    var prompt = WinFormsUtil.Prompt(MessageBoxButtons.YesNo, "Are you sure you want to restart the connection?");
+                    if (prompt != DialogResult.Yes)
+                        return;
 
-                        bot.Bot.Connection.Reset();
-                        bot.Start();
-                        break;
-                    }
+                    bot.Bot.Connection.Reset();
+                    bot.Start();
+                    break;
+                }
                 default:
                     WinFormsUtil.Alert($"{cmd} is not a command that can be sent to the Bot.");
                     return;
             }
-       
+            if (cmd == BotControlCommand.Start)
+            {
+                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                {
+                    ulong.TryParse("872611393222897694", out var tchan);
+                    var tradechan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(tchan).Result;
+                    if (tradechan.Name.Contains("❌"))
+                    {
+                        var role = tradechan.Guild.EveryoneRole;
+                        await tradechan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
+                        await tradechan.ModifyAsync(prop => prop.Name = tradechan.Name.Replace("❌", "✅"));
+                        var offembed = new EmbedBuilder();
+                        offembed.AddField("Empoleon Bot Announcement", "Gen 8 Trade Bot is Online");
+                        await tradechan.SendMessageAsync("<@&898901072523984926>",embed: offembed.Build());
+                    }
+                }
+                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH)
+                {
+                    ulong.TryParse("872611744521007155", out var rchan);
+                    var raidchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(rchan).Result;
+                    if (raidchan.Name != "empoleons-shiny-dens✅")
+                    {
+                        await raidchan.ModifyAsync(prop => prop.Name = "empoleons-shiny-dens✅");
+                        var offembed = new EmbedBuilder();
+                        offembed.AddField("Empoleon Bot Announcement", "Shiny Max Den Bot is Online");
+                        await raidchan.SendMessageAsync("<@&872641196990795826>", embed: offembed.Build());
+                    }
+                }
+                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.OnlineLairBot)
+                {
+                    ulong.TryParse("872611744521007155", out var lchan);
+                    var lairchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(lchan).Result;
+                    if (lairchan.Name != "empoleons-max-adventures✅")
+                    {
+                        await lairchan.ModifyAsync(prop => prop.Name = "empoleons-max-adventures✅");
+                        var offembed = new EmbedBuilder();
+                        offembed.AddField("Empoleon Bot Announcement", "Max Adventures Bot is Online");
+                        await lairchan.SendMessageAsync("<@&872641196990795826>", embed: offembed.Build());
+                    }
+                }
+
+
+
+            }
+            if (cmd == BotControlCommand.Stop)
+            {
+                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                {
+                    ulong.TryParse("872611393222897694", out var tchan);
+                    var tradechan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(tchan).Result;
+                    if (tradechan.Name.Contains("✅"))
+                    {
+                        var role = tradechan.Guild.EveryoneRole;
+                        await tradechan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
+                        await tradechan.ModifyAsync(prop => prop.Name = tradechan.Name.Replace("✅", "❌"));
+                        var offembed = new EmbedBuilder();
+                        offembed.AddField("Empoleon Bot Announcement", "Gen 8 Trade Bot is Offline");
+                        await tradechan.SendMessageAsync(embed: offembed.Build());
+                    }
+                }
+                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH)
+                {
+                    ulong.TryParse("872611744521007155", out var rchan);
+                    var raidchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(rchan).Result;
+                    if (raidchan.Name != "empoleons-shiny-dens❌")
+                    {
+                        await raidchan.ModifyAsync(prop => prop.Name = "empoleons-shiny-dens❌");
+                        var offembed = new EmbedBuilder();
+                        offembed.AddField("Empoleon Bot Announcement", "Shiny Max Den Bot is Offline");
+                        await raidchan.SendMessageAsync(embed: offembed.Build());
+                    }
+                }
+                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.OnlineLairBot)
+                {
+                    ulong.TryParse("872611744521007155", out var lchan);
+                    var lairchan = (ITextChannel)Discord.SysCord<PK8>._client.GetChannelAsync(lchan).Result;
+                    if (lairchan.Name != "empoleons-max-adventures❌")
+                    {
+                        await lairchan.ModifyAsync(prop => prop.Name = "empoleons-max-adventures❌");
+                        var offembed = new EmbedBuilder();
+                        offembed.AddField("Empoleon Bot Announcement", "Max Adventures Bot is Offline");
+                        await lairchan.SendMessageAsync(embed: offembed.Build());
+                    }
+                }
+            }
         }
 
         private BotSource<PokeBotState> GetBot()
