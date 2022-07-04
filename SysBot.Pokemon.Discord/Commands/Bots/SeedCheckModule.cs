@@ -20,7 +20,7 @@ namespace SysBot.Pokemon.Discord
             if(code == 0)
                 code = new Random().Next(99999999);
             var sig = Context.User.GetFavor();
-            await QueueHelper<PK8>.AddToQueueAsync(Context, code, Context.User.Username, sig, new PK8(), PokeRoutineType.SeedCheck, PokeTradeType.Seed).ConfigureAwait(false);
+            await QueueHelper.AddToQueueAsync(Context, code, Context.User.Username, sig, new PK8(), PokeRoutineType.SeedCheck, PokeTradeType.Seed).ConfigureAwait(false);
         }
 
   
@@ -33,7 +33,6 @@ namespace SysBot.Pokemon.Discord
        
         public async Task FindFrameAsync(string seedString)
         {
-            await DeferAsync();
             var me = SysCord<PK8>.Runner;
             var hub = me.Hub;
 
@@ -43,7 +42,7 @@ namespace SysBot.Pokemon.Discord
 
             var seed = Util.GetHexValue64(seedString);
 
-            var r = new SeedSearchResult(Z3SearchResult.Success, seed, -1, SeedCheckResults.FirstStarAndSquare);
+            var r = new SeedSearchResult(Z3SearchResult.Success, seed, -1, hub.Config.SeedCheck.ResultDisplayMode);
             var msg = r.ToString();
 
             var embed = new EmbedBuilder { Color = Color.LighterGrey };
@@ -54,7 +53,7 @@ namespace SysBot.Pokemon.Discord
                 x.Value = msg;
                 x.IsInline = false;
             });
-            await FollowupAsync($"Here are the details for `{r.Seed:X16}`:", embed: embed.Build(),ephemeral:true).ConfigureAwait(false);
+            await RespondAsync($"Here are the details for `{r.Seed:X16}`:", embed: embed.Build(),ephemeral:true).ConfigureAwait(false);
         }
     }
 }

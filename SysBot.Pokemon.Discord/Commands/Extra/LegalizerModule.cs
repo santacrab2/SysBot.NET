@@ -23,7 +23,7 @@ namespace SysBot.Pokemon.Discord
             await DeferAsync();
             if (gen == 0)
             {
-                await Context.ReplyWithLegalizedSetAsync<PK8>(content).ConfigureAwait(false);return;
+                await Context.ReplyWithLegalizedSetAsync<PB8>(content).ConfigureAwait(false);return;
             }
             await Context.ReplyWithLegalizedSetAsync(content, gen).ConfigureAwait(false);
         }

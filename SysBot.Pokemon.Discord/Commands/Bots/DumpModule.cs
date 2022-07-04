@@ -10,19 +10,18 @@ namespace SysBot.Pokemon.Discord
     [DefaultMemberPermissions(GuildPermission.ViewChannel)]
     public class DumpModule : InteractionModuleBase<SocketInteractionContext> 
     {
-        public static TradeQueueInfo<PK8> Info => SysCord<PK8>.Runner.Hub.Queues.Info;
+        public static TradeQueueInfo<PB8> Info => SysCord<PB8>.Runner.Hub.Queues.Info;
 
         [SlashCommand("dump", "Dumps the Pokémon you show via Link Trade.")]
  
-        public async Task DumpAsync([Summary("TradeCode","leave blank for random")]int code = 0)
+        public async Task DumpAsync()
         {
             await DeferAsync();
-            if(code == 0)
-            {
-                code = new Random().Next(99999999);
-            }
+           
+            var code = new Random().Next(99999999);
+            
             var sig = Context.User.GetFavor();
-            await QueueHelper<PK8>.AddToQueueAsync(Context, code, Context.User.Username, sig, new PK8(), PokeRoutineType.Dump, PokeTradeType.Dump).ConfigureAwait(false);
+            await QueueHelper<PB8>.AddToQueueAsync(Context, code, Context.User.Username, sig, new PB8(), PokeRoutineType.Dump, PokeTradeType.Dump).ConfigureAwait(false);
         }
     }
 }

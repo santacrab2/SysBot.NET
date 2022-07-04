@@ -13,18 +13,18 @@ namespace SysBot.Pokemon.Discord
     [DefaultMemberPermissions(GuildPermission.ViewChannel)]
     public class TradeModule : InteractionModuleBase<SocketInteractionContext>
     {
-        public static TradeQueueInfo<PK8> Info => SysCord<PK8>.Runner.Hub.Queues.Info;
+        public static TradeQueueInfo<PB8> Info => SysCord<PB8>.Runner.Hub.Queues.Info;
 
 
         [SlashCommand("trade", "Receive a Pokémon From Showdown text or File")]
         [RequireQueueRole(nameof(DiscordManager.RolesTrade))]
-        public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment pk8 = default, [Summary("TradeCode", "leave blank for random")] int code = 0)
+        public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment pb8 = default)
         {
             await DeferAsync();
             if (content != "")
             {
-                if (code == 0)
-                    code = new Random().Next(99999999);
+                
+                var code = new Random().Next(99999999);
                 var set = ShowdownUtil.ConvertToShowdown(content);
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 if (set.InvalidLines.Count != 0)
@@ -36,20 +36,20 @@ namespace SysBot.Pokemon.Discord
 
                 try
                 {
-                    var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+                    var sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
                     var pkm = sav.GetLegal(template, out var result);
                     if (pkm.Species == 132)
-                        TradeExtensions<PK8>.DittoTrade(pkm);
+                        TradeExtensions<PB8>.DittoTrade(pkm);
 
                     if (pkm.Nickname.ToLower() == "egg" && Breeding.CanHatchAsEgg(pkm.Species))
-                        TradeExtensions<PK8>.EggTrade(pkm,template);
+                        TradeExtensions<PB8>.EggTrade(pkm,template);
 
                     var la = new LegalityAnalysis(pkm);
                     var spec = GameInfo.Strings.Species[template.Species];
-                    pkm = EntityConverter.ConvertToType(pkm, typeof(PK8), out _) ?? pkm;
+                    pkm = EntityConverter.ConvertToType(pkm, typeof(PB8), out _) ?? pkm;
                    
 
-                    if (pkm is not PK8 pk || !la.Valid)
+                    if (pkm is not PB8 pk || !la.Valid)
                     {
                         var reason = result == "Timeout" ? $"That {spec} set took too long to generate." : $"I wasn't able to create a {spec} from that set.";
                         var imsg = $"Oops! {reason}";
@@ -72,12 +72,12 @@ namespace SysBot.Pokemon.Discord
                     await FollowupAsync(msg,ephemeral:true).ConfigureAwait(false);
                 }
             }
-            if(pk8 != default)
+            if(pb8 != default)
             {
-                if (code == -1)
-                    code = Info.GetRandomTradeCode();
+                
+                var code = new Random().Next(99999999);
                 var sig = Context.User.GetFavor();
-                await TradeAsyncAttach(pk8,code, sig, Context.User).ConfigureAwait(false);
+                await TradeAsyncAttach(pb8,code, sig, Context.User).ConfigureAwait(false);
             }
         }
 
@@ -127,19 +127,19 @@ namespace SysBot.Pokemon.Discord
             await AddTradeToQueueAsync(code, usr.Username, pk, sig, usr).ConfigureAwait(false);
         }
 
-        private static PK8? GetRequest(Download<PKM> dl)
+        private static PB8? GetRequest(Download<PKM> dl)
         {
             if (!dl.Success)
                 return null;
             return dl.Data switch
             {
                 null => null,
-                PK8 pk => pk,
-                _ => EntityConverter.ConvertToType(dl.Data, typeof(PK8), out _) as PK8,
+                PB8 pk => pk,
+                _ => EntityConverter.ConvertToType(dl.Data, typeof(PB8), out _) as PB8,
             };
         }
 
-        private async Task AddTradeToQueueAsync(int code, string trainerName, PK8 pk, RequestSignificance sig, SocketUser usr)
+        private async Task AddTradeToQueueAsync(int code, string trainerName, PB8 pk, RequestSignificance sig, SocketUser usr)
         {
             if (!pk.CanBeTraded())
             {
@@ -150,11 +150,11 @@ namespace SysBot.Pokemon.Discord
             var la = new LegalityAnalysis(pk);
             if (!la.Valid)
             {
-                await FollowupAsync($"{typeof(PK8).Name} attachment is not legal, Here's Why: {la.Report()}",ephemeral:true).ConfigureAwait(false);
+                await FollowupAsync($"{typeof(PB8).Name} attachment is not legal, Here's Why: {la.Report()}",ephemeral:true).ConfigureAwait(false);
                 return;
             }
 
-            await QueueHelper<PK8>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr).ConfigureAwait(false);
+            await QueueHelper<PB8>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr).ConfigureAwait(false);
         }
     }
 }

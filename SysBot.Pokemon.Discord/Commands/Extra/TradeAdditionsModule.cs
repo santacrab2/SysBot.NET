@@ -14,10 +14,10 @@ namespace SysBot.Pokemon.Discord
     [DefaultMemberPermissions(GuildPermission.ViewChannel)]
     public class TradeAdditionsModule : InteractionModuleBase<SocketInteractionContext> 
     {
-        private static TradeQueueInfo<PK8> Info => SysCord<PK8>.Runner.Hub.Queues.Info;
-        private readonly ExtraCommandUtil<PK8> Util = new();
-        private readonly LairBotSettings LairSettings = SysCord<PK8>.Runner.Hub.Config.LairSWSH;
-        private readonly RollingRaidSettings RollingRaidSettings = SysCord<PK8>.Runner.Hub.Config.RollingRaidSWSH;
+        private static TradeQueueInfo<PB8> Info => SysCord<PB8>.Runner.Hub.Queues.Info;
+     
+        private readonly LairBotSettings LairSettings = SysCord<PB8>.Runner.Hub.Config.LairSWSH;
+        private readonly RollingRaidSettings RollingRaidSettings = SysCord<PB8>.Runner.Hub.Config.RollingRaidSWSH;
 
 
         [SlashCommand("fixot", "Fixes OT and Nickname of a Pokémon you show via Link Trade if an advert is detected.")]
@@ -26,7 +26,7 @@ namespace SysBot.Pokemon.Discord
             await DeferAsync();
             var code = Info.GetRandomTradeCode();
             var sig = Context.User.GetFavor();
-            await QueueHelper<PK8>.AddToQueueAsync(Context, code, Context.User.Username, sig, new PK8(), PokeRoutineType.FixOT, PokeTradeType.FixOT).ConfigureAwait(false);
+            await QueueHelper<PB8>.AddToQueueAsync(Context, code, Context.User.Username, sig, new PB8(), PokeRoutineType.FixOT, PokeTradeType.FixOT).ConfigureAwait(false);
         }
 
         [SlashCommand("itemtrade", "Makes the bot trade you a Pokémon holding the requested item")]
@@ -44,9 +44,9 @@ namespace SysBot.Pokemon.Discord
             Species species = Species.Diglett;
             var set = new ShowdownSet($"{SpeciesName.GetSpeciesNameGeneration((int)species, 2, 8)} @ {item.Trim()}");
             var template = AutoLegalityWrapper.GetTemplate(set);
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+            var sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
             var pkm = sav.GetLegal(template, out var result);
-            pkm = EntityConverter.ConvertToType(pkm, typeof(PK8), out _) ?? pkm;
+            pkm = EntityConverter.ConvertToType(pkm, typeof(PB8), out _) ?? pkm;
             if (pkm.HeldItem == 0)
             {
                 await FollowupAsync($"{Context.User.Username}, the item you entered wasn't recognized.").ConfigureAwait(false);
@@ -56,7 +56,7 @@ namespace SysBot.Pokemon.Discord
             var la = new LegalityAnalysis(pkm);
          
             
-            if (pkm is not PK8 pk || !la.Valid)
+            if (pkm is not PB8 pk || !la.Valid)
             {
                 var reason = result == "Timeout" ? "That set took too long to generate." : "I wasn't able to create something from that.";
                 var imsg = $"Oops! {reason} Here's my best attempt for that {species}!";
@@ -66,7 +66,7 @@ namespace SysBot.Pokemon.Discord
             pk.ResetPartyStats();
 
             var sig = Context.User.GetFavor();
-            await QueueHelper<PK8>.AddToQueueAsync(Context, code, Context.User.Username, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.SupportTrade).ConfigureAwait(false);
+            await QueueHelper<PB8>.AddToQueueAsync(Context, code, Context.User.Username, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.SupportTrade).ConfigureAwait(false);
         }
 
        
@@ -104,12 +104,12 @@ namespace SysBot.Pokemon.Discord
 
         private async Task LairEmbedLoop(List<ulong> channels)
         {
-            var ping = SysCord<PK8>.Runner.Hub.Config.StopConditions.MatchFoundEchoMention;
+            var ping = SysCord<PB8>.Runner.Hub.Config.StopConditions.MatchFoundEchoMention;
             while (!LairBotUtil.EmbedSource.IsCancellationRequested)
             {
                 if (LairBotUtil.EmbedMon.Item1 != null)
                 {
-                    var url = TradeExtensions<PK8>.PokeImg(LairBotUtil.EmbedMon.Item1, LairBotUtil.EmbedMon.Item1.CanGigantamax, false);
+                    var url = TradeExtensions<PB8>.PokeImg(LairBotUtil.EmbedMon.Item1, LairBotUtil.EmbedMon.Item1.CanGigantamax, false);
                     var ballStr = $"{(Ball)LairBotUtil.EmbedMon.Item1.Ball}".ToLower();
                     var ballUrl = $"https://serebii.net/itemdex/sprites/pgl/{ballStr}ball.png";
                     var author = new EmbedAuthorBuilder { IconUrl = ballUrl, Name = LairBotUtil.EmbedMon.Item2 ? "Legendary Caught!" : "Result found, but not quite Legendary!" };
@@ -175,7 +175,7 @@ namespace SysBot.Pokemon.Discord
             {
                 if (RollingRaidBot.EmbedQueue.TryDequeue(out var embedInfo))
                 {
-                    var url = TradeExtensions<PK8>.PokeImg(embedInfo.Item1, embedInfo.Item1.CanGigantamax, false);
+                    var url = TradeExtensions<PB8>.PokeImg(embedInfo.Item1, embedInfo.Item1.CanGigantamax, false);
                     var embed = new EmbedBuilder
                     {
                         Title = embedInfo.Item3,

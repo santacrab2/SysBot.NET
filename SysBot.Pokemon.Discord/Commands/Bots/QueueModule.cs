@@ -10,7 +10,7 @@ namespace SysBot.Pokemon.Discord
     [DefaultMemberPermissions(GuildPermission.ViewChannel)]
     public class QueueModule : InteractionModuleBase<SocketInteractionContext> 
     {
-        public static TradeQueueInfo<PK8> Info => SysCord<PK8>.Runner.Hub.Queues.Info;
+        public static TradeQueueInfo<PB8> Info => SysCord<PB8>.Runner.Hub.Queues.Info;
 
         [SlashCommand("queuestatus", "Checks the user's position in the queue.")]
     

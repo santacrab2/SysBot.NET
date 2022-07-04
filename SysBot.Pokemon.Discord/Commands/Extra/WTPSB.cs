@@ -20,11 +20,11 @@ namespace SysBot.Pokemon.Discord
         public static bool buttonpressed = false;
         public static bool tradepokemon = false;
         public static CancellationTokenSource WTPsource = new();
-        public static TradeQueueInfo<PK8> Info => SysCord<PK8>.Runner.Hub.Queues.Info;
-        public readonly PokeTradeHub<PK8> Hub = SysCord<PK8>.Runner.Hub;
-       // public readonly ExtraCommandUtil<PK8> Util = new();
+        public static TradeQueueInfo<PB8> Info => SysCord<PB8>.Runner.Hub.Queues.Info;
+        public readonly PokeTradeHub<PB8> Hub = SysCord<PB8>.Runner.Hub;
+       
       
-        public static GameVersion Game = GameVersion.SWSH;
+        public static GameVersion Game = GameVersion.BDSP;
         public static string guess = "";
         public static SocketUser usr;
         public static int randspecies;
@@ -80,22 +80,26 @@ namespace SysBot.Pokemon.Discord
                     }
                     if (tradepokemon)
                     {
-       
-                        var pk = new PK8() { SpecForm = randspecies};
-                        pk.SetIsShiny(true);
-                        pk = (PK8)pk.Legalize();
-                        
+
+                        var set = new ShowdownSet($"{SpeciesName.GetSpeciesNameGeneration(randspecies, 2, 8)}\nShiny: Yes");
+                        var template = AutoLegalityWrapper.GetTemplate(set);
+                        var sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
+                        var pk = sav.GetLegal(template, out var result);
+                        pk = EntityConverter.ConvertToType(pk, typeof(PB8), out _) ?? pk;
                         if(!new LegalityAnalysis(pk).Valid)
                         {
-                            pk = new PK8() { SpecForm = randspecies };
-                            pk = (PK8)pk.Legalize();
-
+                            set = new ShowdownSet($"{SpeciesName.GetSpeciesNameGeneration(randspecies, 2, 8)}");
+                            template = AutoLegalityWrapper.GetTemplate(set);
+                            sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
+                            pk = sav.GetLegal(template, out result);
+                            pk = EntityConverter.ConvertToType(pk, typeof(PB8), out _) ?? pk;
                         }
                         pk.Ball = BallApplicator.ApplyBallLegalByColor(pk);
                         int[] sugmov = MoveSetApplicator.GetMoveSet(pk, true);
                         pk.SetMoves(sugmov);
                         int natue = random.Next(24);
                         pk.Nature = natue;
+                        
                        
 
                         await QueueHelper<PK8>.AddToQueueAsync(con, code, usr.Username, RequestSignificance.None, (PK8)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr).ConfigureAwait(false);
