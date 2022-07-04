@@ -469,11 +469,13 @@ namespace SysBot.Pokemon
             }
 
             await Click(A, 1_000, token).ConfigureAwait(false); // Would you like to enter? Screen
-
-            Log("Selecting Link Code room.");
-            // Link code selection index
-            await Click(DDOWN, 0_200, token).ConfigureAwait(false);
-            await Click(DDOWN, 0_200, token).ConfigureAwait(false);
+            if (tradeCode >= 0)
+            {
+                Log("Selecting Link Code room.");
+                // Link code selection index
+                await Click(DDOWN, 0_200, token).ConfigureAwait(false);
+                await Click(DDOWN, 0_200, token).ConfigureAwait(false);
+            }
 
             Log("Connecting to internet.");
             await Click(A, 0_050, token).ConfigureAwait(false);
@@ -501,16 +503,18 @@ namespace SysBot.Pokemon
             // Agree and save the game.
             await Click(A, 0_050, token).ConfigureAwait(false);
             await PressAndHold(A, 6_500, 0, token).ConfigureAwait(false);
+            if (tradeCode >= 0)
+            {
+                if (tradeType != PokeTradeType.Random)
+                    Hub.Config.Stream.StartEnterCode(this);
+                Log($"Entering Link Trade code: {tradeCode:0000 0000}...");
+                await EnterLinkCode(tradeCode, Hub.Config, token).ConfigureAwait(false);
 
-            if (tradeType != PokeTradeType.Random)
-                Hub.Config.Stream.StartEnterCode(this);
-            Log($"Entering Link Trade code: {tradeCode:0000 0000}...");
-            await EnterLinkCode(tradeCode, Hub.Config, token).ConfigureAwait(false);
-
-            // Wait for Barrier to trigger all bots simultaneously.
-            WaitAtBarrierIfApplicable(token);
-            await Click(PLUS, 0_600, token).ConfigureAwait(false);
-            Hub.Config.Stream.EndEnterCode(this);
+                // Wait for Barrier to trigger all bots simultaneously.
+                WaitAtBarrierIfApplicable(token);
+                await Click(PLUS, 0_600, token).ConfigureAwait(false);
+                Hub.Config.Stream.EndEnterCode(this);
+            }
             Log("Entering the Union Room.");
 
             // Wait until we're past the communication message.

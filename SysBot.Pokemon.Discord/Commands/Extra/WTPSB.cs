@@ -33,10 +33,11 @@ namespace SysBot.Pokemon.Discord
         [RequireOwner]
         public async Task WhoseThatPokemon()
         {
+            await DeferAsync(ephemeral:true);
             ITextChannel wtpchannel = (ITextChannel)Context.Channel;
             await wtpchannel.ModifyAsync(newname => newname.Name = wtpchannel.Name.Replace("❌", "✅"));
             await wtpchannel.AddPermissionOverwriteAsync(wtpchannel.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Allow));
-            await RespondAsync("\"who's that pokemon\" mode started!",ephemeral:true);
+            await FollowupAsync("\"who's that pokemon\" mode started!",ephemeral:true);
             while (!WTPsource.IsCancellationRequested)
             {
                 Stopwatch sw = new();
@@ -51,7 +52,7 @@ namespace SysBot.Pokemon.Discord
                 if (randspecies < 891)
                     embed.ImageUrl = $"https://logoassetsgame.s3.us-east-2.amazonaws.com/wtp/pokemon/{randspecies}q.png";
                 else
-                    embed.ImageUrl = $"https://raw.githubusercontent.com/santacrab2/SysBot.NET/RNGstuff/finalimages/{randspecies}q.png";
+                    embed.ImageUrl = $"https://raw.githubusercontent.com/santacrab2/SysBot.NET/BDSP/RNGstuff/finalimages/{randspecies}q.png";
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
                 while (guess.ToLower() != ((Species)randspecies).ToString().ToLower() && sw.ElapsedMilliseconds / 1000 < 600)
                 {
@@ -64,7 +65,7 @@ namespace SysBot.Pokemon.Discord
                 if (randspecies < 891)
                     embed.ImageUrl = $"https://logoassetsgame.s3.us-east-2.amazonaws.com/wtp/pokemon/{randspecies}a.png";
                 else
-                    embed.ImageUrl = $"https://raw.githubusercontent.com/santacrab2/SysBot.NET/RNGstuff/finalimages/{randspecies}a.png";
+                    embed.ImageUrl = $"https://raw.githubusercontent.com/santacrab2/SysBot.NET/BDSP/RNGstuff/finalimages/{randspecies}a.png";
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
               
                 if (guess.ToLower() == ((Species)randspecies).ToString().ToLower())
@@ -102,7 +103,7 @@ namespace SysBot.Pokemon.Discord
                         
                        
 
-                        await QueueHelper<PK8>.AddToQueueAsync(con, code, usr.Username, RequestSignificance.None, (PK8)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr).ConfigureAwait(false);
+                        await QueueHelper<PB8>.AddToQueueAsync(con, code, usr.Username, RequestSignificance.None, (PB8)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr).ConfigureAwait(false);
                     }
                     usr = null;
                     guess = "";
@@ -118,22 +119,24 @@ namespace SysBot.Pokemon.Discord
        
         public async Task WTPguess([Summary("pokemon","put the pokemon name here")]string userguess)
         {
+            await DeferAsync();
             if (userguess.ToLower() == ((Species)randspecies).ToString().ToLower())
             {
-                await RespondAsync($"{Context.User.Username} You are correct! It's {userguess}");
+                await FollowupAsync($"{Context.User.Username} You are correct! It's {userguess}");
                 guess = userguess;
                 usr = Context.User;
                 con = Context;
             }
             else
-                await RespondAsync($"{Context.User.Username} You are incorrect. It is not {userguess}");
+                await FollowupAsync($"{Context.User.Username} You are incorrect. It is not {userguess}");
         }
         [SlashCommand("wtpcancel","owner only")]
         [RequireOwner]
         public async Task wtpcancel()
         {
+            await DeferAsync(ephemeral: true);
             WTPsource.Cancel();
-            await RespondAsync("\"Who's That Pokemon\" mode stopped.",ephemeral:true);
+            await FollowupAsync("\"Who's That Pokemon\" mode stopped.",ephemeral:true);
             ITextChannel wtpchannel = (ITextChannel)Context.Channel;
             await wtpchannel.ModifyAsync(newname => newname.Name = wtpchannel.Name.Replace("✅","❌"));
             await wtpchannel.AddPermissionOverwriteAsync(wtpchannel.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
@@ -151,8 +154,8 @@ namespace SysBot.Pokemon.Discord
                 var species = SpeciesName.GetSpeciesNameGeneration(i, 2, 8);
                 var set = new ShowdownSet($"{species}{(i == (int)NidoranF ? "-F" : i == (int)NidoranM ? "-M" : "")}");
                 var template = AutoLegalityWrapper.GetTemplate(set);
-                var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-                _ = (PK8)sav.GetLegal(template, out string result);
+                var sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
+                _ = (PB8)sav.GetLegal(template, out string result);
 
                 if (result == "Regenerated")
                     dex.Add(i);

@@ -65,4 +65,24 @@ namespace SysBot.Pokemon
                 yield return $"Adventures Completed: {CompletedCurries}";
         }
     }
+    public enum CurryBerries
+    {
+        Starf = 207,
+        Enigma = 208,
+        Micle = 209,
+        Custap = 210,
+        Jaboca = 211,
+        Rowap = 212,
+    }
+
+    public enum CurryIngredients
+    {
+        SmokePokeTail = 1091,
+        LargeLeek = 1092,
+        FancyApple = 1093,
+        BoiledEgg = 1099,
+        FruitBunch = 1256,
+        MoomooCheese = 1257,
+        Gigantamix = 1264,
+    }
 }

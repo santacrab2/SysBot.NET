@@ -180,43 +180,7 @@ namespace SysBot.Pokemon.Discord
             return true;
         }
 
-        public async Task<int> EventVoteCalc(SocketInteractionContext ctx, List<PokeEventType> events)
-        {
-            IEmote[] reactions = { new Emoji("1️⃣"), new Emoji("2️⃣"), new Emoji("3️⃣"), new Emoji("4️⃣"), new Emoji("5️⃣") };
-            string text = "The community vote has started! You have 30 seconds to vote for the next event!\n";
-            for (int i = 0; i < events.Count; i++)
-                text += $"{i + 1}. {events[i]}\n";
-
-            var embed = new EmbedBuilder { Color = Color.DarkBlue }.AddField(x =>
-            {
-                x.Name = "Community Event Vote";
-                x.Value = text;
-                x.IsInline = false;
-            });
-
-            var msg = await ctx.Channel.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
-            await msg.AddReactionsAsync(reactions).ConfigureAwait(false);
-
-            await Task.Delay(30_000).ConfigureAwait(false);
-            await msg.UpdateAsync().ConfigureAwait(false);
-            List<int> reactList = new();
-            for (int i = 0; i < 5; i++)
-                reactList.Add(msg.Reactions.Values.ToArray()[i].ReactionCount);
-
-            var topVote = reactList.Max();
-            bool tieBreak = reactList.FindAll(x => x == topVote).Count > 1;
-            if (tieBreak)
-            {
-                List<int> indexes = new();
-                for (int i = 0; i < reactList.Count; i++)
-                {
-                    if (reactList[i] == topVote)
-                        indexes.Add(i);
-                }
-                return indexes[new Random().Next(indexes.Count)];
-            }
-            return reactList.IndexOf(topVote);
-        }
+       
 
         public async Task EmbedUtil(SocketInteractionContext ctx, string name, string value, EmbedBuilder? embed = null)
         {

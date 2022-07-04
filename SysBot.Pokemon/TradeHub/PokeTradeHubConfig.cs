@@ -74,6 +74,12 @@ namespace SysBot.Pokemon
         [Category(BotEncounter), Description("Stop conditions for EggBot, FossilBot, and EncounterBot.")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public StopConditionSettings StopConditions { get; set; } = new();
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public BoolSettings Bool {get;set;}=new();
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public CurryBotSettings Curry { get; set; }=new();
 
         // Integration
 
