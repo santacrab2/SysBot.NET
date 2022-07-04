@@ -51,7 +51,18 @@ namespace SysBot.Pokemon
         [Category(BotEncounter)]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public RaidSettings RaidSWSH { get; set; } = new();
-
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public DenSettings DenSWSH { get; set; } = new();
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public RollingRaidSettings RollingRaidSWSH { get; set; } = new();
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public OnlineLairBotSettings OnlineLair { get; set; } = new();
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public LairBotSettings LairSWSH { get; set; } = new();
         [Category(BotEncounter)]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public FossilSettings FossilSWSH { get; set; } = new();

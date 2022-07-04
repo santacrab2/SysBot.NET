@@ -56,7 +56,7 @@ namespace SysBot.Pokemon
 
         private async Task InnerLoop(CancellationToken token)
         {
-            while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.RaidBot)
+            while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.RaidBotSWSH)
             {
                 Config.IterateNextRoutine();
                 addFriends = false;

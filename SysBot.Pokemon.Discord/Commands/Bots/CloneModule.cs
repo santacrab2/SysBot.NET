@@ -1,61 +1,27 @@
 ﻿using Discord;
-using Discord.Commands;
+using System;
+using Discord.Interactions;
 using PKHeX.Core;
 using System.Threading.Tasks;
 
 namespace SysBot.Pokemon.Discord
 {
-    [Summary("Queues new Clone trades")]
-    public class CloneModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new()
+    [EnabledInDm(false)]
+    [DefaultMemberPermissions(GuildPermission.ViewChannel)]
+    public class CloneModule : InteractionModuleBase<SocketInteractionContext> 
     {
-        private static TradeQueueInfo<T> Info => SysCord<T>.Runner.Hub.Queues.Info;
+        public static TradeQueueInfo<PK8> Info => SysCord<PK8>.Runner.Hub.Queues.Info;
 
-        [Command("clone")]
-        [Alias("c")]
-        [Summary("Clones the Pokémon you show via Link Trade.")]
-        [RequireQueueRole(nameof(DiscordManager.RolesClone))]
-        public async Task CloneAsync(int code)
+        [SlashCommand("clone", "Clones the Pokémon you show via Link Trade.")]
+    
+        public async Task CloneAsync([Summary("TradeCode","leave it blank for random")]int code = 0)
         {
+            await DeferAsync();
+            if (code == 0)
+                code = new Random().Next(99999999);
             var sig = Context.User.GetFavor();
-            await QueueHelper<T>.AddToQueueAsync(Context, code, Context.User.Username, sig, new T(), PokeRoutineType.Clone, PokeTradeType.Clone).ConfigureAwait(false);
+            await QueueHelper<PK8>.AddToQueueAsync(Context, code, Context.User.Username, sig, new PK8(), PokeRoutineType.Clone, PokeTradeType.Clone).ConfigureAwait(false);
         }
 
-        [Command("clone")]
-        [Alias("c")]
-        [Summary("Clones the Pokémon you show via Link Trade.")]
-        [RequireQueueRole(nameof(DiscordManager.RolesClone))]
-        public async Task CloneAsync([Summary("Trade Code")][Remainder] string code)
-        {
-            int tradeCode = Util.ToInt32(code);
-            var sig = Context.User.GetFavor();
-            await QueueHelper<T>.AddToQueueAsync(Context, tradeCode == 0 ? Info.GetRandomTradeCode() : tradeCode, Context.User.Username, sig, new T(), PokeRoutineType.Clone, PokeTradeType.Clone).ConfigureAwait(false);
-        }
-
-        [Command("clone")]
-        [Alias("c")]
-        [Summary("Clones the Pokémon you show via Link Trade.")]
-        [RequireQueueRole(nameof(DiscordManager.RolesClone))]
-        public async Task CloneAsync()
-        {
-            var code = Info.GetRandomTradeCode();
-            await CloneAsync(code).ConfigureAwait(false);
-        }
-
-        [Command("cloneList")]
-        [Alias("cl", "cq")]
-        [Summary("Prints the users in the Clone queue.")]
-        [RequireSudo]
-        public async Task GetListAsync()
-        {
-            string msg = Info.GetTradeList(PokeRoutineType.Clone);
-            var embed = new EmbedBuilder();
-            embed.AddField(x =>
-            {
-                x.Name = "Pending Trades";
-                x.Value = msg;
-                x.IsInline = false;
-            });
-            await ReplyAsync("These are the users who are currently waiting:", embed: embed.Build()).ConfigureAwait(false);
-        }
     }
 }

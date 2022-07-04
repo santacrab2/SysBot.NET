@@ -1,13 +1,13 @@
-﻿using Discord.Commands;
+﻿using Discord.Interactions;
+using PKHeX.Core;
 using System.Threading.Tasks;
 
 namespace SysBot.Pokemon.Discord
 {
-    public class HelloModule : ModuleBase<SocketCommandContext>
+    public class HelloModule : InteractionModuleBase<SocketInteractionContext> 
     {
-        [Command("hello")]
-        [Alias("hi")]
-        [Summary("Say hello to the bot and get a response.")]
+        [SlashCommand("hello", "Say hello to the bot")]
+      
         public async Task PingAsync()
         {
             var str = SysCordSettings.Settings.HelloResponse;

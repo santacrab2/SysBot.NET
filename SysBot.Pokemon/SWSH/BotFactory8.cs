@@ -17,7 +17,7 @@ namespace SysBot.Pokemon
 
             PokeRoutineType.EggFetch => new EggBot(cfg, Hub),
             PokeRoutineType.FossilBot => new FossilBot(cfg, Hub),
-            PokeRoutineType.RaidBot => new RaidBot(cfg, Hub),
+            PokeRoutineType.RaidBotSWSH => new RaidBot(cfg, Hub),
             PokeRoutineType.EncounterLine => new EncounterBotLine(cfg, Hub),
             PokeRoutineType.Reset => new EncounterBotReset(cfg, Hub),
             PokeRoutineType.Dogbot => new EncounterBotDog(cfg, Hub),
@@ -38,7 +38,7 @@ namespace SysBot.Pokemon
 
             PokeRoutineType.EggFetch => true,
             PokeRoutineType.FossilBot => true,
-            PokeRoutineType.RaidBot => true,
+            PokeRoutineType.RaidBotSWSH => true,
             PokeRoutineType.EncounterLine => true,
             PokeRoutineType.Reset => true,
             PokeRoutineType.Dogbot => true,

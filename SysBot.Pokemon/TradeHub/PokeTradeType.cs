@@ -7,5 +7,7 @@
         Seed,
         Clone,
         Dump,
+        FixOT,
+        SupportTrade,
     }
 }

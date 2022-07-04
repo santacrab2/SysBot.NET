@@ -229,5 +229,26 @@ namespace SysBot.Base
             Array.Reverse(offsetBytes, 0, 8);
             return BitConverter.ToUInt64(offsetBytes, 0);
         }
+
+        public async Task<byte[]> Screengrab(CancellationToken token)
+        {
+            List<byte> flexBuffer = new();
+            int received = 0;
+
+            await SendAsync(SwitchCommand.Screengrab(), token).ConfigureAwait(false);
+            await Task.Delay(Connection.ReceiveBufferSize / DelayFactor + BaseDelay, token).ConfigureAwait(false);
+            while (Connection.Available > 0)
+            {
+                byte[] buffer = new byte[Connection.ReceiveBufferSize];
+                received += Connection.Receive(buffer, 0, Connection.ReceiveBufferSize, SocketFlags.None);
+                flexBuffer.AddRange(buffer);
+                await Task.Delay(MaximumTransferSize / DelayFactor + BaseDelay, token).ConfigureAwait(false);
+            }
+
+            byte[] data = new byte[flexBuffer.Count];
+            flexBuffer.CopyTo(data);
+            var result = data.SliceSafe(0, received);
+            return Decoder.ConvertHexByteStringToBytes(result);
+        }
     }
 }

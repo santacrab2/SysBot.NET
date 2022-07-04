@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using PKHeX.Core;
@@ -23,7 +24,7 @@ namespace SysBot.Pokemon.Discord
     {
         public static PokeBotRunner<T> Runner { get; private set; } = default!;
 
-        private readonly DiscordSocketClient _client;
+        public static DiscordSocketClient _client;
         private readonly DiscordManager Manager;
         public readonly PokeTradeHub<T> Hub;
 
@@ -31,6 +32,9 @@ namespace SysBot.Pokemon.Discord
         // These two types require you install the Discord.Net.Commands package.
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
+
+        // Bot listens to channel messages to reply with a ShowdownSet whenever a PKM file is attached (not with a command).
+        private bool ConvertPKMToShowdownSet { get; } = true;
 
         // Track loading of Echo/Logging channels so they aren't loaded multiple times.
         private bool MessageChannelsLoaded { get; set; }
@@ -52,7 +56,7 @@ namespace SysBot.Pokemon.Discord
                 // If you or another service needs to do anything with messages
                 // (eg. checking Reactions, checking the content of edited/deleted messages),
                 // you must set the MessageCacheSize. You may adjust the number as needed.
-                //MessageCacheSize = 50,
+                MessageCacheSize = 100,
             });
 
             _commands = new CommandService(new CommandServiceConfig
@@ -62,7 +66,7 @@ namespace SysBot.Pokemon.Discord
 
                 // This makes commands get run on the task thread pool instead on the websocket read thread.
                 // This ensures long running logic can't block the websocket connection.
-                DefaultRunMode = Hub.Config.Discord.AsyncCommands ? RunMode.Async : RunMode.Sync,
+                //DefaultRunMode = Hub.Config.Discord.AsyncCommands ? RunMode.Async : RunMode.Sync,
 
                 // There's a few more properties you can set,
                 // for example, case-insensitive commands.
@@ -120,6 +124,7 @@ namespace SysBot.Pokemon.Discord
 
         public async Task MainAsync(string apiToken, CancellationToken token)
         {
+            _client.Ready += LoadLoggingAndEcho;
             // Centralize the logic for commands into a separate method.
             await InitCommands().ConfigureAwait(false);
 
@@ -133,7 +138,17 @@ namespace SysBot.Pokemon.Discord
             // Wait infinitely so your bot actually stays connected.
             await MonitorStatusAsync(token).ConfigureAwait(false);
         }
+        public async Task ready()
+        {
+          
+        }
+        public Task slashtask(SocketSlashCommand arg1)
+        {
 
+
+            return Task.CompletedTask;
+
+        }
         public async Task InitCommands()
         {
             var assembly = Assembly.GetExecutingAssembly();
@@ -163,10 +178,29 @@ namespace SysBot.Pokemon.Discord
             }
 
             // Subscribe a handler to see if a message invokes a command.
-            _client.Ready += LoadLoggingAndEcho;
+          
             _client.MessageReceived += HandleMessageAsync;
+  
+            _client.ButtonExecuted += handlebuttonpress;
         }
-
+        private async Task handlebuttonpress(SocketMessageComponent arg)
+        {
+          
+            if (arg.Data.CustomId == "wtpyes")
+            {
+                WTPSB.buttonpressed = true;
+                WTPSB.tradepokemon = true;
+                await arg.Message.DeleteAsync();
+                return;
+            }
+            if (arg.Data.CustomId == "wtpno")
+            {
+                WTPSB.buttonpressed = true;
+                WTPSB.tradepokemon = false;
+                await arg.Message.DeleteAsync();
+                return;
+            }
+        }
         private async Task HandleMessageAsync(SocketMessage arg)
         {
             // Bail out if it's a System Message.
@@ -174,8 +208,7 @@ namespace SysBot.Pokemon.Discord
                 return;
 
             // We don't want the bot to respond to itself or other bots.
-            if (msg.Author.Id == _client.CurrentUser.Id || msg.Author.IsBot)
-                return;
+       
 
             // Create a number to track where the prefix ends and the command begins
             int pos = 0;
@@ -192,15 +225,10 @@ namespace SysBot.Pokemon.Discord
         private async Task TryHandleMessageAsync(SocketMessage msg)
         {
             // should this be a service?
-            if (msg.Attachments.Count > 0)
+            if (msg.Attachments.Count > 0 && ConvertPKMToShowdownSet)
             {
-                var mgr = Manager;
-                var cfg = mgr.Config;
-                if (cfg.ConvertPKMToShowdownSet && (cfg.ConvertPKMReplyAnyChannel || mgr.CanUseCommandChannel(msg.Channel.Id)))
-                {
-                    foreach (var att in msg.Attachments)
-                        await msg.Channel.RepostPKMAsShowdownAsync(att).ConfigureAwait(false);
-                }
+                foreach (var att in msg.Attachments)
+                    await msg.Channel.RepostPKMAsShowdownAsync(att).ConfigureAwait(false);
             }
         }
 
@@ -284,8 +312,18 @@ namespace SysBot.Pokemon.Discord
             }
         }
 
-        private async Task LoadLoggingAndEcho()
+        public async Task LoadLoggingAndEcho()
         {
+            var _interactionService = new InteractionService(_client);
+            await _interactionService.AddModulesAsync(Assembly.GetExecutingAssembly(), _services);
+            await _interactionService.RegisterCommandsToGuildAsync(872587205787394119);
+            _client.InteractionCreated += async interaction =>
+            {
+
+                var ctx = new SocketInteractionContext(_client, interaction);
+                var result = await _interactionService.ExecuteCommandAsync(ctx, null);
+            };
+            _client.SlashCommandExecuted += slashtask;
             if (MessageChannelsLoaded)
                 return;
 
@@ -304,5 +342,6 @@ namespace SysBot.Pokemon.Discord
             if (!string.IsNullOrWhiteSpace(game))
                 await _client.SetGameAsync(game).ConfigureAwait(false);
         }
+       
     }
 }

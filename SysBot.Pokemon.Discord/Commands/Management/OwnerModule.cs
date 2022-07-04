@@ -1,13 +1,16 @@
-﻿using Discord.Commands;
+using Discord.Commands;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
+using System.Threading;
+using PKHeX.Core;
 
 namespace SysBot.Pokemon.Discord
 {
     public class OwnerModule : SudoModule
     {
+       
         [Command("addSudo")]
         [Summary("Adds mentioned user to global sudo")]
         [RequireOwner]
@@ -54,53 +57,9 @@ namespace SysBot.Pokemon.Discord
             await ReplyAsync("Done.").ConfigureAwait(false);
         }
 
-        [Command("leave")]
-        [Alias("bye")]
-        [Summary("Leaves the current server.")]
-        [RequireOwner]
-        // ReSharper disable once UnusedParameter.Global
-        public async Task Leave()
-        {
-            await ReplyAsync("Goodbye.").ConfigureAwait(false);
-            await Context.Guild.LeaveAsync().ConfigureAwait(false);
-        }
+       
 
-        [Command("leaveguild")]
-        [Alias("lg")]
-        [Summary("Leaves guild based on supplied ID.")]
-        [RequireOwner]
-        // ReSharper disable once UnusedParameter.Global
-        public async Task LeaveGuild(string userInput)
-        {
-            if (!ulong.TryParse(userInput, out ulong id))
-            {
-                await ReplyAsync("Please provide a valid Guild ID.").ConfigureAwait(false);
-                return;
-            }
-
-            var guild = Context.Client.Guilds.FirstOrDefault(x => x.Id == id);
-            if (guild is null)
-            {
-                await ReplyAsync($"Provided input ({userInput}) is not a valid guild ID or the bot is not in the specified guild.").ConfigureAwait(false);
-                return;
-            }
-
-            await ReplyAsync($"Leaving {guild}.").ConfigureAwait(false);
-            await guild.LeaveAsync().ConfigureAwait(false);
-        }
-
-        [Command("leaveall")]
-        [Summary("Leaves all servers the bot is currently in.")]
-        [RequireOwner]
-        // ReSharper disable once UnusedParameter.Global
-        public async Task LeaveAll()
-        {
-            await ReplyAsync("Leaving all servers.").ConfigureAwait(false);
-            foreach (var guild in Context.Client.Guilds)
-            {
-                await guild.LeaveAsync().ConfigureAwait(false);
-            }
-        }
+        
 
         [Command("sudoku")]
         [Alias("kill", "shutdown")]

@@ -1,34 +1,33 @@
-﻿using Discord.Commands;
+﻿using Discord.Interactions;
+using Discord;
 using System.Threading.Tasks;
 using PKHeX.Core;
 
 namespace SysBot.Pokemon.Discord
 {
-    public class LegalizerModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new()
+    public class LegalizerModule : InteractionModuleBase<SocketInteractionContext> 
     {
-        [Command("legalize"), Alias("alm")]
-        [Summary("Tries to legalize the attached pkm data.")]
-        public async Task LegalizeAsync()
+        [SlashCommand("legalize", "Tries to legalize the attached pkm data.")]
+       
+        public async Task LegalizeAsync(Attachment pkfile)
         {
-            var attachments = Context.Message.Attachments;
-            foreach (var att in attachments)
-                await Context.Channel.ReplyWithLegalizedSetAsync(att).ConfigureAwait(false);
+            await DeferAsync();
+           
+            await Context.ReplyWithLegalizedSetAsync(pkfile).ConfigureAwait(false);
         }
 
-        [Command("convert"), Alias("showdown")]
-        [Summary("Tries to convert the Showdown Set to pkm data.")]
-        [Priority(1)]
-        public async Task ConvertShowdown([Summary("Generation/Format")] int gen, [Remainder][Summary("Showdown Set")] string content)
+        [SlashCommand("convert", "Tries to convert the Showdown Set to pkm data.")]
+
+        public async Task ConvertShowdown([Summary("PokemonText")]string content, int gen=0)
         {
-            await Context.Channel.ReplyWithLegalizedSetAsync(content, gen).ConfigureAwait(false);
+            await DeferAsync();
+            if (gen == 0)
+            {
+                await Context.ReplyWithLegalizedSetAsync<PK8>(content).ConfigureAwait(false);return;
+            }
+            await Context.ReplyWithLegalizedSetAsync(content, gen).ConfigureAwait(false);
         }
 
-        [Command("convert"), Alias("showdown")]
-        [Summary("Tries to convert the Showdown Set to pkm data.")]
-        [Priority(0)]
-        public async Task ConvertShowdown([Remainder][Summary("Showdown Set")] string content)
-        {
-            await Context.Channel.ReplyWithLegalizedSetAsync<T>(content).ConfigureAwait(false);
-        }
+
     }
 }

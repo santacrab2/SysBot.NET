@@ -1,5 +1,5 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Net;
 using PKHeX.Core;
@@ -11,11 +11,11 @@ namespace SysBot.Pokemon.Discord
     {
         private const uint MaxTradeCode = 9999_9999;
 
-        public static async Task AddToQueueAsync(SocketCommandContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type, SocketUser trader)
+        public static async Task AddToQueueAsync(SocketInteractionContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type, SocketUser trader)
         {
             if ((uint)code > MaxTradeCode)
             {
-                await context.Channel.SendMessageAsync("Trade code should be 00000000-99999999!").ConfigureAwait(false);
+                await context.Interaction.FollowupAsync("Trade code should be 00000000-99999999!").ConfigureAwait(false);
                 return;
             }
 
@@ -28,22 +28,11 @@ namespace SysBot.Pokemon.Discord
                 var result = AddToTradeQueue(context, trade, code, trainer, sig, routine, type, trader, out var msg);
 
                 // Notify in channel
-                await context.Channel.SendMessageAsync(msg).ConfigureAwait(false);
+                await context.Interaction.FollowupAsync(msg).ConfigureAwait(false);
                 // Notify in PM to mirror what is said in the channel.
                 await trader.SendMessageAsync($"{msg}\nYour trade code will be **{code:0000 0000}**.").ConfigureAwait(false);
 
-                // Clean Up
-                if (result)
-                {
-                    // Delete the user's join message for privacy
-                    if (!context.IsPrivate)
-                        await context.Message.DeleteAsync(RequestOptions.Default).ConfigureAwait(false);
-                }
-                else
-                {
-                    // Delete our "I'm adding you!", and send the same message that we sent to the general channel.
-                    await test.DeleteAsync().ConfigureAwait(false);
-                }
+         
             }
             catch (HttpException ex)
             {
@@ -51,12 +40,12 @@ namespace SysBot.Pokemon.Discord
             }
         }
 
-        public static async Task AddToQueueAsync(SocketCommandContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type)
+        public static async Task AddToQueueAsync(SocketInteractionContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type)
         {
             await AddToQueueAsync(context, code, trainer, sig, trade, routine, type, context.User).ConfigureAwait(false);
         }
 
-        private static bool AddToTradeQueue(SocketCommandContext context, T pk, int code, string trainerName, RequestSignificance sig, PokeRoutineType type, PokeTradeType t, SocketUser trader, out string msg)
+        private static bool AddToTradeQueue(SocketInteractionContext context, T pk, int code, string trainerName, RequestSignificance sig, PokeRoutineType type, PokeTradeType t, SocketUser trader, out string msg)
         {
             var user = trader;
             var userID = user.Id;
@@ -97,7 +86,7 @@ namespace SysBot.Pokemon.Discord
             return true;
         }
 
-        private static async Task HandleDiscordExceptionAsync(SocketCommandContext context, SocketUser trader, HttpException ex)
+        private static async Task HandleDiscordExceptionAsync(SocketInteractionContext context, SocketUser trader, HttpException ex)
         {
             string message = string.Empty;
             switch (ex.DiscordCode)
@@ -131,7 +120,7 @@ namespace SysBot.Pokemon.Discord
                         message = ex.DiscordCode != null ? $"Discord error {(int)ex.DiscordCode}: {ex.Reason}" : $"Http error {(int)ex.HttpCode}: {ex.Message}";
                     }; break;
             }
-            await context.Channel.SendMessageAsync(message).ConfigureAwait(false);
+            await context.Interaction.FollowupAsync(message).ConfigureAwait(false);
         }
     }
 }

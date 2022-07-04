@@ -18,6 +18,7 @@ namespace SysBot.Pokemon.Discord
     {
         private const string detail = "I am an open-source Discord bot powered by PKHeX.Core and other open-source software.";
         private const string repo = "https://github.com/kwsch/SysBot.NET";
+        private const string fork = "https://github.com/Koi-3088/ForkBot.NET";
 
         [Command("info")]
         [Alias("about", "whoami", "owner")]
@@ -32,7 +33,8 @@ namespace SysBot.Pokemon.Discord
             };
 
             builder.AddField("Info",
-                $"- [Source Code]({repo})\n" +
+                $"- [Original Source Code]({repo})\n" +
+                $"- [Fork's Source Code]({fork})\n" +
                 $"- {Format.Bold("Owner")}: {app.Owner} ({app.Owner.Id})\n" +
                 $"- {Format.Bold("Library")}: Discord.Net ({DiscordConfig.Version})\n" +
                 $"- {Format.Bold("Uptime")}: {GetUptime()}\n" +
@@ -47,7 +49,8 @@ namespace SysBot.Pokemon.Discord
                 $"- {Format.Bold("Heap Size")}: {GetHeapSize()}MiB\n" +
                 $"- {Format.Bold("Guilds")}: {Context.Client.Guilds.Count}\n" +
                 $"- {Format.Bold("Channels")}: {Context.Client.Guilds.Sum(g => g.Channels.Count)}\n" +
-                $"- {Format.Bold("Users")}: {Context.Client.Guilds.Sum(g => g.MemberCount)}\n"
+                $"- {Format.Bold("Users")}: {Context.Client.Guilds.Sum(g => g.MemberCount)}\n" +
+                $"{Format.Bold("\nThank you, Project Pokémon, for making Pokémon sprites and images used here publicly available!")}\n"
                 );
 
             await ReplyAsync("Here's a bit about me!", embed: builder.Build()).ConfigureAwait(false);
@@ -68,7 +71,7 @@ namespace SysBot.Pokemon.Discord
         private static string GetDateOfDll(string dll)
         {
             var folder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            var path = Path.Combine(folder ?? "", dll);
+            var path = Path.Combine(folder, dll);
             var date = File.GetLastWriteTime(path);
             return date.ToString(@"yy-MM-dd\.hh\:mm");
         }
