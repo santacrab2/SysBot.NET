@@ -47,16 +47,15 @@ namespace SysBot.Pokemon.Discord
 
         public static async Task ReplyWithLegalizedSetAsync(this SocketInteractionContext channel, string content, int gen)
         {
-            content = ReusableActions.StripCodeBlock(content);
-            var set = new ShowdownSet(content);
+            var set = ShowdownUtil.ConvertToShowdown(content);
             var sav = AutoLegalityWrapper.GetTrainerInfo(gen);
             await channel.ReplyWithLegalizedSetAsync(sav, set).ConfigureAwait(false);
         }
 
         public static async Task ReplyWithLegalizedSetAsync<T>(this SocketInteractionContext channel, string content) where T : PKM, new()
         {
-            content = ReusableActions.StripCodeBlock(content);
-            var set = new ShowdownSet(content);
+
+            var set = ShowdownUtil.ConvertToShowdown(content);
             var sav = AutoLegalityWrapper.GetTrainerInfo<T>();
             await channel.ReplyWithLegalizedSetAsync(sav, set).ConfigureAwait(false);
         }
