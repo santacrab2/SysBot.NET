@@ -239,6 +239,8 @@ namespace SysBot.Pokemon.WinForms
                         offembed.AddField("Empoleon Bot Announcement", "Gen 8 Trade Bot is Online");
                         await tradechan.SendMessageAsync("<@&898901072523984926>",embed: offembed.Build());
                     }
+                    if(SysCord<PB8>.Runner.Config.Discord.WTPbool)
+                        WTPSB.WhoseThatPokemon();
                 }
                 if (bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH)
                 {
