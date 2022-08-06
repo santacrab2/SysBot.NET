@@ -209,6 +209,8 @@ namespace SysBot.Pokemon.WinForms
                         offembed.AddField("Spiritomb Bot Announcement", "BDSP Trade Bot is Online");
                         await districhan.SendMessageAsync("<@&913989068117930024>",embed: offembed.Build());
                     }
+                    if(SysCord<PB8>.Runner.Config.Discord.WTPbool)
+                        WTPSB.WhoseThatPokemon();
                 }
             }
             if (cmd == BotControlCommand.Stop)

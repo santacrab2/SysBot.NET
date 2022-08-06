@@ -91,5 +91,9 @@ namespace SysBot.Pokemon
 
         [Category(Operation), Description("Bot can reply with a ShowdownSet in Any channel the bot can see, instead of only channels the bot has been whitelisted to run in. Only make this true if you want the bot to serve more utility in non-bot channels.")]
         public bool ConvertPKMReplyAnyChannel { get; set; } = false;
+        [Category(Operation), Description("WTP CHANNEL")]
+        public ulong WTPchannelid { get; set; } = 0;
+        [Category(Operation), Description("wtp")]
+        public bool WTPbool { get; set; } = true;
     }
 }

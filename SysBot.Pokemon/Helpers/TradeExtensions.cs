@@ -162,12 +162,12 @@ namespace SysBot.Pokemon
             }
 
             pk = TrashBytes(pk);
-            pk.SetDynamaxLevel();
+            
 
             var la = new LegalityAnalysis(pk);
             var enc = la.EncounterMatch;
             pk.CurrentFriendship = enc is EncounterStatic s ? s.EggCycles : pk.PersonalInfo.HatchCycles;
-            pk.RelearnMoves = MoveBreed.GetExpectedMoves(pk.Moves, la.EncounterMatch);
+            MoveBreed.GetExpectedMoves(pk.Moves, la.EncounterMatch, pk.RelearnMoves);
             pk.Moves = pk.RelearnMoves;
             pk.Move1_PPUps = pk.Move2_PPUps = pk.Move3_PPUps = pk.Move4_PPUps = 0;
             pk.SetMaximumPPCurrent(pk.Moves);
@@ -335,7 +335,7 @@ namespace SysBot.Pokemon
         public static string FormOutput(int species, int form, out string[] formString)
         {
             var strings = GameInfo.GetStrings("en");
-            formString = FormConverter.GetFormList(species, strings.Types, strings.forms, GameInfo.GenderSymbolASCII, typeof(T) == typeof(PK8) ? 8 : 4);
+            formString = FormConverter.GetFormList(species, strings.Types, strings.forms, GameInfo.GenderSymbolASCII, typeof(T) == typeof(PB8) ? EntityContext.Gen8b : EntityContext.Gen4);
             if (formString.Length == 0)
                 return string.Empty;
 
