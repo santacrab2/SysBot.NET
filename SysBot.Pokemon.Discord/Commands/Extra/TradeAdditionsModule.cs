@@ -42,7 +42,7 @@ namespace SysBot.Pokemon.Discord
         public async Task ItemTrade(int code, string item)
         {
             Species species = Species.Diglett;
-            var set = new ShowdownSet($"{SpeciesName.GetSpeciesNameGeneration((int)species, 2, 8)} @ {item.Trim()}");
+            var set = new ShowdownSet($"{SpeciesName.GetSpeciesNameGeneration((ushort)species, 2, 8)} @ {item.Trim()}");
             var template = AutoLegalityWrapper.GetTemplate(set);
             var sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
             var pkm = sav.GetLegal(template, out var result);

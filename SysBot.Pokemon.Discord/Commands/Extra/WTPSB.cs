@@ -27,7 +27,7 @@ namespace SysBot.Pokemon.Discord
         public static GameVersion Game = GameVersion.BDSP;
         public static string guess = "";
         public static SocketUser usr;
-        public static int randspecies;
+        public static ushort randspecies;
         public static SocketInteractionContext con;
         [SlashCommand("wtpstart", "owner only")]
         [RequireOwner]
@@ -93,7 +93,7 @@ namespace SysBot.Pokemon.Discord
                             pk = sav.GetLegalFromSet(template, out result);
                         }
                         pk.Ball = BallApplicator.ApplyBallLegalByColor(pk);
-                        int[] sugmov = MoveSetApplicator.GetMoveSet(pk, true);
+                        ushort[] sugmov = MoveSetApplicator.GetMoveSet(pk, true);
                         pk.SetMoves(sugmov);
                         int natue = random.Next(24);
                         pk.Nature = natue;
@@ -136,10 +136,10 @@ namespace SysBot.Pokemon.Discord
             await wtpchannel.AddPermissionOverwriteAsync(wtpchannel.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
         }
 
-        public static int[] GetPokedex()
+        public static ushort[] GetPokedex()
         {
-            List<int> dex = new();
-            for (int i = 1; i < (Game == GameVersion.BDSP ? 494 : Game == GameVersion.SWSH? 899:906); i++)
+            List<ushort> dex = new();
+            for (ushort i = 1; i < (Game == GameVersion.BDSP ? 494 : Game == GameVersion.SWSH? 899:906); i++)
             {
                 var entry = PersonalTable.BDSP.GetFormEntry(i, 0);
                 if (Game == GameVersion.BDSP && entry is PersonalInfo8BDSP { IsPresentInGame: false })

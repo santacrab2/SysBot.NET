@@ -315,7 +315,7 @@ namespace SysBot.Pokemon
             }
         }
 
-        private async Task RentalRoutine(int noteSpecies, CancellationToken token)
+        private async Task RentalRoutine(ushort noteSpecies, CancellationToken token)
         {
             selection = new();
        
@@ -385,7 +385,7 @@ namespace SysBot.Pokemon
         {
             int[] movePP = new int[] { PlayerPk.Move1_PP, PlayerPk.Move2_PP, PlayerPk.Move3_PP, PlayerPk.Move4_PP };
             var dmgWeight = LairUtils.WeightedDamage(party, PlayerPk, lairMon, MoveInfo, dmax).ToList();
-            var priorityMove = PlayerPk.Moves.ToList().IndexOf(PlayerPk.Moves.Intersect((IEnumerable<int>)Enum.GetValues(typeof(PriorityMoves))).FirstOrDefault());
+            var priorityMove = PlayerPk.Moves.ToList().IndexOf(PlayerPk.Moves.Intersect((IEnumerable<ushort>)Enum.GetValues(typeof(PriorityMoves))).FirstOrDefault());
             bool priority = Settings.EnableOHKO && priorityMove != -1 && dmgWeight[priorityMove] > 0 && lairMon.Ability != (int)Ability.PsychicSurge && lairMon.Ability != (int)Ability.QueenlyMajesty && lairMon.Ability != (int)Ability.Dazzling;
 
             var bestMove = dmgWeight.IndexOf(dmgWeight.Max());
@@ -792,7 +792,7 @@ namespace SysBot.Pokemon
             return true;
         }
 
-        private async Task<int> SetHuntedPokemon(CancellationToken token)
+        private async Task<ushort> SetHuntedPokemon(CancellationToken token)
         {
             if (HackyNoteCheck == -1 || LairBotUtil.DiscordQueueOverride)
             {
@@ -846,7 +846,7 @@ namespace SysBot.Pokemon
                 }
 
                 Log($"Lair Notes set to {string.Join(", ", Settings.LairSpeciesQueue)}!");
-                return (int)Settings.LairSpeciesQueue[0];
+                return (ushort)Settings.LairSpeciesQueue[0];
             }
             else return note;
         }

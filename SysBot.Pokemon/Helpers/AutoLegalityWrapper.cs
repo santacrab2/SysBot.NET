@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace SysBot.Pokemon
 {
-    public static class AutoLegalityWrapper
+    public static class AutoLegalityWrapper 
     {
         private static bool Initialized;
 
@@ -80,6 +80,8 @@ namespace SysBot.Pokemon
             LocalizationUtil.SetLocalization(typeof(MessageStrings), lang);
             RibbonStrings.ResetDictionary(GameInfo.Strings.ribbons);
             ParseSettings.ChangeLocalizationStrings(GameInfo.Strings.movelist, GameInfo.Strings.specieslist);
+           
+            
         }
 
         public static bool CanBeTraded(this PKM pkm)

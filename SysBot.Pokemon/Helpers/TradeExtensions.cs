@@ -332,7 +332,7 @@ namespace SysBot.Pokemon
             return string.Join("_", baseLink);
         }
 
-        public static string FormOutput(int species, int form, out string[] formString)
+        public static string FormOutput(ushort species, byte form, out string[] formString)
         {
             var strings = GameInfo.GetStrings("en");
             formString = FormConverter.GetFormList(species, strings.Types, strings.forms, GameInfo.GenderSymbolASCII, typeof(T) == typeof(PB8) ? EntityContext.Gen8b : EntityContext.Gen4);
@@ -341,7 +341,7 @@ namespace SysBot.Pokemon
 
             formString[0] = "";
             if (form >= formString.Length)
-                form = formString.Length - 1;
+                form = (byte)((byte)formString.Length - 1);
 
             return formString[form].Contains("-") ? formString[form] : formString[form] == "" ? "" : $"-{formString[form]}";
         }
