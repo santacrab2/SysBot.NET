@@ -82,13 +82,13 @@ namespace SysBot.Pokemon.Discord
                     {
 
                         var set = new ShowdownSet($"{SpeciesName.GetSpeciesName(randspecies, 2)}\nShiny: Yes");
-                        var template = AutoLegalityWrapper.GetTemplate(set);
+                        var template = new RegenTemplate(set);
                         var sav = SaveUtil.GetBlankSAV(GameVersion.BD, "Piplup");
                         var pk = sav.GetLegalFromSet(template, out var result);
                         if (!new LegalityAnalysis(pk).Valid)
                         {
                             set = new ShowdownSet(SpeciesName.GetSpeciesName(randspecies, 2));
-                            template = AutoLegalityWrapper.GetTemplate(set);
+                            template = new RegenTemplate(set);
                             sav = SaveUtil.GetBlankSAV(GameVersion.BD, "Piplup");
                             pk = sav.GetLegalFromSet(template, out result);
                         }
