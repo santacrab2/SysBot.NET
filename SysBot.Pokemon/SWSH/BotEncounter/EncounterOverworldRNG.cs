@@ -37,8 +37,7 @@ namespace SysBot.Pokemon
                     s1 = _s1;
                     TotalAdvances += passed;
                     Log($"Total Advances: {TotalAdvances:N0}");
-                    if (TotalAdvances >= (Hub.Config.EncounterSWSH.FrameAdvanceTarget-1))
-                        break;
+                   
                 }
                 await SetStick(LEFT, 0, 30000, 1000, token);
                 await SetStick(LEFT, 0, 0, 0, token);
