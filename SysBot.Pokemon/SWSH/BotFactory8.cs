@@ -21,7 +21,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.EncounterLine => new EncounterBotLine(cfg, Hub),
             PokeRoutineType.Reset => new EncounterBotReset(cfg, Hub),
             PokeRoutineType.Dogbot => new EncounterBotDog(cfg, Hub),
-
+            PokeRoutineType.OverWorldRNG=> new OverworldRNG(cfg,Hub),
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
@@ -42,7 +42,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.EncounterLine => true,
             PokeRoutineType.Reset => true,
             PokeRoutineType.Dogbot => true,
-
+            PokeRoutineType.OverWorldRNG => true,
             PokeRoutineType.RemoteControl => true,
 
             _ => false,

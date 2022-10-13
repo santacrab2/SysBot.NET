@@ -36,5 +36,10 @@
         /// Bot resets Motostoke Gym encounters
         /// </summary>
         MotostokeGym,
+
+        ///<summary>
+        /// Bot runs forward when the Overworld Frames hits the frames you want, theoretically spawning the pokemon
+        ///</summary>
+        OverworldRNG,
     }
 }
