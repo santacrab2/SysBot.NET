@@ -21,6 +21,9 @@ namespace SysBot.Pokemon
 
         protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
         {
+            byte[] KCoordinates;
+            List<PK8> PK8s;
+
             while (!token.IsCancellationRequested)
             {
                 ulong TotalAdvances = 0;
@@ -41,7 +44,29 @@ namespace SysBot.Pokemon
                 }
                 await SetStick(LEFT, 0, 30000, 1000, token);
                 await SetStick(LEFT, 0, 0, 0, token);
+                await Click(X, 2_000, token).ConfigureAwait(false);
+                await Click(R, 2_000, token).ConfigureAwait(false);
+                await Click(A, 5_000, token).ConfigureAwait(false);
+                
+                KCoordinates = await ReadKCoordinates(token).ConfigureAwait(false);
+
+                PK8s = await ReadOwPokemonFromBlock(KCoordinates, sav, token).ConfigureAwait(false);
                 await Click(HOME, 0, token);
+                foreach(var pk in PK8s)
+                {
+                    bool hasMark = HasMark(pk, out RibbonIndex mark);
+                    bool isSquare = pk.ShinyXor == 0;
+                    string markString = hasMark ? $"Mark: {mark.ToString().Replace("Mark", "")}" : string.Empty;
+                    string form = pk.Form == 0 ? "" : $"-{pk.Form}";
+                    string gender = pk.Gender switch
+                    {
+                        0 => " (M)",
+                        1 => " (F)",
+                        _ => string.Empty
+                    };
+                    string output = $"{(isSquare ? "■ - " : pk.ShinyXor <= 16 ? "★ - " : "")}{(Species)pk.Species}{form}{gender}{Environment.NewLine}PID: {pk.PID:X8}{Environment.NewLine}EC: {pk.EncryptionConstant:X8}{Environment.NewLine}{GameInfo.GetStrings(1).Natures[pk.Nature]} Nature{Environment.NewLine}Ability: {GameInfo.GetStrings(1).Ability[pk.Ability]}{Environment.NewLine}IVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}{Environment.NewLine}{markString}";
+                    Log($"{output}");
+                }
                 return;
             }
             
@@ -68,6 +93,19 @@ namespace SysBot.Pokemon
                     return ++i;
             }
             return i;
+        }
+        public static bool HasMark(IRibbonIndex pk, out RibbonIndex result)
+        {
+            result = default;
+            for (var mark = RibbonIndex.MarkLunchtime; mark <= RibbonIndex.MarkSlump; mark++)
+            {
+                if (pk.GetRibbon((int)mark))
+                {
+                    result = mark;
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
