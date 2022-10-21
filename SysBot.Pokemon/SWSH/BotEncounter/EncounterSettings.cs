@@ -22,7 +22,8 @@ namespace SysBot.Pokemon
         public bool ScreenOff { get; set; } = false;
         [Category(Encounter), Description("Frame Advance Target for Overworld RNG")]
         public uint FrameAdvanceTarget { get; set; }
-
+        [Category(Encounter), Description("Which Direction should the bot move the player at the designated frame advance target")]
+        public MovementDirection MoveDirection { get; set; }
         private int _completedWild;
         private int _completedLegend;
 
@@ -54,6 +55,13 @@ namespace SysBot.Pokemon
                 yield return $"Wild Encounters: {CompletedEncounters}";
             if (CompletedLegends != 0)
                 yield return $"Legendary Encounters: {CompletedLegends}";
+        }
+        public enum MovementDirection
+        {
+            up,
+            down,
+            left,
+            right
         }
     }
 }

@@ -314,7 +314,7 @@ namespace SysBot.Pokemon
             var data = new[] { (byte)((textSpeedByte[0] & 0xFC) | (int)speed) };
             await Connection.WriteBytesAsync(data, TextSpeedOffset, token).ConfigureAwait(false);
         }
-        public async Task<byte[]> ReadKCoordinates(CancellationToken token) => await Connection.ReadBytesAsync(0x4505B3C0, 24592, token).ConfigureAwait(false);
+        public async Task<byte[]> ReadOverWorldSpawnBlock(CancellationToken token) => await Connection.ReadBytesAsync(0x4505C240, 24592, token).ConfigureAwait(false);
         public async Task<List<PK8>> ReadOwPokemonFromBlock(byte[] KCoordinates, SAV8SWSH sav, CancellationToken token)
         {
             var PK8s = new List<PK8>();
@@ -422,17 +422,18 @@ namespace SysBot.Pokemon
                 if (data[14] == 1)
                     pk.HeldItem = data[16];
 
-                FakeShiny shinyness = (FakeShiny)(data[6]+1);
+                Shiny shinyness = (Shiny)(data[6]-1);
                 int ivs = data[18];
                 uint seed = BitConverter.ToUInt32(data.Slice(24, 4), 0);
 
                 pk = CalculateFromSeed(pk,shinyness, ivs, seed);
+           
                 return pk;
             }
             else
                 return null;
         }
-        public static PK8 CalculateFromSeed(PK8 pk, FakeShiny shiny, int flawless, uint seed)
+        public static PK8 CalculateFromSeed(PK8 pk, Shiny shiny, int flawless, uint seed)
         {
             var UNSET = -1;
             var xoro = new Xoroshiro128Plus(seed);
@@ -442,12 +443,13 @@ namespace SysBot.Pokemon
 
             // PID
             var pid = (uint)xoro.NextInt(uint.MaxValue);
-            if (shiny == FakeShiny.Never)
+            if (shiny == Shiny.Never)
             {
                 if (GetIsShiny(pk.TID, pk.SID, pid))
                     pid ^= 0x1000_0000;
             }
-            else if (shiny != FakeShiny.Random)
+           
+            else if (shiny != Shiny.Random)
             {
                 if (!GetIsShiny(pk.TID, pk.SID, pid))
                     pid = GetShinyPID(pk.TID, pk.SID, pid, 0);
@@ -498,37 +500,6 @@ namespace SysBot.Pokemon
             var xor = pid ^ oid;
             return (xor ^ (xor >> 16)) & 0xFFFF;
         }
-        public enum FakeShiny : byte
-        {
-            /// <summary>
-            /// PID is fixed to a specified value.
-            /// </summary>
-            FixedValue = 0,
-
-            /// <summary>
-            /// PID is purely random; can be shiny or not shiny.
-            /// </summary>
-            Random = 1,
-
-            /// <summary>
-            /// PID is randomly created and forced to be shiny.
-            /// </summary>
-            Always = 2,
-
-            /// <summary>
-            /// PID is randomly created and forced to be not shiny.
-            /// </summary>
-            Never = 3,
-
-            /// <summary>
-            /// PID is randomly created and forced to be shiny as Stars.
-            /// </summary>
-            AlwaysStar = 5,
-
-            /// <summary>
-            /// PID is randomly created and forced to be shiny as Squares.
-            /// </summary>
-            AlwaysSquare = 6,
-        }
+       
     }
 }

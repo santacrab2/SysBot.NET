@@ -42,13 +42,33 @@ namespace SysBot.Pokemon
                     Log($"Total Advances: {TotalAdvances:N0}");
                    
                 }
-                await SetStick(LEFT, 0, 30000, 1000, token);
-                await SetStick(LEFT, 0, 0, 0, token);
+                switch (Hub.Config.EncounterSWSH.MoveDirection)
+                {
+                    case EncounterSettings.MovementDirection.up:
+                        await SetStick(LEFT, 0, 30000, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+                    case EncounterSettings.MovementDirection.down:
+                        await SetStick(LEFT, 0, -30000, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+                    case EncounterSettings.MovementDirection.left:
+                        await SetStick(LEFT, -30000, 0, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+                    case EncounterSettings.MovementDirection.right:
+                        await SetStick(LEFT, 30000, 0, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+
+                }
+                    
+                
                 await Click(X, 2_000, token).ConfigureAwait(false);
                 await Click(R, 2_000, token).ConfigureAwait(false);
                 await Click(A, 5_000, token).ConfigureAwait(false);
                 
-                KCoordinates = await ReadKCoordinates(token).ConfigureAwait(false);
+                KCoordinates = await ReadOverWorldSpawnBlock(token).ConfigureAwait(false);
 
                 PK8s = await ReadOwPokemonFromBlock(KCoordinates, sav, token).ConfigureAwait(false);
                 await Click(HOME, 0, token);
