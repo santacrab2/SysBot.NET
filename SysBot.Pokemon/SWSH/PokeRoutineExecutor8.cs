@@ -314,7 +314,7 @@ namespace SysBot.Pokemon
             var data = new[] { (byte)((textSpeedByte[0] & 0xFC) | (int)speed) };
             await Connection.WriteBytesAsync(data, TextSpeedOffset, token).ConfigureAwait(false);
         }
-        public async Task<byte[]> ReadOverWorldSpawnBlock(CancellationToken token) => await Connection.ReadBytesAsync(0x4505C240, 24592, token).ConfigureAwait(false);
+        public async Task<byte[]> ReadOverWorldSpawnBlock(CancellationToken token) => await Connection.ReadBytesAsync(0x4505B3C0, 24592, token).ConfigureAwait(false);
         public async Task<List<PK8>> ReadOwPokemonFromBlock(byte[] KCoordinates, SAV8SWSH sav, CancellationToken token)
         {
             var PK8s = new List<PK8>();
