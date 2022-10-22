@@ -60,6 +60,22 @@ namespace SysBot.Pokemon
                         await SetStick(LEFT, 30000, 0, 1000, token);
                         await SetStick(LEFT, 0, 0, 0, token);
                         break;
+                    case EncounterSettings.MovementDirection.upleft:
+                        await SetStick(LEFT, -30000, 30000, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+                    case EncounterSettings.MovementDirection.upright:
+                        await SetStick(LEFT, 30000, 30000, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+                    case EncounterSettings.MovementDirection.downleft:
+                        await SetStick(LEFT, -30000, -30000, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
+                    case EncounterSettings.MovementDirection.downright:
+                        await SetStick(LEFT, 30000, -30000, 1000, token);
+                        await SetStick(LEFT, 0, 0, 0, token);
+                        break;
 
                 }
                     

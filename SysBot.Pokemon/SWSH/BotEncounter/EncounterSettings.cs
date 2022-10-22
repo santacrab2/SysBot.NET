@@ -61,7 +61,13 @@ namespace SysBot.Pokemon
             up,
             down,
             left,
-            right
+            right,
+            upleft,
+            upright,
+            downleft,
+            downright,
+
+
         }
     }
 }
