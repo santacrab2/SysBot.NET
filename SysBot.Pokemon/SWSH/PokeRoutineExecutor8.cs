@@ -422,7 +422,7 @@ namespace SysBot.Pokemon
                 if (data[14] == 1)
                     pk.HeldItem = data[16];
 
-                Shiny shinyness = (Shiny)(data[6]-1);
+                FakeShiny shinyness = (FakeShiny)(data[6]+1);
                 int ivs = data[18];
                 uint seed = BitConverter.ToUInt32(data.Slice(24, 4), 0);
 
@@ -433,7 +433,7 @@ namespace SysBot.Pokemon
             else
                 return null;
         }
-        public static PK8 CalculateFromSeed(PK8 pk, Shiny shiny, int flawless, uint seed)
+        public static PK8 CalculateFromSeed(PK8 pk, FakeShiny shiny, int flawless, uint seed)
         {
             var UNSET = -1;
             var xoro = new Xoroshiro128Plus(seed);
@@ -443,13 +443,13 @@ namespace SysBot.Pokemon
 
             // PID
             var pid = (uint)xoro.NextInt(uint.MaxValue);
-            if (shiny == Shiny.Never)
+            if (shiny == FakeShiny.Never)
             {
                 if (GetIsShiny(pk.TID, pk.SID, pid))
                     pid ^= 0x1000_0000;
             }
            
-            else if (shiny != Shiny.Random)
+            else if (shiny != FakeShiny.Random)
             {
                 if (!GetIsShiny(pk.TID, pk.SID, pid))
                     pid = GetShinyPID(pk.TID, pk.SID, pid, 0);
@@ -500,6 +500,37 @@ namespace SysBot.Pokemon
             var xor = pid ^ oid;
             return (xor ^ (xor >> 16)) & 0xFFFF;
         }
-       
+        public enum FakeShiny : byte
+        {
+            /// <summary>
+            /// PID is fixed to a specified value.
+            /// </summary>
+            FixedValue = 0,
+
+            /// <summary>
+            /// PID is purely random; can be shiny or not shiny.
+            /// </summary>
+            Random = 1,
+
+            /// <summary>
+            /// PID is randomly created and forced to be shiny.
+            /// </summary>
+            Always = 2,
+
+            /// <summary>
+            /// PID is randomly created and forced to be not shiny.
+            /// </summary>
+            Never = 3,
+
+            /// <summary>
+            /// PID is randomly created and forced to be shiny as Stars.
+            /// </summary>
+            AlwaysStar = 5,
+
+            /// <summary>
+            /// PID is randomly created and forced to be shiny as Squares.
+            /// </summary>
+            AlwaysSquare = 6,
+        }
     }
 }
