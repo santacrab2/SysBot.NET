@@ -42,6 +42,7 @@ namespace SysBot.Pokemon
 
         /// <summary> Indicates if the trade data is currently being traded. </summary>
         public bool IsProcessing;
+        public pictocodes[] LGPETradeCode;
 
         public PokeTradeDetail(TPoke pkm, PokeTradeTrainerInfo info, IPokeTradeNotifier<TPoke> notifier, PokeTradeType type, int code, bool favored = false)
         {
@@ -92,5 +93,19 @@ namespace SysBot.Pokemon
                 return $"{queuePosition:00}: {Trainer.TrainerName}";
             return $"{queuePosition:00}: {Trainer.TrainerName}, {(Species)TradeData.Species}";
         }
+
+    }
+    public enum pictocodes
+    {
+        Pikachu,
+        Eevee,
+        Bulbasaur,
+        Charmander,
+        Squirtle,
+        Pidgey,
+        Caterpie,
+        Rattata,
+        Jigglypuff,
+        Diglett
     }
 }
