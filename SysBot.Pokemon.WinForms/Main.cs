@@ -56,6 +56,7 @@ namespace SysBot.Pokemon.WinForms
             ProgramMode.SWSH => new PokeBotRunnerImpl<PK8>(cfg.Hub, new BotFactory8()),
             ProgramMode.BDSP => new PokeBotRunnerImpl<PB8>(cfg.Hub, new BotFactory8BS()),
             ProgramMode.LA => new PokeBotRunnerImpl<PA8>(cfg.Hub, new BotFactory8LA()),
+            ProgramMode.LGPE=> new PokeBotRunnerImpl<PB7>(cfg.Hub,new BotFactory7LGPE()),
             _ => throw new IndexOutOfRangeException("Unsupported mode."),
         };
 
