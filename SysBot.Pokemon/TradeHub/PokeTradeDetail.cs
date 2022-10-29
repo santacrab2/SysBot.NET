@@ -45,7 +45,7 @@ namespace SysBot.Pokemon
         public bool IsProcessing;
         public List<pictocodes> LGPETradeCode;
 
-        public PokeTradeDetail(TPoke pkm, PokeTradeTrainerInfo info, IPokeTradeNotifier<TPoke> notifier, PokeTradeType type, int code, bool favored = false,List<pictocodes>lgcode = null)
+        public PokeTradeDetail(TPoke pkm, PokeTradeTrainerInfo info, IPokeTradeNotifier<TPoke> notifier, PokeTradeType type, int code, List<pictocodes> lgcode, bool favored = false)
         {
             ID = Interlocked.Increment(ref CreatedCount) % 3000;
             Code = code;

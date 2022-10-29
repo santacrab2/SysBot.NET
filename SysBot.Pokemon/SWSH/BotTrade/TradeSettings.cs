@@ -42,6 +42,29 @@ namespace SysBot.Pokemon
         /// Gets a random trade code based on the range settings.
         /// </summary>
         public int GetRandomTradeCode() => Util.Rand.Next(MinTradeCode, MaxTradeCode + 1);
+        public List<pictocodes> GetRandomLGTradeCode(bool randomtrade=false)
+        {
+            var code = new List<pictocodes>();
+            if (randomtrade)
+            {
+                for (int i = 0; i <= 2; i++)
+                {
+                    //code.Add((pictocodes)Util.Rand.Next(10));
+                    code.Add(pictocodes.Pikachu);
+
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= 2; i++)
+                {
+                    code.Add((pictocodes)Util.Rand.Next(10));
+                    //code.Add(pictocodes.Pikachu);
+
+                }
+            }
+            return code;
+        }
 
         private int _completedSurprise;
         private int _completedDistribution;

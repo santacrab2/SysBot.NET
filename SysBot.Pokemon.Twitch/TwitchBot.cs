@@ -100,7 +100,7 @@ namespace SysBot.Pokemon.Twitch
             });
         }
 
-        private bool AddToTradeQueue(T pk, int code, OnWhisperReceivedArgs e, RequestSignificance sig, PokeRoutineType type, out string msg)
+        private bool AddToTradeQueue(T pk, int code, OnWhisperReceivedArgs e, RequestSignificance sig, PokeRoutineType type,List<pictocodes>lgcode, out string msg)
         {
             // var user = e.WhisperMessage.UserId;
             var userID = ulong.Parse(e.WhisperMessage.UserId);
@@ -109,7 +109,7 @@ namespace SysBot.Pokemon.Twitch
             var trainer = new PokeTradeTrainerInfo(name, ulong.Parse(e.WhisperMessage.UserId));
             var notifier = new TwitchTradeNotifier<T>(pk, trainer, code, e.WhisperMessage.Username, client, Channel, Hub.Config.Twitch);
             var tt = type == PokeRoutineType.SeedCheck ? PokeTradeType.Seed : PokeTradeType.Specific;
-            var detail = new PokeTradeDetail<T>(pk, trainer, notifier, tt, code, sig == RequestSignificance.Favored);
+            var detail = new PokeTradeDetail<T>(pk, trainer, notifier, tt, code,lgcode, sig == RequestSignificance.Favored);
             var trade = new TradeEntry<T>(detail, userID, type, name);
 
             var added = Info.AddToTradeQueue(trade, userID, sig == RequestSignificance.Owner);
@@ -267,7 +267,8 @@ namespace SysBot.Pokemon.Twitch
             {
                 int code = Util.ToInt32(msg);
                 var sig = GetUserSignificance(user);
-                var _ = AddToTradeQueue(user.Pokemon, code, e, sig, PokeRoutineType.LinkTrade, out string message);
+                var lgcode = Hub.Config.Trade.GetRandomLGTradeCode();
+                var _ = AddToTradeQueue(user.Pokemon, code, e, sig, PokeRoutineType.LinkTrade,lgcode, out string message);
                 client.SendMessage(Channel, message);
             }
 #pragma warning disable CA1031 // Do not catch general exception types

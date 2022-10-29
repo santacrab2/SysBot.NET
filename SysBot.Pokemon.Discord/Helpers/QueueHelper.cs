@@ -5,6 +5,10 @@ using Discord.Net;
 using PKHeX.Core;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
+using PKHeX.Core.AutoMod;
+using PKHeX.Drawing.PokeSprite;
+using System.Drawing;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -31,7 +35,8 @@ namespace SysBot.Pokemon.Discord
                 // Notify in channel
                 await context.Interaction.FollowupAsync(msg).ConfigureAwait(false);
                 // Notify in PM to mirror what is said in the channel.
-                await trader.SendMessageAsync($"{msg}\nYour trade code will be **{code:0000 0000}**.").ConfigureAwait(false);
+                var (thefile,lgcodeembed) = CreateLGLinkCodeSpriteEmbed(lgcode);
+                await trader.SendFileAsync(thefile,$"{msg}\nYour trade code will be.",embed:lgcodeembed).ConfigureAwait(false);
 
          
             }
@@ -54,7 +59,7 @@ namespace SysBot.Pokemon.Discord
 
             var trainer = new PokeTradeTrainerInfo(trainerName, userID);
             var notifier = new DiscordTradeNotifier<T>(pk, trainer, code, user,lgcode);
-            var detail = new PokeTradeDetail<T>(pk, trainer, notifier, t, code, sig == RequestSignificance.Favored,lgcode);
+            var detail = new PokeTradeDetail<T>(pk, trainer, notifier, t, code, lgcode, sig == RequestSignificance.Favored);
             var trade = new TradeEntry<T>(detail, userID, type, name);
 
             var hub = SysCord<T>.Runner.Hub;
@@ -122,6 +127,58 @@ namespace SysBot.Pokemon.Discord
                     }; break;
             }
             await context.Interaction.FollowupAsync(message).ConfigureAwait(false);
+        }
+        public static (string,Embed) CreateLGLinkCodeSpriteEmbed(List<pictocodes> lgcode)
+        {
+            int codecount = 0;
+            List<System.Drawing.Image> spritearray = new();
+            foreach (pictocodes cd in lgcode)
+            {
+
+
+                var showdown = new ShowdownSet(cd.ToString());
+                PKM pk = SaveUtil.GetBlankSAV(EntityContext.Gen7b, "pip").GetLegalFromSet(showdown, out _);
+                System.Drawing.Image png = pk.Sprite();
+                var destRect = new Rectangle(-40, -65, 137, 130);
+                var destImage = new Bitmap(137, 130);
+
+                destImage.SetResolution(png.HorizontalResolution, png.VerticalResolution);
+
+                using (var graphics = Graphics.FromImage(destImage))
+                {
+                    graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                    graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                    graphics.DrawImage(png, destRect, 0, 0, png.Width, png.Height, GraphicsUnit.Pixel);
+
+                }
+                png = destImage;
+                spritearray.Add(png);
+                codecount++;
+            }
+            int outputImageWidth = spritearray[0].Width + 20;
+
+            int outputImageHeight = spritearray[0].Height - 65;
+
+            Bitmap outputImage = new Bitmap(outputImageWidth, outputImageHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            using (Graphics graphics = Graphics.FromImage(outputImage))
+            {
+                graphics.DrawImage(spritearray[0], new Rectangle(0, 0, spritearray[0].Width, spritearray[0].Height),
+                    new Rectangle(new Point(), spritearray[0].Size), GraphicsUnit.Pixel);
+                graphics.DrawImage(spritearray[1], new Rectangle(50, 0, spritearray[1].Width, spritearray[1].Height),
+                    new Rectangle(new Point(), spritearray[1].Size), GraphicsUnit.Pixel);
+                graphics.DrawImage(spritearray[2], new Rectangle(100, 0, spritearray[2].Width, spritearray[2].Height),
+                    new Rectangle(new Point(), spritearray[2].Size), GraphicsUnit.Pixel);
+            }
+            System.Drawing.Image finalembedpic = outputImage;
+            var filename = $"{System.IO.Directory.GetCurrentDirectory()}//finalcode.png";
+            finalembedpic.Save(filename);
+            filename = System.IO.Path.GetFileName($"{System.IO.Directory.GetCurrentDirectory()}//finalcode.png");
+            Embed returnembed = new EmbedBuilder().WithTitle($"{lgcode[0]}, {lgcode[1]}, {lgcode[2]}").WithImageUrl($"attachment://{filename}").Build();
+            return (filename,returnembed);
         }
     }
 }

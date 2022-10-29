@@ -39,9 +39,9 @@ namespace SysBot.Pokemon.Discord
             else
             {
                 var receive = Data.Species == 0 ? string.Empty : $" ({Data.Nickname})";
-                var lgcodeembed = CreateLGLinkCodeSpriteEmbed(LGCode);
+                var (thefile,lgcodeembed) = CreateLGLinkCodeSpriteEmbed(LGCode);
 
-                Trader.SendMessageAsync($"Initializing trade{receive}. Please be ready. Your code is", embed: lgcodeembed).ConfigureAwait(false);
+                Trader.SendFileAsync(thefile,$"Initializing trade{receive}. Please be ready. Your code is", embed: lgcodeembed).ConfigureAwait(false);
             }
         }
 
@@ -55,10 +55,10 @@ namespace SysBot.Pokemon.Discord
             }
             else
             {
-                var lgcodeembed = CreateLGLinkCodeSpriteEmbed(LGCode);
+                var (thefile,lgcodeembed) = CreateLGLinkCodeSpriteEmbed(LGCode);
                 var name = Info.TrainerName;
                 var trainer = string.IsNullOrEmpty(name) ? string.Empty : $", {name}";
-                Trader.SendMessageAsync($"I'm waiting for you{trainer}! My IGN is **{routine.InGameName}**. Your code is",embed:lgcodeembed).ConfigureAwait(false);
+                Trader.SendFileAsync(thefile,$"I'm waiting for you{trainer}! My IGN is **{routine.InGameName}**. Your code is",embed:lgcodeembed).ConfigureAwait(false);
             }
         }
 
@@ -122,7 +122,7 @@ namespace SysBot.Pokemon.Discord
             var msg = $"Here are the details for `{r.Seed:X16}`:";
             Trader.SendMessageAsync(msg, embed: embed.Build()).ConfigureAwait(false);
         }
-        public static Embed CreateLGLinkCodeSpriteEmbed(List<pictocodes>lgcode)
+        public static (string,Embed) CreateLGLinkCodeSpriteEmbed(List<pictocodes>lgcode)
         {
             int codecount = 0;
             List<System.Drawing.Image> spritearray = new();
@@ -170,8 +170,9 @@ namespace SysBot.Pokemon.Discord
             System.Drawing.Image finalembedpic = outputImage;
             var filename = $"{System.IO.Directory.GetCurrentDirectory()}//finalcode.png";
             finalembedpic.Save(filename);
+            filename = System.IO.Path.GetFileName($"{System.IO.Directory.GetCurrentDirectory()}//finalcode.png");
             Embed returnembed = new EmbedBuilder().WithTitle($"{lgcode[0]}, {lgcode[1]}, {lgcode[2]}").WithImageUrl($"attachment://{filename}").Build();
-            return returnembed;
+            return (filename,returnembed);
         }
     }
 }

@@ -54,9 +54,9 @@ namespace SysBot.Pokemon
             if (!string.IsNullOrWhiteSpace(externalSource) && Directory.Exists(externalSource))
                 TrainerSettings.LoadTrainerDatabaseFromPath(externalSource);
 
-            for (int i = 1; i < PKX.Generation + 1; i++)
+            for (int i = 1; i < 8; i++)
             {
-                var versions = GameUtil.GetVersionsInGeneration(i, PKX.Generation);
+                var versions = GameUtil.GetVersionsInGeneration(i, 7);
                 foreach (var v in versions)
                 {
                     var fallback = new SimpleTrainerInfo(v)
@@ -113,7 +113,7 @@ namespace SysBot.Pokemon
             if (typeof(T) == typeof(PA8))
                 return TrainerSettings.GetSavedTrainerData(GameVersion.PLA, 8);
             if (typeof(T) == typeof(PB7))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.GG, 7);
+                return TrainerSettings.GetSavedTrainerData(GameVersion.GE, 7);
             throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
         }
 

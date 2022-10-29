@@ -25,13 +25,7 @@ namespace SysBot.Pokemon.Discord
             if (content != "")
             {
 
-                var code = new List<pictocodes>();
-                for (int i = 0; i <= 2; i++)
-                {
-                    code.Add((pictocodes)Util.Rand.Next(10));
-                    //code.Add(pictocodes.Pikachu);
-
-                }
+                var code = Info.GetRandomLGTradeCode();
                 var set = ShowdownUtil.ConvertToShowdown(content);
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 if (set.InvalidLines.Count != 0)
@@ -43,7 +37,8 @@ namespace SysBot.Pokemon.Discord
 
                 try
                 {
-                    var sav = AutoLegalityWrapper.GetTrainerInfo<PB7>();
+                    var trainer = AutoLegalityWrapper.GetTrainerInfo<PB7>();
+                    var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                     var pkm = sav.GetLegal(template, out var result);
                
 
@@ -80,13 +75,7 @@ namespace SysBot.Pokemon.Discord
             if(PB7 != default)
             {
 
-                var code = new List<pictocodes>();
-                for (int i = 0; i <= 2; i++)
-                {
-                    code.Add((pictocodes)Util.Rand.Next(10));
-                    //code.Add(pictocodes.Pikachu);
-
-                }
+                var code = Info.GetRandomLGTradeCode();
                 var sig = Context.User.GetFavor();
                 await TradeAsyncAttach(PB7,0, sig, Context.User,code).ConfigureAwait(false);
             }

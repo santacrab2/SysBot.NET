@@ -91,18 +91,18 @@ namespace SysBot.Pokemon.WinForms
                 if (b.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
                 {
 
-                    var districhan = (ITextChannel)Discord.SysCord<PB8>._client.GetChannelAsync(913969726898720809).Result;
+                    var districhan = (ITextChannel)Discord.SysCord<PB7>._client.GetChannelAsync(890016056549195797).Result;
                     if (districhan.Name.Contains("✅"))
                     {
                         var role = districhan.Guild.EveryoneRole;
                         await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
                         var offembed = new EmbedBuilder();
-                        offembed.AddField("Spiritomb Bot Announcement", "BDSP Trade Bot is Offline");
+                        offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Offline");
                         await districhan.SendMessageAsync(embed: offembed.Build());
                     }
 
-                    var wtpchan = (ITextChannel)Discord.SysCord<PB8>._client.GetChannelAsync(957255159803686922).Result;
+                    var wtpchan = (ITextChannel)Discord.SysCord<PB7>._client.GetChannelAsync(961071583747776532).Result;
                     if (wtpchan.Name.Contains("✅"))
                     {
                         WTPSB.WTPsource.Cancel();
@@ -198,18 +198,18 @@ namespace SysBot.Pokemon.WinForms
             {
                 if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
                 {
-                    ulong.TryParse("913969726898720809", out var dchan);
-                    var districhan = (ITextChannel)Discord.SysCord<PB8>._client.GetChannel(dchan);
+                    
+                    var districhan = (ITextChannel)await SysCord<PB7>._client.GetChannelAsync(890016056549195797);
                     if (districhan.Name.Contains("❌"))
                     {
                         var role = districhan.Guild.EveryoneRole;
                         await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
                         var offembed = new EmbedBuilder();
-                        offembed.AddField("Spiritomb Bot Announcement", "BDSP Trade Bot is Online");
-                        await districhan.SendMessageAsync("<@&913989068117930024>",embed: offembed.Build());
+                        offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Online");
+                        await districhan.SendMessageAsync("<@&898901020678176839>", embed: offembed.Build());
                     }
-                    if(SysCord<PB8>.Runner.Config.Discord.WTPbool)
+                    if(SysCord<PB7>.Runner.Config.Discord.WTPbool)
                         WTPSB.WhoseThatPokemon();
                 }
             }
@@ -217,15 +217,15 @@ namespace SysBot.Pokemon.WinForms
             {
                 if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
                 {
-                    ulong.TryParse("913969726898720809", out var dchan);
-                    var districhan = (ITextChannel)Discord.SysCord<PB8>._client.GetChannel(dchan);
+                    
+                    var districhan = (ITextChannel)await SysCord<PB7>._client.GetChannelAsync(890016056549195797);
                     if (districhan.Name.Contains("✅"))
                     {
                         var role = districhan.Guild.EveryoneRole;
                         await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
                         var offembed = new EmbedBuilder();
-                        offembed.AddField("Spiritomb Bot Announcement", "BDSP Trade Bot is Offline");
+                        offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Offline");
                         await districhan.SendMessageAsync(embed: offembed.Build());
                     }
                 }

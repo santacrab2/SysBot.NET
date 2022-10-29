@@ -18,13 +18,8 @@ namespace SysBot.Pokemon.Discord
         public async Task CloneAsync()
         {
             await DeferAsync();
-            var code = new List<pictocodes>();
-            for (int i = 0; i <= 2; i++)
-            {
-                code.Add((pictocodes)Util.Rand.Next(10));
-                //code.Add(pictocodes.Pikachu);
-
-            }
+            var code = Info.GetRandomLGTradeCode();
+           
             var sig = Context.User.GetFavor();
             await QueueHelper<PB7>.AddToQueueAsync(Context, 0, Context.User.Username, sig, new PB7(), PokeRoutineType.Clone, PokeTradeType.Clone,code).ConfigureAwait(false);
         }
