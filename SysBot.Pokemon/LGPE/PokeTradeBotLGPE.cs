@@ -470,6 +470,8 @@ namespace SysBot.Pokemon
 
             await Click(A, 1000, token).ConfigureAwait(false);
             await EnterLinkCodeLG(detail, token);
+            detail.TradeSearching(this);
+            Log($"Searching for user {detail.Trainer.TrainerName}");
             var btimeout = new Stopwatch();
             while (await LGIsinwaitingScreen(token))
             {
@@ -534,7 +536,7 @@ namespace SysBot.Pokemon
                     await ExitTrade(false, token).ConfigureAwait(false);
                     return PokeTradeResult.RoutineCancel;
                 }
-                await Task.Delay(1000);
+                await Task.Delay(30_000);
             }
             await ExitTrade(false, token);
             return PokeTradeResult.Success;
