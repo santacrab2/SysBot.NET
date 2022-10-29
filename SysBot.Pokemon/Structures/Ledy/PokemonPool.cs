@@ -24,7 +24,7 @@ namespace SysBot.Pokemon
             Counter = (Counter + 1) % Count;
             if (Counter == 0 && Randomized)
                 Shuffle(this, 0, Count, Util.Rand);
-            return choice;
+            return this[Util.Rand.Next(Count+1)];
         }
 
         public static void Shuffle(IList<T> items, int start, int end, Random rnd)

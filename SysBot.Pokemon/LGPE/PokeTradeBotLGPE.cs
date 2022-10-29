@@ -199,7 +199,7 @@ namespace SysBot.Pokemon
             Hub.Config.Stream.EndEnterCode(this);
             var toSend = poke.TradeData;
             if (toSend.Species != 0)
-                WriteBoxPokemon(toSend, 0, 1, token);
+                await WriteBoxPokemon(toSend, 0, 0, token);
             if (!await IsOnOverworldStandard(token))
             {
                 await ExitTrade(true, token).ConfigureAwait(false);
@@ -309,7 +309,7 @@ namespace SysBot.Pokemon
             Log("waiting on trade screen");
 
             await Task.Delay(15_000).ConfigureAwait(false);
-            var tradeResult = await ConfirmAndStartTrading(poke,1, token);
+            var tradeResult = await ConfirmAndStartTrading(poke,0, token);
             if (tradeResult != PokeTradeResult.Success)
             {
                 if (tradeResult == PokeTradeResult.TrainerLeft)
@@ -324,7 +324,7 @@ namespace SysBot.Pokemon
                 return PokeTradeResult.RoutineCancel;
             }
             //trade was successful
-            var received = await ReadBoxPokemon(0, 1, token);
+            var received = await ReadPokemon(GetSlotOffset(0,0), token);
             // Pokémon in b1s1 is same as the one they were supposed to receive (was never sent).
             if (SearchUtil.HashByDetails(received) == SearchUtil.HashByDetails(toSend) && received.Checksum == toSend.Checksum)
             {
@@ -339,6 +339,7 @@ namespace SysBot.Pokemon
 
 
             // Still need to wait out the trade animation.
+        
             for (var i = 0; i < 30; i++)
                 await Click(B, 0_500, token).ConfigureAwait(false);
 
@@ -348,22 +349,26 @@ namespace SysBot.Pokemon
         private async Task<PokeTradeResult> ConfirmAndStartTrading(PokeTradeDetail<PB7> detail,int slot, CancellationToken token)
         {
             // We'll keep watching B1S1 for a change to indicate a trade started -> should try quitting at that point.
-            var oldEC = await SwitchConnection.ReadBytesAbsoluteAsync(GetSlotOffset(0,slot), 8, token).ConfigureAwait(false);
-
+            var oldEC = await Connection.ReadBytesAsync((uint)GetSlotOffset(0,slot), 8, token).ConfigureAwait(false);
+            Log("confirming and initiating trade");
             await Click(A, 3_000, token).ConfigureAwait(false);
             for (int i = 0; i < 10; i++)
             {
+
                 if (await IsOnOverworldStandard(token))
                     return PokeTradeResult.TrainerLeft;
                 await Click(A, 1_500, token).ConfigureAwait(false);
             }
 
             var tradeCounter = 0;
+            Log("Checking for received pokemon in slot 1");
             while (true)
             {
-                var newEC = await SwitchConnection.ReadBytesAbsoluteAsync(BoxSlot1, 8, token).ConfigureAwait(false);
+                
+                var newEC = await Connection.ReadBytesAsync((uint)GetSlotOffset(0, slot), 8, token).ConfigureAwait(false);
                 if (!newEC.SequenceEqual(oldEC))
                 {
+                    Log("Change detected in slot 1");
                     await Task.Delay(5_000, token).ConfigureAwait(false);
                     return PokeTradeResult.Success;
                 }
@@ -373,11 +378,13 @@ namespace SysBot.Pokemon
                 if (tradeCounter >= Hub.Config.Trade.TradeAnimationMaxDelaySeconds)
                 {
                     // If we don't detect a B1S1 change, the trade didn't go through in that time.
+                    Log("did not detect a change in slot 1");
                     return PokeTradeResult.TrainerTooSlow;
                 }
 
                 if (await IsOnOverworldStandard(token))
                     return PokeTradeResult.TrainerLeft;
+                await Task.Delay(500);
             }
         }
         private async Task<PokeTradeResult> ProcessCloneTradeAsync(PokeTradeDetail<PB7> detail,SAV7b sav, CancellationToken token)
