@@ -98,6 +98,7 @@ namespace SysBot.Pokemon
                 Log("Turning off screen.");
                 await SetScreen(ScreenState.Off, token).ConfigureAwait(false);
             }
+            await SetController(ControllerType.JoyRight1, token);
         }
 
         public async Task CleanExit(IBotStateSettings settings, CancellationToken token)
@@ -288,6 +289,13 @@ namespace SysBot.Pokemon
         {
             var cmd = SwitchCommand.Configure(SwitchConfigureParameter.mainLoopSleepTime, value, UseCRLF);
             await Connection.SendAsync(cmd, token).ConfigureAwait(false);
+        }
+        public async Task<bool> LGIsinwaitingScreen(CancellationToken token) => BitConverter.ToUInt32(await SwitchConnection.ReadBytesMainAsync(waitingscreen, 4, token).ConfigureAwait(false), 0) == 0;
+
+        public async Task RestartGameLGPE(PokeTradeHubConfig config, CancellationToken token)
+        {
+            await CloseGame(config, token);
+            await StartGame(config, token);
         }
     }
 }

@@ -112,7 +112,8 @@ namespace SysBot.Pokemon
                 return TrainerSettings.GetSavedTrainerData(GameVersion.BDSP, 8);
             if (typeof(T) == typeof(PA8))
                 return TrainerSettings.GetSavedTrainerData(GameVersion.PLA, 8);
-
+            if (typeof(T) == typeof(PB7))
+                return TrainerSettings.GetSavedTrainerData(GameVersion.GG, 7);
             throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
         }
 

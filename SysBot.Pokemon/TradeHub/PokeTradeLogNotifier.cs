@@ -48,6 +48,11 @@ namespace SysBot.Pokemon
             LogUtil.LogInfo(message, routine.Connection.Label);
         }
 
+        public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string title, string message)
+        {
+            throw new NotImplementedException();
+        }
+
         public Action<PokeRoutineExecutor<T>>? OnFinish { get; set; }
     }
 }

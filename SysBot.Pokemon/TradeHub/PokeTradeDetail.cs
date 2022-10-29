@@ -1,6 +1,7 @@
 ﻿using PKHeX.Core;
 using System;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
@@ -42,9 +43,9 @@ namespace SysBot.Pokemon
 
         /// <summary> Indicates if the trade data is currently being traded. </summary>
         public bool IsProcessing;
-        public pictocodes[] LGPETradeCode;
+        public List<pictocodes> LGPETradeCode;
 
-        public PokeTradeDetail(TPoke pkm, PokeTradeTrainerInfo info, IPokeTradeNotifier<TPoke> notifier, PokeTradeType type, int code, bool favored = false)
+        public PokeTradeDetail(TPoke pkm, PokeTradeTrainerInfo info, IPokeTradeNotifier<TPoke> notifier, PokeTradeType type, int code, bool favored = false,List<pictocodes>lgcode = null)
         {
             ID = Interlocked.Increment(ref CreatedCount) % 3000;
             Code = code;
@@ -54,6 +55,7 @@ namespace SysBot.Pokemon
             Type = type;
             Time = DateTime.Now;
             IsFavored = favored;
+            LGPETradeCode = lgcode;
         }
 
         public void TradeInitialize(PokeRoutineExecutor<TPoke> routine) => Notifier.TradeInitialize(routine, this);
@@ -68,6 +70,7 @@ namespace SysBot.Pokemon
         public void SendNotification(PokeRoutineExecutor<TPoke> routine, string message) => Notifier.SendNotification(routine, this, message);
         public void SendNotification(PokeRoutineExecutor<TPoke> routine, PokeTradeSummary obj) => Notifier.SendNotification(routine, this, obj);
         public void SendNotification(PokeRoutineExecutor<TPoke> routine, TPoke obj, string message) => Notifier.SendNotification(routine, this, obj, message);
+        public void SendNotification(PokeRoutineExecutor<TPoke> routine, string title, string message) => Notifier.SendNotification(routine, this, title, message);
 
         public bool Equals(PokeTradeDetail<TPoke>? other)
         {

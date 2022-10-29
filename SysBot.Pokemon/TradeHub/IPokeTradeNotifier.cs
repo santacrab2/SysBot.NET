@@ -20,6 +20,7 @@ namespace SysBot.Pokemon
         void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, PokeTradeSummary message);
         /// <summary> Sends a notification when called with parameters. </summary>
         void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, T result, string message);
+        void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string title, string message);
 
         /// <summary> Notifies when a trade bot is initializing at the start. </summary>
         Action<PokeRoutineExecutor<T>>? OnFinish { set; }

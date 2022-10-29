@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using Discord.Net;
 using PKHeX.Core;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -11,7 +12,7 @@ namespace SysBot.Pokemon.Discord
     {
         private const uint MaxTradeCode = 9999_9999;
 
-        public static async Task AddToQueueAsync(SocketInteractionContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type, SocketUser trader)
+        public static async Task AddToQueueAsync(SocketInteractionContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type, SocketUser trader, List<pictocodes>lgcode )
         {
             if ((uint)code > MaxTradeCode)
             {
@@ -25,7 +26,7 @@ namespace SysBot.Pokemon.Discord
                 IUserMessage test = await trader.SendMessageAsync(helper).ConfigureAwait(false);
 
                 // Try adding
-                var result = AddToTradeQueue(context, trade, code, trainer, sig, routine, type, trader, out var msg);
+                var result = AddToTradeQueue(context, trade, code, trainer, sig, routine, type, trader,lgcode, out var msg);
 
                 // Notify in channel
                 await context.Interaction.FollowupAsync(msg).ConfigureAwait(false);
@@ -40,20 +41,20 @@ namespace SysBot.Pokemon.Discord
             }
         }
 
-        public static async Task AddToQueueAsync(SocketInteractionContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type)
+        public static async Task AddToQueueAsync(SocketInteractionContext context, int code, string trainer, RequestSignificance sig, T trade, PokeRoutineType routine, PokeTradeType type, List<pictocodes>lgcode)
         {
-            await AddToQueueAsync(context, code, trainer, sig, trade, routine, type, context.User).ConfigureAwait(false);
+            await AddToQueueAsync(context, code, trainer, sig, trade, routine, type, context.User,lgcode).ConfigureAwait(false);
         }
 
-        private static bool AddToTradeQueue(SocketInteractionContext context, T pk, int code, string trainerName, RequestSignificance sig, PokeRoutineType type, PokeTradeType t, SocketUser trader, out string msg)
+        private static bool AddToTradeQueue(SocketInteractionContext context, T pk, int code, string trainerName, RequestSignificance sig, PokeRoutineType type, PokeTradeType t, SocketUser trader,List<pictocodes>lgcode, out string msg)
         {
             var user = trader;
             var userID = user.Id;
             var name = user.Username;
 
             var trainer = new PokeTradeTrainerInfo(trainerName, userID);
-            var notifier = new DiscordTradeNotifier<T>(pk, trainer, code, user);
-            var detail = new PokeTradeDetail<T>(pk, trainer, notifier, t, code, sig == RequestSignificance.Favored);
+            var notifier = new DiscordTradeNotifier<T>(pk, trainer, code, user,lgcode);
+            var detail = new PokeTradeDetail<T>(pk, trainer, notifier, t, code, sig == RequestSignificance.Favored,lgcode);
             var trade = new TradeEntry<T>(detail, userID, type, name);
 
             var hub = SysCord<T>.Runner.Hub;

@@ -20,11 +20,11 @@ namespace SysBot.Pokemon.Discord
         public static bool buttonpressed = false;
         public static bool tradepokemon = false;
         public static CancellationTokenSource WTPsource = new();
-        public static TradeQueueInfo<PB8> Info => SysCord<PB8>.Runner.Hub.Queues.Info;
-        public static PokeTradeHub<PB8> Hub = SysCord<PB8>.Runner.Hub;
+        public static TradeQueueInfo<PB7> Info => SysCord<PB7>.Runner.Hub.Queues.Info;
+        public static PokeTradeHub<PB7> Hub = SysCord<PB7>.Runner.Hub;
        // public readonly ExtraCommandUtil<PK8> Util = new();
       
-        public static GameVersion Game = GameVersion.BDSP;
+        public static GameVersion Game = GameVersion.GG;
         public static string guess = "";
         public static SocketUser usr;
         public static ushort randspecies;
@@ -34,7 +34,7 @@ namespace SysBot.Pokemon.Discord
         public static async Task WhoseThatPokemon()
         {
            
-            var wtpchan = (ITextChannel)SysCord<PB8>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid).Result;
+            var wtpchan = (ITextChannel)SysCord<PB7>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid).Result;
             await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Allow));
             await wtpchan.ModifyAsync(prop => prop.Name = wtpchan.Name.Replace("❌", "✅"));
             while (!WTPsource.IsCancellationRequested)
@@ -42,7 +42,13 @@ namespace SysBot.Pokemon.Discord
                 Stopwatch sw = new();
                 sw.Restart();
                 Random random = new Random();
-                var code = random.Next(99999999);
+                var code = new List<pictocodes>();
+                for (int i = 0; i <= 2; i++)
+                {
+                    code.Add((pictocodes)Util.Rand.Next(10));
+                    //code.Add(pictocodes.Pikachu);
+
+                }
                 var Dex = GetPokedex();
                 randspecies = Dex[random.Next(Dex.Length)];
                 EmbedBuilder embed = new EmbedBuilder();
@@ -83,13 +89,13 @@ namespace SysBot.Pokemon.Discord
 
                         var set = new ShowdownSet($"{SpeciesName.GetSpeciesName(randspecies, 2)}\nShiny: Yes");
                         var template = new RegenTemplate(set);
-                        var sav = SaveUtil.GetBlankSAV(GameVersion.BD, "Piplup");
+                        var sav = SaveUtil.GetBlankSAV(GameVersion.GE, "Piplup");
                         var pk = sav.GetLegalFromSet(template, out var result);
                         if (!new LegalityAnalysis(pk).Valid)
                         {
                             set = new ShowdownSet(SpeciesName.GetSpeciesName(randspecies, 2));
                             template = new RegenTemplate(set);
-                            sav = SaveUtil.GetBlankSAV(GameVersion.BD, "Piplup");
+                            sav = SaveUtil.GetBlankSAV(GameVersion.GE, "Piplup");
                             pk = sav.GetLegalFromSet(template, out result);
                         }
                         pk.Ball = BallApplicator.ApplyBallLegalByColor(pk);
@@ -99,7 +105,7 @@ namespace SysBot.Pokemon.Discord
                         pk.Nature = natue;
                        
 
-                        await QueueHelper<PB8>.AddToQueueAsync(con, code, usr.Username, RequestSignificance.None, (PB8)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr).ConfigureAwait(false);
+                        await QueueHelper<PB7>.AddToQueueAsync(con, 0, usr.Username, RequestSignificance.None, (PB7)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,code).ConfigureAwait(false);
                     }
                     usr = null;
                     guess = "";
@@ -139,17 +145,16 @@ namespace SysBot.Pokemon.Discord
         public static ushort[] GetPokedex()
         {
             List<ushort> dex = new();
-            for (ushort i = 1; i < (Game == GameVersion.BDSP ? 494 : Game == GameVersion.SWSH? 899:906); i++)
+            for (ushort i = 1; i < 151; i++)
             {
-                var entry = PersonalTable.BDSP.GetFormEntry(i, 0);
-                if (Game == GameVersion.BDSP && entry is PersonalInfo8BDSP { IsPresentInGame: false })
-                    continue;
+               
+              
 
                 var species = SpeciesName.GetSpeciesNameGeneration(i, 2, 8);
                 var set = new ShowdownSet($"{species}{(i == (int)NidoranF ? "-F" : i == (int)NidoranM ? "-M" : "")}");
                 var template = AutoLegalityWrapper.GetTemplate(set);
-                var sav = AutoLegalityWrapper.GetTrainerInfo<PB8>();
-                _ = (PB8)sav.GetLegal(template, out string result);
+                var sav = AutoLegalityWrapper.GetTrainerInfo<PB7>();
+                _ = (PB7)sav.GetLegal(template, out string result);
 
                 if (result == "Regenerated")
                     dex.Add(i);

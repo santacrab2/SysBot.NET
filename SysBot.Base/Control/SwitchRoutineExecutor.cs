@@ -55,7 +55,12 @@ namespace SysBot.Base
         {
             await Connection.SendAsync(SwitchCommand.DetachController(UseCRLF), token).ConfigureAwait(false);
         }
-
+        
+        public override async Task SetController(ControllerType ControllerType,CancellationToken token)
+        {
+            var cmd = SwitchCommand.Configure(SwitchConfigureParameter.controllerType, (int)ControllerType);
+            await Connection.SendAsync(cmd, token).ConfigureAwait(false);
+        }
         public async Task SetScreen(ScreenState state, CancellationToken token)
         {
             await Connection.SendAsync(SwitchCommand.SetScreen(state, UseCRLF), token).ConfigureAwait(false);
@@ -95,5 +100,28 @@ namespace SysBot.Base
 
         public async Task DaySkip(CancellationToken token) => await Connection.SendAsync(SwitchCommand.DaySkip(UseCRLF), token).ConfigureAwait(false);
         public async Task ResetTime(CancellationToken token) => await Connection.SendAsync(SwitchCommand.ResetTime(UseCRLF), token).ConfigureAwait(false);
+    }
+    public enum ControllerType
+    {
+       JoyRight1 = 1,   ///< Joy-Con right controller.
+        JoyLeft2 = 2,   ///< Joy-Con left controller.
+        ProController = 3,   ///< Pro Controller and Gc controller.
+        JoyLeft4 = 4,    ///< Joy-Con left controller.
+        JoyRight5 = 5,   ///< Joy-Con right controller.
+        ProController2 = 6,   ///< Pro Controller and GC Controller
+       FamicomLeft = 7,   ///< Famicom left controller.
+       FamicomRight = 8,    ///< Famicom right controller (with microphone).
+       NESLeft = 9,    ///< NES left controller.
+        NESRight = 10,   ///< NES right controller.
+        SNES = 11,   ///< SNES controller
+        PokeBallPlus = 12,  ///< Poké Ball Plus controller.
+        ProController3 = 13,  ///< Pro Controller and Gc controller.
+        ProController4 = 15,  ///< Pro Controller and Gc controller.
+        DebugPad = 17,  ///< DebugPad
+        System19 = 19,  ///< Generic controller.
+        System20 = 20,  ///< Generic controller.
+        System21 = 21,  ///< Generic controller.
+        N64 = 22,  ///< N64 controller
+        SegaGenesis = 28,   ///< Sega Genesis controller
     }
 }

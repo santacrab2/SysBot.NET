@@ -41,6 +41,7 @@ namespace SysBot.Base
             Connection.Connect();
             Log("Initializing connection with console...");
             await InitialStartup(token).ConfigureAwait(false);
+            await SetController(ControllerType.ProController, token);
             await MainLoop(token).ConfigureAwait(false);
             Connection.Disconnect();
         }
@@ -49,5 +50,6 @@ namespace SysBot.Base
         public abstract Task InitialStartup(CancellationToken token);
         public abstract void SoftStop();
         public abstract Task HardStop();
+        public abstract Task SetController(ControllerType Controller,CancellationToken token);
     }
 }
