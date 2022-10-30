@@ -34,7 +34,7 @@ namespace SysBot.Pokemon.Discord
         public static async Task WhoseThatPokemon()
         {
            
-            var wtpchan = (ITextChannel)SysCord<PB7>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid).Result;
+            var wtpchan = (ITextChannel)await SysCord<PB7>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid);
             await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Allow));
             await wtpchan.ModifyAsync(prop => prop.Name = wtpchan.Name.Replace("❌", "✅"));
             while (!WTPsource.IsCancellationRequested)
@@ -42,13 +42,7 @@ namespace SysBot.Pokemon.Discord
                 Stopwatch sw = new();
                 sw.Restart();
                 Random random = new Random();
-                var code = new List<pictocodes>();
-                for (int i = 0; i <= 2; i++)
-                {
-                    code.Add((pictocodes)Util.Rand.Next(10));
-                    //code.Add(pictocodes.Pikachu);
-
-                }
+                var code = Hub.Config.Trade.GetRandomLGTradeCode();
                 var Dex = GetPokedex();
                 randspecies = Dex[random.Next(Dex.Length)];
                 EmbedBuilder embed = new EmbedBuilder();
@@ -150,11 +144,12 @@ namespace SysBot.Pokemon.Discord
                
               
 
-                var species = SpeciesName.GetSpeciesNameGeneration(i, 2, 8);
+                var species = SpeciesName.GetSpeciesNameGeneration(i, 2, 7);
                 var set = new ShowdownSet($"{species}{(i == (int)NidoranF ? "-F" : i == (int)NidoranM ? "-M" : "")}");
                 var template = AutoLegalityWrapper.GetTemplate(set);
-                var sav = AutoLegalityWrapper.GetTrainerInfo<PB7>();
-                _ = (PB7)sav.GetLegal(template, out string result);
+                var trainer = AutoLegalityWrapper.GetTrainerInfo<PB7>();
+                var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+                _ = sav.GetLegal(template, out var result);
 
                 if (result == "Regenerated")
                     dex.Add(i);

@@ -124,7 +124,7 @@ namespace SysBot.Pokemon.Discord
             {
                 null => null,
                 PB7 pk => pk,
-                _ => EntityConverter.ConvertToType(dl.Data, typeof(PB7), out _) as PB7,
+                _ => null,
             };
         }
 
