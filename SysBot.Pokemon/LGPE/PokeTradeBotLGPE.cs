@@ -403,7 +403,11 @@ namespace SysBot.Pokemon
                 await Task.Delay(5_000);
                 var newoffereddata = await SwitchConnection.ReadBytesAsync(OfferedPokemon, 0x104, token);
                 var newofferedpbm = new PB7(newoffereddata);
-                if (SearchUtil.HashByDetails(offeredpbmc) != SearchUtil.HashByDetails(newofferedpbm))
+                if (clonelist.Any(z => SearchUtil.HashByDetails(z) == SearchUtil.HashByDetails(newofferedpbm)))
+                {
+                    continue;
+                }
+                else
                 {
                     clonelist.Add(newofferedpbm);
                     offeredpbmc = newofferedpbm;
