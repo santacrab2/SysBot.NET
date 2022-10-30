@@ -384,7 +384,7 @@ namespace SysBot.Pokemon
 
                 if (await IsOnOverworldStandard(token))
                     return PokeTradeResult.TrainerLeft;
-                await Task.Delay(500);
+                await Task.Delay(1000);
             }
         }
         private async Task<PokeTradeResult> ProcessCloneTradeAsync(PokeTradeDetail<PB7> detail,SAV7b sav, CancellationToken token)
@@ -660,7 +660,7 @@ namespace SysBot.Pokemon
                     return;
 
                
-                await Click(BitConverter.ToUInt16(await SwitchConnection.ReadBytesMainAsync(ScreenOff, 2, token), 0) != menuscreen ? A : B, 1_000, token).ConfigureAwait(false);
+                await Click(BitConverter.ToUInt16(await SwitchConnection.ReadBytesMainAsync(ScreenOff, 2, token), 0) != Boxscreen ? A : B, 1_000, token).ConfigureAwait(false);
                 if (await IsOnOverworldStandard(token))
                     return;
 
