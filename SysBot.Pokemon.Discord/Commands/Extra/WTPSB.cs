@@ -57,7 +57,7 @@ namespace SysBot.Pokemon.Discord
                 {
                     await Task.Delay(25);
                 }
-                var entry = File.ReadAllLines("DexFlavor.txt")[randspecies];
+                var entry = File.ReadAllLines(Properties.Resources.DexFlavor)[randspecies];
                 embed = new EmbedBuilder().WithFooter(entry);
                 embed.Title = $"It's {SpeciesName.GetSpeciesName(randspecies,2)}";
                 embed.AddField(new EmbedFieldBuilder { Name = "instructions", Value = $"Type /guess <pokemon name> to guess the name of the pokemon displayed and you get that pokemon in your actual game!" });

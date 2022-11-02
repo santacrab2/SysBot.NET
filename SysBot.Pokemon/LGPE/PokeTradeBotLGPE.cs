@@ -355,7 +355,7 @@ namespace SysBot.Pokemon
             for (int i = 0; i < 10; i++)
             {
 
-                if (await IsOnOverworldStandard(token))
+                if (await IsOnOverworldStandard(token) || BitConverter.ToUInt16(await SwitchConnection.ReadBytesMainAsync(ScreenOff, 2, token), 0) == Boxscreen)
                     return PokeTradeResult.TrainerLeft;
                 await Click(A, 1_500, token).ConfigureAwait(false);
             }
@@ -369,7 +369,7 @@ namespace SysBot.Pokemon
                 if (!newEC.SequenceEqual(oldEC))
                 {
                     Log("Change detected in slot 1");
-                    await Task.Delay(5_000, token).ConfigureAwait(false);
+                    await Task.Delay(15_000, token).ConfigureAwait(false);
                     return PokeTradeResult.Success;
                 }
 
@@ -658,7 +658,7 @@ namespace SysBot.Pokemon
                     await RestartGameLGPE(Hub.Config,token).ConfigureAwait(false);
                     return;
                 }
-
+                
                 await Click(B, 1_000, token).ConfigureAwait(false);
                 if (await IsOnOverworldStandard(token))
                     return;
