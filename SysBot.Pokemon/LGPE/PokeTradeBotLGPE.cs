@@ -54,7 +54,7 @@ namespace SysBot.Pokemon
                 RecentTrainerCache.SetRecentTrainer(sav);
                
 
-                Log($"Starting main {nameof(PokeTradeBotLA)} loop.");
+                Log($"Starting main {nameof(PokeTradeBotLGPE)} loop.");
                 await InnerLoop(sav, token).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -355,7 +355,7 @@ namespace SysBot.Pokemon
             for (int i = 0; i < 10; i++)
             {
 
-                if (await IsOnOverworldStandard(token) || BitConverter.ToUInt16(await SwitchConnection.ReadBytesMainAsync(ScreenOff, 2, token), 0) == Boxscreen)
+                if (BitConverter.ToUInt16(await SwitchConnection.ReadBytesMainAsync(ScreenOff, 2, token), 0) == Boxscreen || BitConverter.ToUInt16(await SwitchConnection.ReadBytesMainAsync(ScreenOff, 2, token), 0) == menuscreen)
                     return PokeTradeResult.TrainerLeft;
                 await Click(A, 1_500, token).ConfigureAwait(false);
             }
