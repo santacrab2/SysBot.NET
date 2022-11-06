@@ -30,5 +30,7 @@ namespace SysBot.Base
         Task PointerPoke(byte[] data, IEnumerable<long> jumps, CancellationToken token);
         Task<ulong> PointerAll(IEnumerable<long> jumps, CancellationToken token);
         Task<ulong> PointerRelative(IEnumerable<long> jumps, CancellationToken token);
+        Task DaySkip(CancellationToken token);
+        Task ResetTime(CancellationToken token);
     }
 }

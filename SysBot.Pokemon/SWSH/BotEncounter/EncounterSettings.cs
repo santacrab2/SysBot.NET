@@ -24,6 +24,28 @@ namespace SysBot.Pokemon
         public uint FrameAdvanceTarget { get; set; }
         [Category(Encounter), Description("Which Direction should the bot move the player at the designated frame advance target")]
         public MovementDirection MoveDirection { get; set; }
+        [Category(Encounter), Description("TID 5 digit")]
+        public uint TID { get; set; }
+        [Category(Encounter), Description("SID 5 digit")]
+        public uint SID { get; set; }
+        [Category(Encounter), Description("shiny charm?")]
+        public bool shinycharm { get; set; }
+        [Category(Encounter), Description("mark charm?")]
+        public bool markcharm { get; set; }
+        [Category(Encounter), Description("encounter slot min")]
+        public uint slotmin { get; set; }
+        [Category(Encounter), Description("encounter slot max")]
+        public uint slotmax { get; set; }
+        [Category(Encounter), Description("egg moves count")]
+        public uint EMs { get; set; }
+        [Category(Encounter)]
+        public uint flawlessivs { get; set; }
+        [Category(Encounter)]
+        public bool weather { get; set; }
+        [Category(Encounter)]
+        public ulong onedayskip { get; set; }
+        [Category(Encounter), Description("how many frames before the target to start moving")]
+        public ulong movementdelay { get; set; }
         private int _completedWild;
         private int _completedLegend;
 

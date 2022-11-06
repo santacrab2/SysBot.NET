@@ -229,5 +229,7 @@ namespace SysBot.Base
             Array.Reverse(offsetBytes, 0, 8);
             return BitConverter.ToUInt64(offsetBytes, 0);
         }
+        public async Task DaySkip(CancellationToken token) => await SendAsync(SwitchCommand.DaySkip(), token).ConfigureAwait(false);
+        public async Task ResetTime(CancellationToken token) => await SendAsync(SwitchCommand.ResetTime(), token).ConfigureAwait(false);
     }
 }

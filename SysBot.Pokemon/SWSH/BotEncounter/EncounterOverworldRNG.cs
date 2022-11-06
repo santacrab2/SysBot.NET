@@ -9,6 +9,7 @@ using PKHeX.Core;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Base.SwitchStick;
 using static SysBot.Pokemon.PokeDataOffsets;
+using SWSH_OWRNG_Generator.Core;
 
 namespace SysBot.Pokemon
 {
@@ -23,14 +24,80 @@ namespace SysBot.Pokemon
         {
             byte[] KCoordinates;
             List<PK8> PK8s;
+            var desiredmark = "Any Mark";
+            Log("desiredmark set");
+            StopConditionSettings.InitializeTargetIVs(Hub.Config, out var DesiredMinIVs, out var DesiredMaxIVs);
+            Log("target ivs set");
+            var shinyfilter = Hub.Config.StopConditions.ShinyTarget switch
+            {
+                TargetShinyType.DisableOption => "Ignore",
+                TargetShinyType.NonShiny => "No",
+                TargetShinyType.AnyShiny => "Star/Square",
+                TargetShinyType.SquareOnly => "Square",
+                TargetShinyType.StarOnly => "Star",
+                
+            };
+            Log("shiny filter set");
+            var searchfilters = new SWSH_OWRNG_Generator.Core.Overworld.Filter()
+            {
 
+                TSV = SWSH_OWRNG_Generator.Core.Util.Common.GetTSV(Hub.Config.EncounterSWSH.TID, Hub.Config.EncounterSWSH.SID),
+                SlotMin = Hub.Config.EncounterSWSH.slotmin,
+                SlotMax = Hub.Config.EncounterSWSH.slotmax,
+                LevelMax = 0,
+                LevelMin = 0,
+                KOs = 500,
+                EggMoveCount = Hub.Config.EncounterSWSH.EMs,
+                FlawlessIVs = Hub.Config.EncounterSWSH.flawlessivs,
+                Weather = Hub.Config.EncounterSWSH.weather,
+                Static = false,
+                Fishing = false,
+                HeldItem = false,
+                AbilityLocked = false,
+                TIDSIDSearch = false,
+                CuteCharm = false,
+                ShinyLocked = false,
+                Hidden = false,
+                MenuClose = false,
+                DesiredAura = "Ignore",
+                DesiredNature = "Ignore",
+                DesiredMark = desiredmark,
+                DesiredShiny = shinyfilter,
+                MarkRolls = Hub.Config.EncounterSWSH.markcharm ? 3 : 1,
+                ShinyRolls = Hub.Config.EncounterSWSH.shinycharm ? 3: 1,
+                MaxIVs = DesiredMaxIVs,
+                MinIVs = DesiredMinIVs
+        };
+            Log("search filter set");
+            bool initrun = true;
+            bool secondrun = false;
             while (!token.IsCancellationRequested)
             {
+                Log("made it to tracking loop");
+                var frameadvancetarget = await calculateframeadvance(searchfilters, token);
+                var daystoskip = await calculatedaystoskip(frameadvancetarget, token);
                 ulong TotalAdvances = 0;
                 Log($"Total Advances: {TotalAdvances:N0}");
                 var (s0, s1) = await GetGlobalRNGState(token).ConfigureAwait(false);
-                while(Hub.Config.EncounterSWSH.FrameAdvanceTarget > TotalAdvances)
+                await Click(B, 500, token);
+                while(frameadvancetarget-Hub.Config.EncounterSWSH.movementdelay > TotalAdvances)
                 {
+                 
+                    if (initrun && frameadvancetarget > Hub.Config.EncounterSWSH.onedayskip+100)
+                    {
+                        for(ulong i = 0; i < daystoskip; i++)
+                        {
+                            Log($"skipping day {i}");
+                            await SwitchConnection.DaySkip(token);
+                            await Task.Delay(360);
+                        }
+                        await SwitchConnection.ResetTime(token);
+                        await Task.Delay(1000);
+                       
+                        
+                    }
+                    
+                  
                     var (_s0, _s1) = await GetGlobalRNGState(token).ConfigureAwait(false);
                     // Only update if it changed.
                     if (_s0 == s0 && _s1 == s1)
@@ -40,56 +107,49 @@ namespace SysBot.Pokemon
                     s1 = _s1;
                     TotalAdvances += passed;
                     Log($"Total Advances: {TotalAdvances:N0}");
-                   
-                }
-                switch (Hub.Config.EncounterSWSH.MoveDirection)
-                {
-                    case EncounterSettings.MovementDirection.up:
-                        await SetStick(LEFT, 0, 30000, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.down:
-                        await SetStick(LEFT, 0, -30000, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.left:
-                        await SetStick(LEFT, -30000, 0, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.right:
-                        await SetStick(LEFT, 30000, 0, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.upleft:
-                        await SetStick(LEFT, -30000, 30000, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.upright:
-                        await SetStick(LEFT, 30000, 30000, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.downleft:
-                        await SetStick(LEFT, -30000, -30000, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
-                    case EncounterSettings.MovementDirection.downright:
-                        await SetStick(LEFT, 30000, -30000, 1000, token);
-                        await SetStick(LEFT, 0, 0, 0, token);
-                        break;
+                    if (secondrun)
+                    {
+                        await Click(X, 500, token);
+                        if ((frameadvancetarget - 100) > (TotalAdvances))
+                        {
 
+                            await Click(A, 500, token);
+                            var skips = (frameadvancetarget - TotalAdvances) - 100;
+                            Log($"Skipping {skips} frames)");
+                            for (ulong j = 0; j < skips; j++)
+                            {
+                                await Click(LSTICK, 150, token);
+                                if (skips >= 500 && j % 500 == 0)
+                                    Log(j.ToString());
+                                else if (skips <500 && j % 100 == 0)
+                                    Log(j.ToString());
+                            }
+                            await Click(B, 1000, token);
+
+                        }
+                        while(!await IsOnOverworld(Hub.Config,token))
+                            await Click(B, 1000, token);
+                        secondrun = false;
+                    }
+                    if (initrun)
+                    {
+                        initrun = false;
+                        secondrun = true;
+                    }
                 }
-                    
-                
-                await Click(X, 2_000, token).ConfigureAwait(false);
-                await Click(R, 2_000, token).ConfigureAwait(false);
-                await Click(A, 5_000, token).ConfigureAwait(false);
+                await moveplayerandsave(token);
                 
                 KCoordinates = await ReadOverWorldSpawnBlock(token).ConfigureAwait(false);
 
                 PK8s = await ReadOwPokemonFromBlock(KCoordinates, sav, token).ConfigureAwait(false);
-                await Click(HOME, 0, token);
+                await Click(HOME, 500, token);
+                bool matchfound = false;
                 foreach(var pk in PK8s)
                 {
+                    var match = StopConditionSettings.EncounterFound(pk, DesiredMinIVs, DesiredMaxIVs, Hub.Config.StopConditions, null);
+                    if (!match)
+                        continue;
+                       
                     bool hasMark = HasMark(pk, out RibbonIndex mark);
                     bool isSquare = pk.ShinyXor == 0;
                     string markString = hasMark ? $"Mark: {mark.ToString().Replace("Mark", "")}" : string.Empty;
@@ -102,10 +162,127 @@ namespace SysBot.Pokemon
                     };
                     string output = $"{(isSquare ? "■ - " : pk.ShinyXor <= 16 ? "★ - " : "")}{(Species)pk.Species}{form}{gender}{Environment.NewLine}PID: {pk.PID:X8}{Environment.NewLine}EC: {pk.EncryptionConstant:X8}{Environment.NewLine}{GameInfo.GetStrings(1).Natures[pk.Nature]} Nature{Environment.NewLine}Ability: {GameInfo.GetStrings(1).Ability[pk.Ability]}{Environment.NewLine}IVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}{Environment.NewLine}{markString}";
                     Log($"{output}");
+                    
+                    matchfound = true;
+                    break;
                 }
+                if (!matchfound)
+                {
+
+                    
+                    await Click(A, 1000, token);
+                    await resetplayerposition(token);
+                    await Click(X, 1000, token);
+                    initrun = true;
+                    secondrun = false;
+                    continue;
+                }
+                   
                 return;
             }
             
+        }
+
+        public async Task<ulong> calculatedaystoskip(ulong advances,CancellationToken token)
+        {
+            var daystoskip = advances / (Hub.Config.EncounterSWSH.onedayskip+50);
+            if (daystoskip < 0)
+                return 0;
+            return daystoskip;
+        }
+        public async Task resetplayerposition(CancellationToken token)
+        {
+            switch (Hub.Config.EncounterSWSH.MoveDirection)
+            {
+                case EncounterSettings.MovementDirection.up:
+                    await SetStick(LEFT, 0, -30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.down:
+                    await SetStick(LEFT, 0, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.left:
+                    await SetStick(LEFT, 30000, 0, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.right:
+                    await SetStick(LEFT, -30000, 0, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.upleft:
+                    await SetStick(LEFT, 30000, -30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.upright:
+                    await SetStick(LEFT, -30000, -30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.downleft:
+                    await SetStick(LEFT, 30000, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.downright:
+                    await SetStick(LEFT, -30000, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+
+            }
+        }
+        public async Task moveplayerandsave(CancellationToken token)
+        {
+            switch (Hub.Config.EncounterSWSH.MoveDirection)
+            {
+                case EncounterSettings.MovementDirection.up:
+                    await SetStick(LEFT, 0, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.down:
+                    await SetStick(LEFT, 0, -30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.left:
+                    await SetStick(LEFT, -30000, 0, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.right:
+                    await SetStick(LEFT, 30000, 0, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.upleft:
+                    await SetStick(LEFT, -30000, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.upright:
+                    await SetStick(LEFT, 30000, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.downleft:
+                    await SetStick(LEFT, -30000, -30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+                case EncounterSettings.MovementDirection.downright:
+                    await SetStick(LEFT, 30000, -30000, 1000, token);
+                    await SetStick(LEFT, 0, 0, 0, token);
+                    break;
+
+            }
+
+
+            await Click(X, 2_000, token).ConfigureAwait(false);
+            await Click(R, 2_000, token).ConfigureAwait(false);
+            await Click(A, 5_000, token).ConfigureAwait(false);
+        }
+        public async Task<ulong> calculateframeadvance(SWSH_OWRNG_Generator.Core.Overworld.Filter filters,CancellationToken token)
+        {
+            var (s0, s1) = await GetGlobalRNGState(token).ConfigureAwait(false);
+            var frames = Generator.Generate(s0, s1, 500000, 0, null, filters, 0);
+            if (frames == null)
+                return 0;
+            Log(frames[0].Advances);
+            var adv = ulong.Parse(frames[0].Advances.Replace(",",""));
+            return adv;
+
         }
         public async Task<(ulong s0, ulong s1)> GetGlobalRNGState( CancellationToken token)
         {
@@ -121,7 +298,7 @@ namespace SysBot.Pokemon
 
             var rng = new Xoroshiro128Plus(prevs0, prevs1);
             ulong i = 0;
-            for (; i < 20_000; i++) // 20,000 is an arbitrary number to prevent an infinite loop
+            for (; i < 500000; i++) // 20,000 is an arbitrary number to prevent an infinite loop
             {
                 rng.Next();
                 var (s0, s1) = rng.GetState();

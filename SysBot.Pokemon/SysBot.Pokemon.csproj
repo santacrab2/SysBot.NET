@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>9</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
@@ -18,6 +18,9 @@
   <ItemGroup>
     <Reference Include="PKHeX.Core.AutoMod">
       <HintPath>deps\PKHeX.Core.AutoMod.dll</HintPath>
+    </Reference>
+    <Reference Include="SWSH_OWRNG_Generator.Core">
+      <HintPath>..\..\swsh-overworld-rng-gui\SWSH_OWRNG_Generator.Core\bin\Release\net6.0\SWSH_OWRNG_Generator.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 

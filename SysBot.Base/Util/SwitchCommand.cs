@@ -272,5 +272,13 @@ namespace SysBot.Base
         /// <param name="crlf">Line terminator (unused by USB protocol)</param>
         /// <returns>Encoded command bytes</returns>
         public static byte[] SetScreen(ScreenState state, bool crlf = true) => Encode($"screen{(state == ScreenState.On ? "On" : "Off")}", crlf);
+        public static byte[] DaySkip(bool crlf = true)
+        {
+            return Encode("daySkip", crlf);
+        }
+        public static byte[] ResetTime(bool crlf = true)
+        {
+            return Encode("resetTime", crlf);
+        }
     }
 }

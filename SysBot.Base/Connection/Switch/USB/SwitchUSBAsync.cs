@@ -114,5 +114,15 @@ namespace SysBot.Base
                 return BitConverter.ToUInt64(baseBytes, 0);
             }, token);
         }
+
+        public Task DaySkip(CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ResetTime(CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
