@@ -142,7 +142,7 @@ namespace SysBot.Pokemon
                 KCoordinates = await ReadOverWorldSpawnBlock(token).ConfigureAwait(false);
 
                 PK8s = await ReadOwPokemonFromBlock(KCoordinates, sav, token).ConfigureAwait(false);
-                await Click(HOME, 500, token);
+                await Click(HOME, 1000, token);
                 bool matchfound = false;
                 foreach(var pk in PK8s)
                 {
