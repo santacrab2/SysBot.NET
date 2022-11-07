@@ -56,7 +56,8 @@ namespace SysBot.Pokemon.Discord
         {
 
             var set = ShowdownUtil.ConvertToShowdown(content);
-            var sav = AutoLegalityWrapper.GetTrainerInfo<T>();
+            var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
+            var sav = SaveUtil.GetBlankSAV(trainer.Context, trainer.OT);
             await channel.ReplyWithLegalizedSetAsync(sav, set).ConfigureAwait(false);
         }
 
