@@ -36,12 +36,27 @@ namespace SysBot.Pokemon
         public uint slotmin { get; set; }
         [Category(Encounter), Description("encounter slot max")]
         public uint slotmax { get; set; }
+        [Category(Encounter)]
+        public uint levelmin { get; set; }
+        [Category(Encounter)]
+        public uint levelmax { get; set; }
         [Category(Encounter), Description("egg moves count")]
         public uint EMs { get; set; }
         [Category(Encounter)]
         public uint flawlessivs { get; set; }
         [Category(Encounter)]
         public bool weather { get; set; }
+        [Category(Encounter)]
+        public bool helditem { get; set; }
+
+        [Category(Encounter)]
+        public bool Static { get; set; }
+        [Category(Encounter)]
+        public bool fishing { get; set; }
+        [Category(Encounter)]
+        public bool hidden { get; set; }
+        [Category(Encounter)]
+        public aura theaura { get; set; }
         [Category(Encounter)]
         public ulong onedayskip { get; set; }
         [Category(Encounter), Description("how many frames before the target to start moving")]
@@ -90,6 +105,12 @@ namespace SysBot.Pokemon
             downright,
 
 
+        }
+        public enum aura
+        {
+            Ignore,
+            None,
+            Brilliant
         }
     }
 }
