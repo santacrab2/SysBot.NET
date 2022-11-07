@@ -120,9 +120,9 @@ namespace SysBot.Pokemon
                             {
                                 await Click(LSTICK, 150, token);
                                 if (skips >= 500 && j % 500 == 0)
-                                    Log(j.ToString());
+                                    Log($"{j} frames skipped");
                                 else if (skips <500 && j % 100 == 0)
-                                    Log(j.ToString());
+                                    Log($"{j} frames skipped");
                             }
                             await Click(B, 1000, token);
 
