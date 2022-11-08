@@ -109,7 +109,7 @@ namespace SysBot.Pokemon
                     Log($"Total Advances: {TotalAdvances:N0}");
                     if (secondrun)
                     {
-                        await Click(X, 500, token);
+                        await Click(X, 1000, token);
                         if ((frameadvancetarget - 100) > (TotalAdvances))
                         {
 
@@ -185,7 +185,7 @@ namespace SysBot.Pokemon
 
         public async Task<ulong> calculatedaystoskip(ulong advances,CancellationToken token)
         {
-            var daystoskip = advances / (Hub.Config.EncounterSWSH.onedayskip+50);
+            var daystoskip = advances / Hub.Config.EncounterSWSH.onedayskip;
             if (daystoskip < 0)
                 return 0;
             return daystoskip;
