@@ -20,8 +20,7 @@ namespace SysBot.Pokemon
         [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
 
         public bool ScreenOff { get; set; } = false;
-        [Category(Encounter), Description("Frame Advance Target for Overworld RNG")]
-        public uint FrameAdvanceTarget { get; set; }
+    
         [Category(Encounter), Description("Which Direction should the bot move the player at the designated frame advance target")]
         public MovementDirection MoveDirection { get; set; }
         [Category(Encounter), Description("TID 5 digit")]
