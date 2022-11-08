@@ -61,6 +61,8 @@ namespace SysBot.Pokemon
         public ulong onedayskip { get; set; }
         [Category(Encounter), Description("how many frames before the target to start moving")]
         public ulong movementdelay { get; set; }
+        [Category(Encounter)]
+        public double moveduration { get; set; }
         private int _completedWild;
         private int _completedLegend;
 

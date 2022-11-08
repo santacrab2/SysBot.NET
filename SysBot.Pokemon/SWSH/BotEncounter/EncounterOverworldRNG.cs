@@ -192,38 +192,39 @@ namespace SysBot.Pokemon
         }
         public async Task resetplayerposition(CancellationToken token)
         {
+            var movetime = (int)(Hub.Config.EncounterSWSH.moveduration * 1000);
             switch (Hub.Config.EncounterSWSH.MoveDirection)
             {
                 case EncounterSettings.MovementDirection.up:
-                    await SetStick(LEFT, 0, -30000, 1000, token);
+                    await SetStick(LEFT, 0, -30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.down:
-                    await SetStick(LEFT, 0, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.left:
-                    await SetStick(LEFT, 30000, 0, 1000, token);
+                    await SetStick(LEFT, 30000, 0, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.right:
-                    await SetStick(LEFT, -30000, 0, 1000, token);
+                    await SetStick(LEFT, -30000, 0, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.upleft:
-                    await SetStick(LEFT, 30000, -30000, 1000, token);
+                    await SetStick(LEFT, 30000, -30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.upright:
-                    await SetStick(LEFT, -30000, -30000, 1000, token);
+                    await SetStick(LEFT, -30000, -30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.downleft:
-                    await SetStick(LEFT, 30000, 30000, 1000, token);
+                    await SetStick(LEFT, 30000, 30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.downright:
-                    await SetStick(LEFT, -30000, 30000, 1000, token);
+                    await SetStick(LEFT, -30000, 30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
 
@@ -231,38 +232,39 @@ namespace SysBot.Pokemon
         }
         public async Task moveplayerandsave(CancellationToken token)
         {
+            var movetime = (int)(Hub.Config.EncounterSWSH.moveduration*1000);
             switch (Hub.Config.EncounterSWSH.MoveDirection)
             {
                 case EncounterSettings.MovementDirection.up:
-                    await SetStick(LEFT, 0, 30000, 1000, token);
+                    await SetStick(LEFT, 0, 30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.down:
-                    await SetStick(LEFT, 0, -30000, 1000, token);
+                    await SetStick(LEFT, 0, -30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.left:
-                    await SetStick(LEFT, -30000, 0, 1000, token);
+                    await SetStick(LEFT, -30000, 0, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.right:
-                    await SetStick(LEFT, 30000, 0, 1000, token);
+                    await SetStick(LEFT, 30000, 0, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.upleft:
-                    await SetStick(LEFT, -30000, 30000, 1000, token);
+                    await SetStick(LEFT, -30000, 30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.upright:
-                    await SetStick(LEFT, 30000, 30000, 1000, token);
+                    await SetStick(LEFT, 30000, 30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.downleft:
-                    await SetStick(LEFT, -30000, -30000, 1000, token);
+                    await SetStick(LEFT, -30000, -30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
                 case EncounterSettings.MovementDirection.downright:
-                    await SetStick(LEFT, 30000, -30000, 1000, token);
+                    await SetStick(LEFT, 30000, -30000, movetime, token);
                     await SetStick(LEFT, 0, 0, 0, token);
                     break;
 
