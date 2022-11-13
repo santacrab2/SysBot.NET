@@ -31,7 +31,7 @@ namespace SysBot.Pokemon.Discord
 
         public void TradeInitialize(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
-            if (Data is not PB7)
+            if (Data is not T)
             {
                 var receive = Data.Species == 0 ? string.Empty : $" ({Data.Nickname})";
                 Trader.SendMessageAsync($"Initializing trade{receive}. Please be ready. Your code is **{Code:0000 0000}**.").ConfigureAwait(false);
@@ -47,7 +47,7 @@ namespace SysBot.Pokemon.Discord
 
         public void TradeSearching(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info)
         {
-            if (Data is not PB7)
+            if (Data is not T)
             {
                 var name = Info.TrainerName;
                 var trainer = string.IsNullOrEmpty(name) ? string.Empty : $", {name}";
