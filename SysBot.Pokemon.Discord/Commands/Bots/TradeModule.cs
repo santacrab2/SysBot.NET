@@ -12,20 +12,20 @@ namespace SysBot.Pokemon.Discord
 {
     [EnabledInDm(false)]
     [DefaultMemberPermissions(GuildPermission.ViewChannel)]
-    public class TradeModule : InteractionModuleBase<SocketInteractionContext>
+    public class TradeModule<T> : InteractionModuleBase<SocketInteractionContext> where T : PKM,new()
     {
-        public static TradeQueueInfo<PB7> Info => SysCord<PB7>.Runner.Hub.Queues.Info;
+        public static TradeQueueInfo<T> Info => SysCord<T>.Runner.Hub.Queues.Info;
 
 
         [SlashCommand("trade", "Receive a Pokémon From Showdown text or File")]
         [RequireQueueRole(nameof(DiscordManager.RolesTrade))]
-        public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment PB7 = default)
+        public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment PKM = default)
         {
             await DeferAsync();
             if (content != "")
             {
-
-                var code = Info.GetRandomLGTradeCode();
+                var code = Info.GetRandomTradeCode();
+                var lgcode = Info.GetRandomLGTradeCode();
                 var set = ShowdownUtil.ConvertToShowdown(content);
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 if (set.InvalidLines.Count != 0)
@@ -37,7 +37,7 @@ namespace SysBot.Pokemon.Discord
 
                 try
                 {
-                    var trainer = AutoLegalityWrapper.GetTrainerInfo<PB7>();
+                    var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
                     var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                     var pkm = sav.GetLegal(template, out var result);
                
@@ -46,10 +46,10 @@ namespace SysBot.Pokemon.Discord
 
                     var la = new LegalityAnalysis(pkm);
                     var spec = GameInfo.Strings.Species[template.Species];
-                    pkm = EntityConverter.ConvertToType(pkm, typeof(PB7), out _) ?? pkm;
+                    pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
                    
 
-                    if (pkm is not PB7 pk || !la.Valid)
+                    if (pkm is not T pk || !la.Valid)
                     {
                         var reason = result == "Timeout" ? $"That {spec} set took too long to generate." : $"I wasn't able to create a {spec} from that set.";
                         var imsg = $"Oops! {reason}";
@@ -61,23 +61,24 @@ namespace SysBot.Pokemon.Discord
                     pk.ResetPartyStats();
 
                     var sig = Context.User.GetFavor();
-                    await AddTradeToQueueAsync(0, Context.User.Username, pk, sig, Context.User,code).ConfigureAwait(false);
+                    await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User,lgcode).ConfigureAwait(false);
                 }
 #pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
 #pragma warning restore CA1031 // Do not catch general exception types
                 {
-                    LogUtil.LogSafe(ex, nameof(TradeModule));
+                    LogUtil.LogSafe(ex, nameof(TradeModule<T>));
                     var msg = $"Oops! An unexpected problem happened with this Showdown Set:\n```{string.Join("\n", set.GetSetLines())}```";
                     await FollowupAsync(msg,ephemeral:true).ConfigureAwait(false);
                 }
             }
-            if(PB7 != default)
+            if(PKM != default)
             {
 
-                var code = Info.GetRandomLGTradeCode();
+                var code = Info.GetRandomTradeCode();
+                var lgcode = Info.GetRandomLGTradeCode();
                 var sig = Context.User.GetFavor();
-                await TradeAsyncAttach(PB7,0, sig, Context.User,code).ConfigureAwait(false);
+                await TradeAsyncAttach(PKM,code, sig, Context.User,lgcode).ConfigureAwait(false);
             }
         }
 
@@ -116,19 +117,19 @@ namespace SysBot.Pokemon.Discord
             await AddTradeToQueueAsync(code, usr.Username, pk, sig, usr,lgcode).ConfigureAwait(false);
         }
 
-        private static PB7? GetRequest(Download<PKM> dl)
+        private static T? GetRequest(Download<PKM> dl)
         {
             if (!dl.Success)
                 return null;
             return dl.Data switch
             {
                 null => null,
-                PB7 pk => pk,
+                T pk => pk,
                 _ => null,
             };
         }
 
-        private async Task AddTradeToQueueAsync(int code, string trainerName, PB7 pk, RequestSignificance sig, SocketUser usr, List<pictocodes>lgcode)
+        private async Task AddTradeToQueueAsync(int code, string trainerName, T pk, RequestSignificance sig, SocketUser usr, List<pictocodes>lgcode)
         {
             if (!pk.CanBeTraded())
             {
@@ -139,11 +140,11 @@ namespace SysBot.Pokemon.Discord
             var la = new LegalityAnalysis(pk);
             if (!la.Valid)
             {
-                await FollowupAsync($"{typeof(PB7).Name} attachment is not legal, Here's Why: {la.Report()}",ephemeral:true).ConfigureAwait(false);
+                await FollowupAsync($"{typeof(T).Name} attachment is not legal, Here's Why: {la.Report()}",ephemeral:true).ConfigureAwait(false);
                 return;
             }
 
-            await QueueHelper<PB7>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
+            await QueueHelper<T>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
         }
     }
 }

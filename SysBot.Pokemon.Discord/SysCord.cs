@@ -188,15 +188,15 @@ namespace SysBot.Pokemon.Discord
           
             if (arg.Data.CustomId == "wtpyes")
             {
-                WTPSB.buttonpressed = true;
-                WTPSB.tradepokemon = true;
+                WTPSB<T>.buttonpressed = true;
+                WTPSB<T>.tradepokemon = true;
                 await arg.Message.DeleteAsync();
                 return;
             }
             if (arg.Data.CustomId == "wtpno")
             {
-                WTPSB.buttonpressed = true;
-                WTPSB.tradepokemon = false;
+                WTPSB<T>.buttonpressed = true;
+                WTPSB<T>.tradepokemon = false;
                 await arg.Message.DeleteAsync();
                 return;
             }
@@ -308,14 +308,73 @@ namespace SysBot.Pokemon.Discord
                     state = active;
                     await _client.SetStatusAsync(state).ConfigureAwait(false);
                 }
+                if (!Runner.IsRunning)
+                {
+                    var bots = Runner.Bots;
+                    foreach (var bot in bots)
+                    {
+                        if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                        {
+                            var districhan = (ITextChannel)SysCord<T>._client.GetChannelAsync(890016056549195797).Result;
+                            if (districhan.Name.Contains("✅"))
+                            {
+                                var role = districhan.Guild.EveryoneRole;
+                                await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
+                                await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
+                                var offembed = new EmbedBuilder();
+                                offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Offline");
+                                await districhan.SendMessageAsync(embed: offembed.Build());
+                            }
+
+                            var wtpchan = (ITextChannel)SysCord<T>._client.GetChannelAsync(961071583747776532).Result;
+                            if (wtpchan.Name.Contains("✅"))
+                            {
+                                WTPSB<T>.WTPsource.Cancel();
+                                await wtpchan.ModifyAsync(x => x.Name = wtpchan.Name.Replace("✅", "❌"));
+                                await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var bots = Runner.Bots;
+                    foreach (var bot in bots)
+                    {
+                        if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                        {
+
+                            var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(890016056549195797);
+                            if (districhan.Name.Contains("❌"))
+                            {
+                                var role = districhan.Guild.EveryoneRole;
+                                await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
+                                await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
+                                var offembed = new EmbedBuilder();
+                                offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Online");
+                                await districhan.SendMessageAsync("<@&898901020678176839>", embed: offembed.Build());
+
+                                if (SysCord<T>.Runner.Config.Discord.WTPbool)
+                                    WTPSB<T>.WhoseThatPokemon();
+                            }
+                        }
+                    }
+                }
                 await Task.Delay(gap, token).ConfigureAwait(false);
             }
         }
 
         public async Task LoadLoggingAndEcho()
         {
+            var assembly = Assembly.GetExecutingAssembly();
             var _interactionService = new InteractionService(_client);
-            await _interactionService.AddModulesAsync(Assembly.GetExecutingAssembly(), _services);
+            await _interactionService.AddModulesAsync(assembly, _services);
+            var genericTypes = assembly.DefinedTypes.Where(z => z.IsSubclassOf(typeof(InteractionModuleBase<SocketInteractionContext>)) && z.IsGenericType);
+            foreach (var t in genericTypes)
+            {
+                var genModule = t.MakeGenericType(typeof(T));
+                await _interactionService.AddModuleAsync(genModule, _services).ConfigureAwait(false);
+            }
             await _interactionService.RegisterCommandsToGuildAsync(872587205787394119);
             _client.InteractionCreated += async interaction =>
             {
@@ -342,6 +401,8 @@ namespace SysBot.Pokemon.Discord
             if (!string.IsNullOrWhiteSpace(game))
                 await _client.SetGameAsync(game).ConfigureAwait(false);
         }
+
+       
        
     }
 }

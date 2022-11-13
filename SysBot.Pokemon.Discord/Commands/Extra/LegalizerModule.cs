@@ -5,7 +5,7 @@ using PKHeX.Core;
 
 namespace SysBot.Pokemon.Discord
 {
-    public class LegalizerModule : InteractionModuleBase<SocketInteractionContext> 
+    public class LegalizerModule<T> : InteractionModuleBase<SocketInteractionContext> where T : PKM, new()
     {
         [SlashCommand("legalize", "Tries to legalize the attached pkm data.")]
        
@@ -23,7 +23,7 @@ namespace SysBot.Pokemon.Discord
             await DeferAsync();
             if (gen == 0)
             {
-                await Context.ReplyWithLegalizedSetAsync<PB7>(content).ConfigureAwait(false);return;
+                await Context.ReplyWithLegalizedSetAsync<T>(content).ConfigureAwait(false);return;
             }
             await Context.ReplyWithLegalizedSetAsync(content, gen).ConfigureAwait(false);
         }

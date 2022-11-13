@@ -15,13 +15,13 @@ using System.Reflection;
 
 namespace SysBot.Pokemon.Discord
 {
-    public class WTPSB : InteractionModuleBase<SocketInteractionContext>
+    public class WTPSB<T> : InteractionModuleBase<SocketInteractionContext> where T : PKM, new()
     {
         public static bool buttonpressed = false;
         public static bool tradepokemon = false;
         public static CancellationTokenSource WTPsource = new();
-        public static TradeQueueInfo<PB7> Info => SysCord<PB7>.Runner.Hub.Queues.Info;
-        public static PokeTradeHub<PB7> Hub = SysCord<PB7>.Runner.Hub;
+        public static TradeQueueInfo<T> Info => SysCord<T>.Runner.Hub.Queues.Info;
+        public static PokeTradeHub<T> Hub = SysCord<T>.Runner.Hub;
        // public readonly ExtraCommandUtil<PK8> Util = new();
       
         public static GameVersion Game = GameVersion.GG;
@@ -34,7 +34,7 @@ namespace SysBot.Pokemon.Discord
         public static async Task WhoseThatPokemon()
         {
            
-            var wtpchan = (ITextChannel)await SysCord<PB7>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid);
+            var wtpchan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid);
             await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Allow));
             await wtpchan.ModifyAsync(prop => prop.Name = wtpchan.Name.Replace("❌", "✅"));
             while (!WTPsource.IsCancellationRequested)
@@ -42,7 +42,8 @@ namespace SysBot.Pokemon.Discord
                 Stopwatch sw = new();
                 sw.Restart();
                 Random random = new Random();
-                var code = Hub.Config.Trade.GetRandomLGTradeCode();
+                var code = Info.GetRandomTradeCode();
+                var lgcode = Info.GetRandomLGTradeCode();
                 var Dex = GetPokedex();
                 randspecies = Dex[random.Next(Dex.Length)];
                 EmbedBuilder embed = new EmbedBuilder();
@@ -99,7 +100,7 @@ namespace SysBot.Pokemon.Discord
                         pk.Nature = natue;
                        
 
-                        await QueueHelper<PB7>.AddToQueueAsync(con, 0, usr.Username, RequestSignificance.None, (PB7)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,code).ConfigureAwait(false);
+                        await QueueHelper<T>.AddToQueueAsync(con, code, usr.Username, RequestSignificance.None, (T)pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
                     }
                     usr = null;
                     guess = "";
@@ -147,7 +148,7 @@ namespace SysBot.Pokemon.Discord
                 var species = SpeciesName.GetSpeciesNameGeneration(i, 2, 7);
                 var set = new ShowdownSet($"{species}{(i == (int)NidoranF ? "-F" : i == (int)NidoranM ? "-M" : "")}");
                 var template = AutoLegalityWrapper.GetTemplate(set);
-                var trainer = AutoLegalityWrapper.GetTrainerInfo<PB7>();
+                var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
                 var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                 _ = sav.GetLegal(template, out var result);
 

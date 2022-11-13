@@ -18,6 +18,7 @@ namespace SysBot.Pokemon.WinForms
 
         public BotController()
         {
+            
             InitializeComponent();
             var opt = (BotControlCommand[])Enum.GetValues(typeof(BotControlCommand));
 
@@ -88,28 +89,7 @@ namespace SysBot.Pokemon.WinForms
             var lastTime = bot.LastTime;
             if (!b.IsRunning)
             {
-                if (b.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
-                {
-
-                    var districhan = (ITextChannel)Discord.SysCord<PB7>._client.GetChannelAsync(890016056549195797).Result;
-                    if (districhan.Name.Contains("✅"))
-                    {
-                        var role = districhan.Guild.EveryoneRole;
-                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
-                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
-                        var offembed = new EmbedBuilder();
-                        offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Offline");
-                        await districhan.SendMessageAsync(embed: offembed.Build());
-                    }
-
-                    var wtpchan = (ITextChannel)Discord.SysCord<PB7>._client.GetChannelAsync(961071583747776532).Result;
-                    if (wtpchan.Name.Contains("✅"))
-                    {
-                        WTPSB.WTPsource.Cancel();
-                        await wtpchan.ModifyAsync(x => x.Name = wtpchan.Name.Replace("✅", "❌"));
-                        await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
-                    }
-                }
+                
                 PB_Lamp.BackColor = System.Drawing.Color.Transparent;
                 return;
             }
@@ -194,42 +174,7 @@ namespace SysBot.Pokemon.WinForms
                     WinFormsUtil.Alert($"{cmd} is not a command that can be sent to the Bot.");
                     return;
             }
-            if (cmd == BotControlCommand.Start)
-            {
-                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
-                {
-                    
-                    var districhan = (ITextChannel)await SysCord<PB7>._client.GetChannelAsync(890016056549195797);
-                    if (districhan.Name.Contains("❌"))
-                    {
-                        var role = districhan.Guild.EveryoneRole;
-                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
-                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
-                        var offembed = new EmbedBuilder();
-                        offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Online");
-                        await districhan.SendMessageAsync("<@&898901020678176839>", embed: offembed.Build());
-                    }
-                    if(SysCord<PB7>.Runner.Config.Discord.WTPbool)
-                        WTPSB.WhoseThatPokemon();
-                }
-            }
-            if (cmd == BotControlCommand.Stop)
-            {
-                if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
-                {
-                    
-                    var districhan = (ITextChannel)await SysCord<PB7>._client.GetChannelAsync(890016056549195797);
-                    if (districhan.Name.Contains("✅"))
-                    {
-                        var role = districhan.Guild.EveryoneRole;
-                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
-                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
-                        var offembed = new EmbedBuilder();
-                        offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Offline");
-                        await districhan.SendMessageAsync(embed: offembed.Build());
-                    }
-                }
-            }
+       
         }
 
         private BotSource<PokeBotState> GetBot()
