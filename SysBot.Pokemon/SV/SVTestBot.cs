@@ -54,17 +54,45 @@ namespace SysBot.Pokemon
         {
             while (!token.IsCancellationRequested)
             {
-                var off = await GetPointerAddress("[[[[[[[[[main+42DBC98]+B0]+0]+0]+30]+B8]+50]+10]+988]", token);
-                var pk1 = System.IO.File.ReadAllBytes(TradeSettings.filename);
-                var test = EntityFormat.GetFromBytes(pk1);
-                Log($"{test.Species}");
-                await Connection.WriteBytesAsync(test.EncryptedPartyData,(uint) off, token);
-
+                Config.IterateNextRoutine();
+                var task = Config.CurrentRoutineType switch
+                {
+                    PokeRoutineType.SVInject => inject1(token),
+                    PokeRoutineType.SVShinify => Shinify( token),
+         
+                };
+                try
+                {
+                    await task.ConfigureAwait(false);
+                }
+                catch (SocketException e)
+                {
+                    Log(e.Message);
+                    Connection.Reset();
+                }
                 return;
+
             }
         }
      
+        public async Task inject1(CancellationToken token)
+        {
+            var off = await GetPointerAddress("[[[[[[[[[main+42DBC98]+B0]+0]+0]+30]+B8]+50]+10]+988]", token);
+            var pk1 = System.IO.File.ReadAllBytes(TradeSettings.filename);
+            var test = EntityFormat.GetFromBytes(pk1);
+            Log($"{test.Species}");
+            await Connection.WriteBytesAsync(test.EncryptedPartyData, (uint)off, token);
 
+            return;
+        }
+        public async Task Shinify(CancellationToken token)
+        {
+            var off = await GetPointerAddress("[[[[[[[[[main+42DBC98]+B0]+0]+0]+30]+B8]+50]+10]+988]", token);
+            var pkb = await Connection.ReadBytesAsync((uint)off, 344, token);
+            var pksh = EntityFormat.GetFromBytes(pkb);
+            pksh.SetIsShiny(true);
+            await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off, token);
+        }
         public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
         {
             throw new NotImplementedException();
