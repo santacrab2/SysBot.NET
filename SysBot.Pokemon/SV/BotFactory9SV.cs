@@ -11,6 +11,7 @@ namespace SysBot.Pokemon
                 => new SVTestBot(Hub, cfg),
             PokeRoutineType.SVShinify
                 => new SVTestBot(Hub, cfg),
+            PokeRoutineType.SVCloneShinify => new SVTestBot(Hub,cfg),
 
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
 
