@@ -19,10 +19,9 @@ namespace SysBot.Pokemon
         public override bool SupportsRoutine(PokeRoutineType type) => type switch
         {
             PokeRoutineType.SVInject =>true,
-            PokeRoutineType.SVShinify
-                => true,
+            PokeRoutineType.SVShinify => true,
+            PokeRoutineType.SVCloneShinify => true,
 
-            PokeRoutineType.RemoteControl => true,
 
             _ => false,
         };
