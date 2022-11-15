@@ -93,6 +93,14 @@ namespace SysBot.Pokemon
             pksh.SetIsShiny(true);
             await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off, token);
         }
+        public async Task Cloneshinify(CancellationToken token)
+        {
+            var off = await GetPointerAddress("[[[[[[[[[main+42DBC98]+B0]+0]+0]+30]+B8]+50]+10]+988]", token);
+            var pkb = await Connection.ReadBytesAsync((uint)off, 344, token);
+            var pksh = EntityFormat.GetFromBytes(pkb);
+            pksh.SetIsShiny(true);
+            await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off+344, token);
+        }
         public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
         {
             throw new NotImplementedException();
