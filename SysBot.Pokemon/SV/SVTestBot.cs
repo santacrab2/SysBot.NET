@@ -59,6 +59,7 @@ namespace SysBot.Pokemon
                 {
                     PokeRoutineType.SVInject => inject1(token),
                     PokeRoutineType.SVShinify => Shinify( token),
+                    PokeRoutineType.SVCloneShinify => Cloneshinify(token),
          
                 };
                 try
