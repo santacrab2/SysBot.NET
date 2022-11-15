@@ -25,7 +25,9 @@ namespace SysBot.Pokemon
         public TimingSettings Timings { get; set; } = new();
 
         // Trade Bots
-
+        [Category(BotTrade)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public SVTestSettings test { get; set; } = new();
         [Category(BotTrade)]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public TradeSettings Trade { get; set; } = new();
