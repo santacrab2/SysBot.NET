@@ -72,6 +72,8 @@
         /// <summary> Resets Swords Of Justice via the camp method. </summary>
         EtumrepDump = 6009,
         OnlineLairBot = 6010,
+        SVInject = 6011,
+        SVShinify = 6012,
     }
 
     public static class PokeRoutineTypeExtensions

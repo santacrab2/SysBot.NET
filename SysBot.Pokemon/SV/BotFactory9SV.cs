@@ -7,7 +7,9 @@ namespace SysBot.Pokemon
     {
         public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PK8> Hub, PokeBotState cfg) => cfg.NextRoutineType switch
         {
-            PokeRoutineType.FlexTrade 
+            PokeRoutineType.SVInject 
+                => new SVTestBot(Hub, cfg),
+            PokeRoutineType.SVShinify
                 => new SVTestBot(Hub, cfg),
 
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
@@ -16,7 +18,8 @@ namespace SysBot.Pokemon
         };
         public override bool SupportsRoutine(PokeRoutineType type) => type switch
         {
-            PokeRoutineType.FlexTrade
+            PokeRoutineType.SVInject =>true,
+            PokeRoutineType.SVShinify
                 => true,
 
             PokeRoutineType.RemoteControl => true,
