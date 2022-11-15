@@ -26,7 +26,6 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.Dump
                 => true,
 
-            PokeRoutineType.RemoteControl => true,
 
             _ => false,
         };
