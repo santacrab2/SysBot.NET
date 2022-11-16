@@ -33,7 +33,10 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.LinkTrade
                 or PokeRoutineType.Clone
                 or PokeRoutineType.Dump
-                or PokeRoutineType.SeedCheck
+                or PokeRoutineType.SeedCheck 
+                or PokeRoutineType.RollingRaidSWSH
+                or PokeRoutineType.OnlineLairBot
+            
                 => true,
 
             PokeRoutineType.EggFetch => true,
