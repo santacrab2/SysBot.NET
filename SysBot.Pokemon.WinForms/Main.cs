@@ -17,7 +17,7 @@ namespace SysBot.Pokemon.WinForms
     {
         private readonly List<PokeBotState> Bots = new();
         private readonly IPokeBotRunner RunningEnvironment;
-        private readonly ProgramConfig Config;
+        public static ProgramConfig Config;
 
         public Main()
         {
@@ -45,6 +45,14 @@ namespace SysBot.Pokemon.WinForms
             RTB_Logs.MaxLength = 32_767; // character length
             LoadControls();
             Text = $"{Text} ({Config.Mode})";
+            Icon = Config.Mode switch
+            {
+                ProgramMode.LGPE => Properties.Resources.icon,
+                ProgramMode.SWSH => Properties.Resources.iconsw,
+                ProgramMode.LA => Properties.Resources.iconla,
+                ProgramMode.BDSP => Properties.Resources.icondp,
+                ProgramMode.SV => Properties.Resources.iconsv,
+            };
             Task.Run(BotMonitor);
 #if NETFRAMEWORK
             InitUtil.InitializeStubs(Config.Mode);
@@ -320,5 +328,7 @@ namespace SysBot.Pokemon.WinForms
         {
             TB_IP.Visible = CB_Protocol.SelectedIndex == 0;
         }
+
+   
     }
 }

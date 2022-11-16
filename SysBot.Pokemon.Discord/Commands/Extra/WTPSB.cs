@@ -24,7 +24,7 @@ namespace SysBot.Pokemon.Discord
         public static PokeTradeHub<T> Hub = SysCord<T>.Runner.Hub;
        // public readonly ExtraCommandUtil<PK8> Util = new();
       
-        public static GameVersion Game = GameVersion.GG;
+        
         public static string guess = "";
         public static SocketUser usr;
         public static ushort randspecies;
@@ -83,14 +83,16 @@ namespace SysBot.Pokemon.Discord
                     {
 
                         var set = new ShowdownSet($"{SpeciesName.GetSpeciesName(randspecies, 2)}\nShiny: Yes");
+                        var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
+                        var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                         var template = new RegenTemplate(set);
-                        var sav = SaveUtil.GetBlankSAV(GameVersion.GE, "Piplup");
                         var pk = sav.GetLegalFromSet(template, out var result);
                         if (!new LegalityAnalysis(pk).Valid)
                         {
                             set = new ShowdownSet(SpeciesName.GetSpeciesName(randspecies, 2));
+                            trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
+                            sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                             template = new RegenTemplate(set);
-                            sav = SaveUtil.GetBlankSAV(GameVersion.GE, "Piplup");
                             pk = sav.GetLegalFromSet(template, out result);
                         }
                         pk.Ball = BallApplicator.ApplyBallLegalByColor(pk);

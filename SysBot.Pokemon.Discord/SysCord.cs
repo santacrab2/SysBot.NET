@@ -308,54 +308,63 @@ namespace SysBot.Pokemon.Discord
                     state = active;
                     await _client.SetStatusAsync(state).ConfigureAwait(false);
                 }
-                if (!Runner.IsRunning)
+                if (Hub.Config.Discord.announcements)
                 {
-                    var bots = Runner.Bots;
-                    foreach (var bot in bots)
+                    if (!Runner.IsRunning)
                     {
-                        if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                        var bots = Runner.Bots;
+                        foreach (var bot in bots)
                         {
-                            var districhan = (ITextChannel)SysCord<T>._client.GetChannelAsync(890016056549195797).Result;
-                            if (districhan.Name.Contains("✅"))
+                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
                             {
-                                var role = districhan.Guild.EveryoneRole;
-                                await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
-                                await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
-                                var offembed = new EmbedBuilder();
-                                offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Offline");
-                                await districhan.SendMessageAsync(embed: offembed.Build());
-                            }
-
-                            var wtpchan = (ITextChannel)SysCord<T>._client.GetChannelAsync(961071583747776532).Result;
-                            if (wtpchan.Name.Contains("✅"))
-                            {
-                                WTPSB<T>.WTPsource.Cancel();
-                                await wtpchan.ModifyAsync(x => x.Name = wtpchan.Name.Replace("✅", "❌"));
-                                await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
+                                foreach (var channel in Hub.Config.Discord.announcementchannels)
+                                {
+                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(channel);
+                                    if (districhan.Name.Contains("✅"))
+                                    {
+                                        var role = districhan.Guild.EveryoneRole;
+                                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
+                                        var offembed = new EmbedBuilder();
+                                        var game = AutoLegalityWrapper.GetTrainerInfo<T>();
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Trade Bot is Offline");
+                                        await districhan.SendMessageAsync(embed: offembed.Build());
+                                    }
+                                }
+                                var wtpchan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid);
+                                if (wtpchan.Name.Contains("✅"))
+                                {
+                                    WTPSB<T>.WTPsource.Cancel();
+                                    await wtpchan.ModifyAsync(x => x.Name = wtpchan.Name.Replace("✅", "❌"));
+                                    await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    var bots = Runner.Bots;
-                    foreach (var bot in bots)
+                    else
                     {
-                        if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                        var bots = Runner.Bots;
+                        foreach (var bot in bots)
                         {
-
-                            var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(890016056549195797);
-                            if (districhan.Name.Contains("❌"))
+                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
                             {
-                                var role = districhan.Guild.EveryoneRole;
-                                await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
-                                await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
-                                var offembed = new EmbedBuilder();
-                                offembed.AddField("Articuno Bot Announcement", "LGPE Trade Bot is Online");
-                                await districhan.SendMessageAsync("<@&898901020678176839>", embed: offembed.Build());
+                                foreach (var chan in Hub.Config.Discord.announcementchannels)
+                                {
+                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
+                                    if (districhan.Name.Contains("❌"))
+                                    {
+                                        var role = districhan.Guild.EveryoneRole;
+                                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
+                                        var offembed = new EmbedBuilder();
+                                        var game = AutoLegalityWrapper.GetTrainerInfo<T>();
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Trade Bot is Online");
+                                        await districhan.SendMessageAsync("<@&898901020678176839>", embed: offembed.Build());
 
-                                if (SysCord<T>.Runner.Config.Discord.WTPbool)
-                                    WTPSB<T>.WhoseThatPokemon();
+                                        if (SysCord<T>.Runner.Config.Discord.WTPbool)
+                                            WTPSB<T>.WhoseThatPokemon();
+                                    }
+                                }
                             }
                         }
                     }

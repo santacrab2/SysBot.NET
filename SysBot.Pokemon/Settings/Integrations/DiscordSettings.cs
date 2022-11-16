@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
@@ -95,5 +96,9 @@ namespace SysBot.Pokemon
         public ulong WTPchannelid { get; set; } = 0;
         [Category(Operation), Description("wtp")]
         public bool WTPbool { get; set; } = true;
+        [Category(Operation)]
+        public bool announcements { get; set; } = false;
+        [Category(Channels)]
+        public List<ulong> announcementchannels { get; set; } = new();
     }
 }

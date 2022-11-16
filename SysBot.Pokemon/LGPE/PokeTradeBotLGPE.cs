@@ -62,7 +62,7 @@ namespace SysBot.Pokemon
                 Log(e.Message);
             }
 
-            Log($"Ending {nameof(PokeTradeBotLA)} loop.");
+            Log($"Ending {nameof(PokeTradeBotLGPE)} loop.");
             await HardStop().ConfigureAwait(false);
         }
 
