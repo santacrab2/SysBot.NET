@@ -74,7 +74,9 @@
         OnlineLairBot = 6010,
         SVInject = 6011,
         SVShinify = 6012,
-        SVCloneShinify = 6013
+        SVCloneShinify = 6013,
+        OverWorldRNG = 6014,
+
     }
 
     public static class PokeRoutineTypeExtensions

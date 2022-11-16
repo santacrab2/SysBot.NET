@@ -18,8 +18,50 @@ namespace SysBot.Pokemon
         public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;
 
         [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
-        public bool ScreenOff { get; set; } = false;
 
+        public bool ScreenOff { get; set; } = false;
+    
+        [Category(Encounter), Description("Which Direction should the bot move the player at the designated frame advance target")]
+        public MovementDirection MoveDirection { get; set; }
+        [Category(Encounter), Description("TID 5 digit")]
+        public uint TID { get; set; }
+        [Category(Encounter), Description("SID 5 digit")]
+        public uint SID { get; set; }
+        [Category(Encounter), Description("shiny charm?")]
+        public bool shinycharm { get; set; }
+        [Category(Encounter), Description("mark charm?")]
+        public bool markcharm { get; set; }
+        [Category(Encounter), Description("encounter slot min")]
+        public uint slotmin { get; set; }
+        [Category(Encounter), Description("encounter slot max")]
+        public uint slotmax { get; set; }
+        [Category(Encounter)]
+        public uint levelmin { get; set; }
+        [Category(Encounter)]
+        public uint levelmax { get; set; }
+        [Category(Encounter), Description("egg moves count")]
+        public uint EMs { get; set; }
+        [Category(Encounter)]
+        public uint flawlessivs { get; set; }
+        [Category(Encounter)]
+        public bool weather { get; set; }
+        [Category(Encounter)]
+        public bool helditem { get; set; }
+
+        [Category(Encounter)]
+        public bool Static { get; set; }
+        [Category(Encounter)]
+        public bool fishing { get; set; }
+        [Category(Encounter)]
+        public bool hidden { get; set; }
+        [Category(Encounter)]
+        public aura theaura { get; set; }
+        [Category(Encounter)]
+        public ulong onedayskip { get; set; }
+        [Category(Encounter), Description("how many frames before the target to start moving")]
+        public ulong movementdelay { get; set; }
+        [Category(Encounter)]
+        public double moveduration { get; set; }
         private int _completedWild;
         private int _completedLegend;
 
@@ -51,6 +93,25 @@ namespace SysBot.Pokemon
                 yield return $"Wild Encounters: {CompletedEncounters}";
             if (CompletedLegends != 0)
                 yield return $"Legendary Encounters: {CompletedLegends}";
+        }
+        public enum MovementDirection
+        {
+            up,
+            down,
+            left,
+            right,
+            upleft,
+            upright,
+            downleft,
+            downright,
+
+
+        }
+        public enum aura
+        {
+            Ignore,
+            None,
+            Brilliant
         }
     }
 }
