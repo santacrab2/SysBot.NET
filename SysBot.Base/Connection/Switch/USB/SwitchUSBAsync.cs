@@ -123,5 +123,15 @@ namespace SysBot.Base
                 return GetScreenshot();
             }, token);
         }
+
+        public Task ResetTime(CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DaySkip(CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -14,8 +14,8 @@ namespace SysBot.Pokemon
         protected readonly PokeTradeHub<PK8> Hub;
         private readonly IDumper DumpSetting;
         private readonly EncounterSettings Settings;
-        private readonly int[] DesiredMinIVs;
-        private readonly int[] DesiredMaxIVs;
+        private readonly uint[] DesiredMinIVs;
+        private readonly uint[] DesiredMaxIVs;
         protected readonly byte[] BattleMenuReady = { 0, 0, 0, 255 };
         public ICountSettings Counts => Settings;
         public readonly IReadOnlyList<string> UnwantedMarks;

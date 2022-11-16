@@ -51,5 +51,6 @@ namespace SysBot.Base
         public abstract void SoftStop();
         public abstract Task HardStop();
         public abstract Task SetController(ControllerType Controller,CancellationToken token);
+      
     }
 }

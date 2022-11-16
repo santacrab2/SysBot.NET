@@ -13,8 +13,8 @@ namespace SysBot.Pokemon
         private readonly PokeTradeHub<PK8> Hub;
         private readonly FossilSettings Settings;
         private readonly IDumper DumpSetting;
-        private readonly int[] DesiredMinIVs;
-        private readonly int[] DesiredMaxIVs;
+        private readonly uint[] DesiredMinIVs;
+        private readonly uint[] DesiredMaxIVs;
         public ICountSettings Counts => Settings;
 
         public FossilBot(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg)

@@ -13,8 +13,8 @@ namespace SysBot.Pokemon
     {
         private readonly PokeTradeHub<PK8> Hub;
         private readonly IDumper DumpSetting;
-        private readonly int[] DesiredMinIVs;
-        private readonly int[] DesiredMaxIVs;
+        private readonly uint[] DesiredMinIVs;
+        private readonly uint[] DesiredMaxIVs;
         private readonly EggSettings Settings;
         public ICountSettings Counts => Settings;
 

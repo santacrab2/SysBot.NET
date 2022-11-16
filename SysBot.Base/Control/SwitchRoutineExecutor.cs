@@ -13,7 +13,7 @@ namespace SysBot.Base
 
         protected SwitchRoutineExecutor(IConsoleBotManaged<IConsoleConnection, IConsoleConnectionAsync> cfg) : base(cfg)
         {
-            UseCRLF = cfg.GetInnerConfig() is ISwitchConnectionConfig {UseCRLF: true};
+            UseCRLF = cfg.GetInnerConfig() is ISwitchConnectionConfig { UseCRLF: true };
             if (Connection is not ISwitchConnectionAsync connect)
                 throw new System.Exception("Not a valid switch connection");
             SwitchConnection = connect;
@@ -55,8 +55,8 @@ namespace SysBot.Base
         {
             await Connection.SendAsync(SwitchCommand.DetachController(UseCRLF), token).ConfigureAwait(false);
         }
-        
-        public override async Task SetController(ControllerType ControllerType,CancellationToken token)
+
+        public override async Task SetController(ControllerType ControllerType, CancellationToken token)
         {
             var cmd = SwitchCommand.Configure(SwitchConfigureParameter.controllerType, (int)ControllerType);
             await Connection.SendAsync(cmd, token).ConfigureAwait(false);
@@ -103,15 +103,15 @@ namespace SysBot.Base
     }
     public enum ControllerType
     {
-       JoyRight1 = 1,   ///< Joy-Con right controller.
+        JoyRight1 = 1,   ///< Joy-Con right controller.
         JoyLeft2 = 2,   ///< Joy-Con left controller.
         ProController = 3,   ///< Pro Controller and Gc controller.
         JoyLeft4 = 4,    ///< Joy-Con left controller.
         JoyRight5 = 5,   ///< Joy-Con right controller.
         ProController2 = 6,   ///< Pro Controller and GC Controller
-       FamicomLeft = 7,   ///< Famicom left controller.
-       FamicomRight = 8,    ///< Famicom right controller (with microphone).
-       NESLeft = 9,    ///< NES left controller.
+        FamicomLeft = 7,   ///< Famicom left controller.
+        FamicomRight = 8,    ///< Famicom right controller (with microphone).
+        NESLeft = 9,    ///< NES left controller.
         NESRight = 10,   ///< NES right controller.
         SNES = 11,   ///< SNES controller
         PokeBallPlus = 12,  ///< Poké Ball Plus controller.

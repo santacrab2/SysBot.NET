@@ -47,7 +47,7 @@ namespace SysBot.Pokemon
         [Category(StopConditions), Description("If not empty, the provided string will be prepended to the result found log message to Echo alerts for whomever you specify. For Discord, use <@userIDnumber> to mention.")]
         public string MatchFoundEchoMention { get; set; } = string.Empty;
 
-        public static bool EncounterFound<T>(T pk, int[] targetminIVs, int[] targetmaxIVs, StopConditionSettings settings, IReadOnlyList<string>? marklist) where T : PKM
+        public static bool EncounterFound<T>(T pk, uint[] targetminIVs, uint[] targetmaxIVs, StopConditionSettings settings, IReadOnlyList<string>? marklist) where T : PKM
         {
             // Match Nature and Species if they were specified.
             if (settings.StopOnSpecies != Species.None && settings.StopOnSpecies != (Species)pk.Species)
@@ -98,15 +98,15 @@ namespace SysBot.Pokemon
             return true;
         }
 
-        public static void InitializeTargetIVs(PokeTradeHubConfig config, out int[] min, out int[] max)
+        public static void InitializeTargetIVs(PokeTradeHubConfig config, out uint[] min, out uint[] max)
         {
             min = ReadTargetIVs(config.StopConditions, true);
             max = ReadTargetIVs(config.StopConditions, false);
         }
 
-        private static int[] ReadTargetIVs(StopConditionSettings settings, bool min)
+        private static uint[] ReadTargetIVs(StopConditionSettings settings, bool min)
         {
-            int[] targetIVs = new int[6];
+            uint[] targetIVs = new uint[6];
             char[] split = { '/' };
 
             string[] splitIVs = min
@@ -120,13 +120,13 @@ namespace SysBot.Pokemon
                 if (i < splitIVs.Length)
                 {
                     var str = splitIVs[i];
-                    if (int.TryParse(str, out var val))
+                    if (uint.TryParse(str, out var val))
                     {
                         targetIVs[i] = val;
                         continue;
                     }
                 }
-                targetIVs[i] = min ? 0 : 31;
+                targetIVs[i] = (uint)(min ? 0 : 31);
             }
             return targetIVs;
         }

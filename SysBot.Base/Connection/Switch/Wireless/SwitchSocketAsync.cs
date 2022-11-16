@@ -250,5 +250,8 @@ namespace SysBot.Base
             var result = data.SliceSafe(0, received);
             return Decoder.ConvertHexByteStringToBytes(result);
         }
+        public async Task DaySkip(CancellationToken token) => await SendAsync(SwitchCommand.DaySkip(), token).ConfigureAwait(false);
+        public async Task ResetTime(CancellationToken token) => await SendAsync(SwitchCommand.ResetTime(), token).ConfigureAwait(false);
+
     }
 }

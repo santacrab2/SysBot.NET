@@ -19,8 +19,8 @@ namespace SysBot.Pokemon
         private readonly LairBotUtil.PokeMoveInfo.MoveInfoRoot MoveInfo;
         private readonly LairBotUtil LairUtils;
         private readonly IDumper DumpSetting;
-        private readonly int[] DesiredMinIVs;
-        private readonly int[] DesiredMaxIVs;
+        private readonly uint[] DesiredMinIVs;
+        private readonly uint[] DesiredMaxIVs;
         private byte[] OtherItemsPouch = { 0 };
         private byte[] BallPouch = { 0 };
         private ulong MainNsoBase;
