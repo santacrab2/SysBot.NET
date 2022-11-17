@@ -23,6 +23,8 @@ namespace SysBot.Pokemon
             PokeRoutineType.Dogbot => new EncounterBotDog(cfg, Hub),
             PokeRoutineType.OverWorldRNG => new OverworldRNG(cfg, Hub),
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
+            PokeRoutineType.RollingRaidSWSH => new RollingRaidBot(cfg, Hub),
+            PokeRoutineType.OnlineLairBot => new onlineLairBot(cfg, Hub),
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
 
@@ -36,18 +38,15 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.SeedCheck 
                 or PokeRoutineType.RollingRaidSWSH
                 or PokeRoutineType.OnlineLairBot
-            
-                => true,
-
-            PokeRoutineType.EggFetch => true,
-            PokeRoutineType.FossilBot => true,
-            PokeRoutineType.RaidBotSWSH => true,
-            PokeRoutineType.EncounterLine => true,
-            PokeRoutineType.Reset => true,
-            PokeRoutineType.Dogbot => true,
-            PokeRoutineType.OverWorldRNG => true,
-            PokeRoutineType.RemoteControl => true,
-
+                or PokeRoutineType.EggFetch
+                or PokeRoutineType.FossilBot
+            or PokeRoutineType.RaidBotSWSH
+            or PokeRoutineType.EncounterLine
+            or PokeRoutineType.Reset
+            or PokeRoutineType.Dogbot
+            or PokeRoutineType.OverWorldRNG
+            or PokeRoutineType.RemoteControl
+              => true,
             _ => false,
         };
     }

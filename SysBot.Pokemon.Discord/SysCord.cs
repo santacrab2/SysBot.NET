@@ -315,7 +315,7 @@ namespace SysBot.Pokemon.Discord
                         var bots = Runner.Bots;
                         foreach (var bot in bots)
                         {
-                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                            if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.FlexTrade)
                             {
                                 foreach (var channel in Hub.Config.Discord.announcementchannels)
                                 {
@@ -339,6 +339,24 @@ namespace SysBot.Pokemon.Discord
                                     await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
                                 }
                             }
+                            if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
+                            {
+                                foreach (var chan in Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels)
+                                {
+
+                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
+                                    if (districhan.Name.Contains("✅"))
+                                    {
+
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
+                                        var offembed = new EmbedBuilder();
+                                        var game = AutoLegalityWrapper.GetTrainerInfo<T>();
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Raid Bot is Offline");
+                                        await districhan.SendMessageAsync( embed: offembed.Build());
+                                    }
+                                }
+                                
+                            }
                         }
                     }
                     else
@@ -346,15 +364,14 @@ namespace SysBot.Pokemon.Discord
                         var bots = Runner.Bots;
                         foreach (var bot in bots)
                         {
-                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                            if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.FlexTrade)
                             {
                                 foreach (var chan in Hub.Config.Discord.announcementchannels)
                                 {
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
                                     if (districhan.Name.Contains("❌"))
                                     {
-                                        var role = districhan.Guild.EveryoneRole;
-                                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
+                                    
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
@@ -366,10 +383,27 @@ namespace SysBot.Pokemon.Discord
                                     }
                                 }
                             }
+                            if(bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
+                            {
+                                foreach(var chan in Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels)
+                                {
+                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
+                                    if (districhan.Name.Contains("❌"))
+                                    {
+                                        
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
+                                        var offembed = new EmbedBuilder();
+                                        var game = AutoLegalityWrapper.GetTrainerInfo<T>();
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Raid Bot is Online");
+                                        await districhan.SendMessageAsync("<@&872641196990795826>", embed: offembed.Build());
+                                    }
+
+                                }
+                            }
                         }
                     }
                 }
-                await Task.Delay(gap, token).ConfigureAwait(false);
+                await Task.Delay(20_000, token).ConfigureAwait(false);
             }
         }
 
