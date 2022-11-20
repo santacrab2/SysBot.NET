@@ -8,10 +8,9 @@ namespace SysBot.Pokemon
         public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PK8> Hub, PokeBotState cfg) => cfg.NextRoutineType switch
         {
             PokeRoutineType.SVInject 
-                => new SVTestBot(Hub, cfg),
-            PokeRoutineType.SVShinify
-                => new SVTestBot(Hub, cfg),
-            PokeRoutineType.SVCloneShinify => new SVTestBot(Hub,cfg),
+            or PokeRoutineType.SVShinify
+            or PokeRoutineType.SVCloneShinify
+            or PokeRoutineType.SVdecrypt => new SVTestBot(Hub, cfg),
 
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
 
@@ -19,9 +18,10 @@ namespace SysBot.Pokemon
         };
         public override bool SupportsRoutine(PokeRoutineType type) => type switch
         {
-            PokeRoutineType.SVInject =>true,
-            PokeRoutineType.SVShinify => true,
-            PokeRoutineType.SVCloneShinify => true,
+            PokeRoutineType.SVInject 
+            or PokeRoutineType.SVShinify 
+            or PokeRoutineType.SVCloneShinify
+            or PokeRoutineType.SVdecrypt => true,
 
 
             _ => false,

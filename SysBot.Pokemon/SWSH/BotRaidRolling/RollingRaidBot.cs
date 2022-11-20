@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Pokemon.PokeDataOffsets;
+using PKHeX.Core.AutoMod;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
@@ -28,7 +30,7 @@ namespace SysBot.Pokemon
 
         public static CancellationTokenSource RaidEmbedSource = new();
         public static bool RollingRaidEmbedsInitialized;
-        public static ConcurrentQueue<(PK8, string, string)> EmbedQueue = new();
+        public static List<EmbedInfo> EmbedQueue = new();
 
         private int encounterCount;
         private bool deleteFriends;
@@ -243,7 +245,7 @@ namespace SysBot.Pokemon
             if (RollingRaidEmbedsInitialized)
             {
                 info.EmbedName = string.IsNullOrEmpty(Settings.RaidDescription) ? $"{RaidInfo.TrainerInfo.OT}'s Raid" : raiddescmsg;
-                EmbedQueue.Enqueue((info.RaidPk, info.EmbedString, info.EmbedName));
+                EmbedQueue.Add(info);
             }
 
             // Invite others and wait
@@ -779,7 +781,11 @@ namespace SysBot.Pokemon
             ivString = SeedSearchUtil.GetCurrentFrameInfo(RaidInfo, flawless, RaidInfo.Den.Seed, out uint shinyType);
 
             var shiny = shinyType == 1 ? "\nShiny: Star" : shinyType == 2 ? "\nShiny: Square" : "";
-            raidPk = (PK8)AutoLegalityWrapper.GetTrainerInfo<PK8>().GetLegal(AutoLegalityWrapper.GetTemplate(new ShowdownSet($"{speciesStr}{formStr}{(gmax ? "-Gmax" : "")}{shiny}")), out _);
+            var trainer = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+            var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+            var showdown = new ShowdownSet($"{speciesStr}{formStr}{(gmax ? "-Gmax" : "")}{shiny}");
+            var regen = new RegenTemplate(showdown);
+            raidPk = (PK8)sav.GetLegal(regen, out _);
 
             bool formLock = Settings.FormLock == string.Empty || formStr.ToLower() == Settings.FormLock.ToLower();
             raidBossString = $"{speciesStr}{formStr}{(gmax ? "-Gmax" : "")}";

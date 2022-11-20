@@ -76,6 +76,7 @@
         SVShinify = 6012,
         SVCloneShinify = 6013,
         OverWorldRNG = 6014,
+        SVdecrypt = 6015,
 
     }
 

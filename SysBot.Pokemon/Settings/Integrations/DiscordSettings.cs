@@ -100,5 +100,7 @@ namespace SysBot.Pokemon
         public bool announcements { get; set; } = false;
         [Category(Channels)]
         public List<ulong> announcementchannels { get; set; } = new();
+        [Category(Channels)]
+        public ulong pingroleid { get; set; } = 0;
     }
 }

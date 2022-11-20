@@ -376,7 +376,7 @@ namespace SysBot.Pokemon.Discord
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Trade Bot is Online");
-                                        await districhan.SendMessageAsync("<@&898901020678176839>", embed: offembed.Build());
+                                        await districhan.SendMessageAsync($"<@&{Hub.Config.Discord.pingroleid}>", embed: offembed.Build());
 
                                         if (SysCord<T>.Runner.Config.Discord.WTPbool)
                                             WTPSB<T>.WhoseThatPokemon();

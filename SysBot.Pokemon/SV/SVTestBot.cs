@@ -60,6 +60,7 @@ namespace SysBot.Pokemon
                     PokeRoutineType.SVInject => inject1(token),
                     PokeRoutineType.SVShinify => Shinify( token),
                     PokeRoutineType.SVCloneShinify => Cloneshinify(token),
+                    PokeRoutineType.SVdecrypt => decryptify(token),
          
                 };
                 try
@@ -101,6 +102,12 @@ namespace SysBot.Pokemon
             var pksh = EntityFormat.GetFromBytes(pkb);
             pksh.SetIsShiny(true);
             await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off+344, token);
+        }
+        public async Task decryptify(CancellationToken token)
+        {
+            var file = System.IO.File.ReadAllBytes(Hub.Config.test.filename);
+            var dec = SwishCrypto.Decrypt(file);
+            System.IO.File.WriteAllBytes($"{System.IO.Directory.GetCurrentDirectory()}/decryptfile", dec[0].Data);
         }
         public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
         {

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Threading.Channels;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -91,10 +93,11 @@ namespace SysBot.Pokemon.Discord
             LairBotUtil.EmbedSource = new();
         }
 
-        [SlashCommand("raidembed", "Initialize posting of RollingRaidBot embeds to specified Discord channels.")]
+        [SlashCommand("raidembedstart", "Initialize posting of RollingRaidBot embeds to specified Discord channels.")]
   
         public async Task InitializeRaidEmbeds()
         {
+            RollingRaidBot.RollingRaidEmbedsInitialized = true;
             await DeferAsync(ephemeral:true);
             if (RollingRaidSettings.RollingRaidEmbedChannels.Count == 0)
             {
@@ -110,39 +113,34 @@ namespace SysBot.Pokemon.Discord
                 return;
             }
 
-            await FollowupAsync(!RollingRaidBot.RollingRaidEmbedsInitialized ? "RollingRaid Embed task started!" : "RollingRaid Embed task stopped!",ephemeral:true).ConfigureAwait(false);
-            if (RollingRaidBot.RollingRaidEmbedsInitialized)
-                RollingRaidBot.RaidEmbedSource.Cancel();
-            else _ = Task.Run(async () => await RollingRaidEmbedLoop(RollingRaidSettings.RollingRaidEmbedChannels, RollingRaidBot.RaidEmbedSource.Token));
-            RollingRaidBot.RollingRaidEmbedsInitialized ^= true;
-        }
-
-        private async Task RollingRaidEmbedLoop(List<ulong> channels, CancellationToken token)
-        {
+            await FollowupAsync("RollingRaid Embed task started!",ephemeral:true).ConfigureAwait(false);
             while (!RollingRaidBot.RaidEmbedSource.IsCancellationRequested)
             {
-                if (RollingRaidBot.EmbedQueue.TryDequeue(out var embedInfo))
+                if (RollingRaidBot.EmbedQueue.Count != 0)
                 {
-                    var url = TradeExtensions<PK8>.PokeImg(embedInfo.Item1, embedInfo.Item1.CanGigantamax, false);
+                    var embedInfo = RollingRaidBot.EmbedQueue[0];
+                    var url = TradeExtensions<PK8>.PokeImg(embedInfo.RaidPk, embedInfo.RaidPk.CanGigantamax, false);
                     var embed = new EmbedBuilder
                     {
-                        Title = embedInfo.Item3,
-                        Description = embedInfo.Item2,
+                        Title = embedInfo.EmbedName,
+                        Description = embedInfo.EmbedString,
                         Color = Color.Blue,
                         ThumbnailUrl = url,
                     };
 
-                    foreach (var guild in channels)
+                    foreach (var chan in RollingRaidSettings.RollingRaidEmbedChannels)
                     {
-                        var ch = (ITextChannel)await SysCord<PK8>._client.GetChannelAsync(guild);
-                        await ch.SendMessageAsync( embed: embed.Build()).ConfigureAwait(false);
+                        var ch = (ITextChannel)await SysCord<PK8>._client.GetChannelAsync(chan);
+                     
+                        await ch.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
                     }
+                    RollingRaidBot.EmbedQueue = new();
                 }
-                else await Task.Delay(0_500, token).ConfigureAwait(false);
+                else await Task.Delay(0_500, RollingRaidBot.RaidEmbedSource.Token).ConfigureAwait(false);
             }
-            RollingRaidBot.RollingRaidEmbedsInitialized = false;
-            RollingRaidBot.RaidEmbedSource = new();
         }
+
+       
 
        
     }
