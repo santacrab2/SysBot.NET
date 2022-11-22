@@ -371,7 +371,8 @@ namespace SysBot.Pokemon.Discord
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
                                     if (districhan.Name.Contains("❌"))
                                     {
-                                    
+                                        var role = districhan.Guild.EveryoneRole;
+                                        await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();

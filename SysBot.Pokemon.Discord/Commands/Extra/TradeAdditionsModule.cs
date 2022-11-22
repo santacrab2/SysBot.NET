@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Threading.Channels;
+using NLog.Fluent;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -119,21 +120,21 @@ namespace SysBot.Pokemon.Discord
                 if (RollingRaidBot.EmbedQueue.Count != 0)
                 {
                     var embedInfo = RollingRaidBot.EmbedQueue[0];
-                    var url = TradeExtensions<PK8>.PokeImg(embedInfo.RaidPk, embedInfo.RaidPk.CanGigantamax, false);
+                  
+                    var url = TradeExtensions<T>.PokeImg(embedInfo.RaidPk, embedInfo.RaidPk.CanGigantamax, false);
                     var embed = new EmbedBuilder
                     {
                         Title = embedInfo.EmbedName,
                         Description = embedInfo.EmbedString,
                         Color = Color.Blue,
-                        ThumbnailUrl = url,
+                        ImageUrl = url,
                     };
 
-                    foreach (var chan in RollingRaidSettings.RollingRaidEmbedChannels)
-                    {
-                        var ch = (ITextChannel)await SysCord<PK8>._client.GetChannelAsync(chan);
+                  
+                        var ch = (ITextChannel)SysCord<T>._client.GetChannel(872611744521007155);
                      
                         await ch.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
-                    }
+                    
                     RollingRaidBot.EmbedQueue = new();
                 }
                 else await Task.Delay(0_500, RollingRaidBot.RaidEmbedSource.Token).ConfigureAwait(false);

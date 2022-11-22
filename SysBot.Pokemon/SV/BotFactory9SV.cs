@@ -10,7 +10,8 @@ namespace SysBot.Pokemon
             PokeRoutineType.SVInject 
             or PokeRoutineType.SVShinify
             or PokeRoutineType.SVCloneShinify
-            or PokeRoutineType.SVdecrypt => new SVTestBot(Hub, cfg),
+            or PokeRoutineType.svdump
+            => new SVTestBot(Hub, cfg),
 
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
 
@@ -21,7 +22,8 @@ namespace SysBot.Pokemon
             PokeRoutineType.SVInject 
             or PokeRoutineType.SVShinify 
             or PokeRoutineType.SVCloneShinify
-            or PokeRoutineType.SVdecrypt => true,
+            or PokeRoutineType.svdump
+             => true,
 
 
             _ => false,

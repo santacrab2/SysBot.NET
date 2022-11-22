@@ -2,6 +2,7 @@
 using PKHeX.Core.Searching;
 using SysBot.Base;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
@@ -58,11 +59,12 @@ namespace SysBot.Pokemon
                 var task = Config.CurrentRoutineType switch
                 {
                     PokeRoutineType.SVInject => inject1(token),
-                    PokeRoutineType.SVShinify => Shinify( token),
+                    PokeRoutineType.SVShinify => Shinify(token),
                     PokeRoutineType.SVCloneShinify => Cloneshinify(token),
-                    PokeRoutineType.SVdecrypt => decryptify(token),
-         
-                };
+                    PokeRoutineType.svdump => Dumps1(token)
+
+
+                } ;
                 try
                 {
                     await task.ConfigureAwait(false);
@@ -84,7 +86,7 @@ namespace SysBot.Pokemon
             var test = EntityFormat.GetFromBytes(pk1);
             Log($"{test.Species}");
             await Connection.WriteBytesAsync(test.EncryptedPartyData, (uint)off, token);
-
+            
             return;
         }
         public async Task Shinify(CancellationToken token)
@@ -93,7 +95,7 @@ namespace SysBot.Pokemon
             var pkb = await Connection.ReadBytesAsync((uint)off, 344, token);
             var pksh = EntityFormat.GetFromBytes(pkb);
             pksh.SetIsShiny(true);
-            await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off, token);
+            await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off, token); 
         }
         public async Task Cloneshinify(CancellationToken token)
         {
@@ -103,12 +105,14 @@ namespace SysBot.Pokemon
             pksh.SetIsShiny(true);
             await Connection.WriteBytesAsync(pksh.EncryptedPartyData, (uint)off+344, token);
         }
-        public async Task decryptify(CancellationToken token)
+        public async Task Dumps1(CancellationToken token)
         {
-            var file = System.IO.File.ReadAllBytes(Hub.Config.test.filename);
-            var dec = SwishCrypto.Decrypt(file);
-            System.IO.File.WriteAllBytes($"{System.IO.Directory.GetCurrentDirectory()}/decryptfile", dec[0].Data);
+            var off = await GetPointerAddress("[[[[[[[[[main+42DBC98]+B0]+0]+0]+30]+B8]+50]+10]+988]", token);
+            var pkb = await Connection.ReadBytesAsync((uint)off, 344, token);
+            var pksh = EntityFormat.GetFromBytes(pkb);
+            File.WriteAllBytes($"{Directory.GetCurrentDirectory()}/dump.pk9", pksh.DecryptedPartyData);
         }
+
         public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
         {
             throw new NotImplementedException();

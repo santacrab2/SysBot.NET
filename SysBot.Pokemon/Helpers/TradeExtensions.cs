@@ -308,9 +308,9 @@ namespace SysBot.Pokemon
                 baseLink = "https://raw.githubusercontent.com/Koi-3088/HomeImages/master/512x512/poke_capture_0001_000_mf_n_00000000_f_n.png".Split('_');
             else baseLink = "https://raw.githubusercontent.com/Koi-3088/HomeImages/master/128x128/poke_capture_0001_000_mf_n_00000000_f_n.png".Split('_');
 
-            if (Enum.IsDefined(typeof(GenderDependent), pkm.Species) && !canGmax && pkm.Form == 0)
+            if (Enum.IsDefined(typeof(GenderDependent), (int)pkm.Species) && !canGmax && pkm.Form == 0)
             {
-                if (pkm.Gender == 0 && pkm.Species != (int)Species.Torchic)
+                if (pkm.Gender == 0 && pkm.Species != (ushort)Species.Torchic)
                     md = true;
                 else fd = true;
             }
@@ -323,11 +323,11 @@ namespace SysBot.Pokemon
 
             };
 
-            baseLink[2] = pkm.Species < 10 ? $"000{pkm.Species}" : pkm.Species < 100 && pkm.Species > 9 ? $"00{pkm.Species}" : $"0{pkm.Species}";
+            baseLink[2] = pkm.Species < 10 ? $"000{(int)pkm.Species}" : pkm.Species < 100 && pkm.Species > 9 ? $"00{(int)pkm.Species}" : $"0{(int)pkm.Species}";
             baseLink[3] = pkm.Form < 10 ? $"00{form}" : $"0{form}";
             baseLink[4] = pkm.PersonalInfo.OnlyFemale ? "fo" : pkm.PersonalInfo.OnlyMale ? "mo" : pkm.PersonalInfo.Genderless ? "uk" : fd ? "fd" : md ? "md" : "mf";
             baseLink[5] = canGmax ? "g" : "n";
-            baseLink[6] = "0000000" + (pkm.Species == (int)Species.Alcremie && !canGmax ? pkm.Data[0xE4] : 0);
+            baseLink[6] = "0000000" + (pkm.Species == (ushort)Species.Alcremie && !canGmax ? pkm.Data[0xE4] : 0);
             baseLink[8] = pkm.IsShiny ? "r.png" : "n.png";
             return string.Join("_", baseLink);
         }

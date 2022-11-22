@@ -126,6 +126,10 @@ namespace SysBot.Pokemon
                 var (detail, priority) = GetTradeData(type);
                 if (detail is null)
                 {
+                    await SetCurrentBox(0, token).ConfigureAwait(false);
+                    var pkm = Hub.Ledy.Pool.GetRandomSurprise();
+                    await EnsureConnectedToYComm(Hub.Config, token).ConfigureAwait(false);
+                    await PerformSurpriseTrade(sav, pkm, token).ConfigureAwait(false);
                     await WaitForQueueStep(waitCounter++, token).ConfigureAwait(false);
                     continue;
                 }
