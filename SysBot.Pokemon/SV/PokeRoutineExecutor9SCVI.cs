@@ -44,7 +44,7 @@ namespace SysBot.Pokemon
                 pkm.Trade(sav, Date.Day, Date.Month, Date.Year);
                 pkm.RefreshChecksum();
             }
-            var (valid, offset) = await ValidatePointerAll(Offsets.BoxStartPokemonPointer, token);
+            var (valid, offset) = await ValidatePointerAll(BoxStartPokemonPointer, token);
             var ofs = GetBoxSlotOffset(offset,box, slot);
             pkm.ResetPartyStats();
             await Connection.WriteBytesAsync(pkm.EncryptedPartyData, ofs, token).ConfigureAwait(false);
