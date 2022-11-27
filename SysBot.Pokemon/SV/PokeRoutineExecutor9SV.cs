@@ -126,7 +126,11 @@ namespace SysBot.Pokemon
 
         public async Task CleanExit(CancellationToken token)
         {
-            await SetScreen(ScreenState.On, token).ConfigureAwait(false);
+            if (settings.ScreenOff)
+            {
+                Log("Turning on screen.");
+                await SetScreen(ScreenState.On, token).ConfigureAwait(false);
+            }
             Log("Detaching controllers on routine exit.");
             await DetachController(token).ConfigureAwait(false);
         }
