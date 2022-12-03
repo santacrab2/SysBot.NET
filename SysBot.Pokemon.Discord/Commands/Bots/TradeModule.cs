@@ -18,7 +18,7 @@ namespace SysBot.Pokemon.Discord
 
 
         [SlashCommand("trade", "Receive a Pokémon From Showdown text or File")]
-        [RequireQueueRole(nameof(DiscordManager.RolesTrade))]
+   
         public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment PKM = default)
         {
             await DeferAsync();
@@ -54,13 +54,14 @@ namespace SysBot.Pokemon.Discord
                         var reason = result == "Timeout" ? $"That {spec} set took too long to generate." : $"I wasn't able to create a {spec} from that set.";
                         var imsg = $"Oops! {reason}";
                         if (result == "Failed")
-                            imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)}";
+                            imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)} game: {(GameVersion)pkm.Version}";
                         await FollowupAsync(imsg, ephemeral: true).ConfigureAwait(false);
                         return;
                     }
                     pk.ResetPartyStats();
 
                     var sig = Context.User.GetFavor();
+                    await Context.Channel.SendPKMAsShowdownSetAsync(pk);
                     await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User,lgcode).ConfigureAwait(false);
                 }
 #pragma warning disable CA1031 // Do not catch general exception types

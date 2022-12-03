@@ -12,7 +12,7 @@ using static SysBot.Pokemon.PokeDataOffsetsSCVI;
 
 namespace SysBot.Pokemon
 {
-    public abstract class PokeRoutineExecutor9SCVI : PokeRoutineExecutor<PK8>
+    public abstract class PokeRoutineExecutor9SCVI : PokeRoutineExecutor<PK9>
     {
         public static uint GetBoxSlotOffset(ulong BoxStartOffset,int box, int slot) => (uint)BoxStartOffset + (uint)(EncryptedSize * ((30 * box) + slot));
 
@@ -30,10 +30,10 @@ namespace SysBot.Pokemon
         public new async Task SetStick(SwitchStick stick, short x, short y, int delayMin, int delayMax, CancellationToken token) =>
             await SetStick(stick, x, y, Util.Rand.Next(delayMin, delayMax), token).ConfigureAwait(false);
 
-        public override async Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        public override async Task<PK9> ReadPokemon(ulong offset, int size, CancellationToken token)
         {
             var data = await Connection.ReadBytesAsync((uint)offset, size, token).ConfigureAwait(false);
-            return new PK8(data);
+            return new PK9(data);
         }
         public async Task SetBoxPokemon(PK8 pkm, int box, int slot, CancellationToken token, ITrainerInfo? sav = null)
         {
@@ -49,21 +49,21 @@ namespace SysBot.Pokemon
             pkm.ResetPartyStats();
             await Connection.WriteBytesAsync(pkm.EncryptedPartyData, ofs, token).ConfigureAwait(false);
         }
-        public override async Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        public override async Task<PK9> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
         {
             var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
             if (!valid)
-                return new PK8();
+                return new PK9();
             return await ReadPokemon(offset, token).ConfigureAwait(false);
         }
 
-        public async Task<SAV8SWSH> SCVIIdentifyTrainer(CancellationToken token)
+        public async Task<SAV9SV> SCVIIdentifyTrainer(CancellationToken token)
         {
             Log("Grabbing trainer data of host console...");
-            SAV8SWSH sav = await SCVIGetFakeTrainerSAV(token).ConfigureAwait(false);
+            SAV9SV sav = await IdentifyTrainer(token).ConfigureAwait(false);
             GameLang = (LanguageID)sav.Language;
             Version = sav.Version;
-           // InGameName = sav.OT;
+            //InGameName = sav.OT;
             Connection.Label = $"{InGameName}-{sav.DisplayTID:000000}";
             Log($"{Connection.Name} identified as {Connection.Label}, using {GameLang}.");
 
@@ -80,11 +80,32 @@ namespace SysBot.Pokemon
             File.WriteAllBytes(fn, pk.DecryptedPartyData);
             LogUtil.LogInfo($"Saved file: {fn}", "Dump");
         }
-
-        public async Task<SAV8SWSH> SCVIGetFakeTrainerSAV(CancellationToken token)
+        public async Task<SAV9SV> IdentifyTrainer(CancellationToken token)
         {
-            SAV8SWSH scvi = new SAV8SWSH();
-            return scvi;
+            // Check title so we can warn if mode is incorrect.
+            string title = await SwitchConnection.GetTitleID(token).ConfigureAwait(false);
+            if (title is not (ScarletID or VioletID))
+                throw new Exception($"{title} is not a valid SWSH title. Is your mode correct?");
+
+            Log("Grabbing trainer data of host console...");
+            var sav = SaveUtil.GetBlankSAV(EntityContext.Gen9, "test");
+            InitSaveData(sav);
+
+            if (!IsValidTrainerData())
+                throw new Exception("Trainer data is not valid. Refer to the SysBot.NET wiki for bad or no trainer data.");
+            //if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
+                //throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
+
+            return (SAV9SV)sav;
+        }
+        public async Task<SAV9SV> SCVIGetFakeTrainerSAV(CancellationToken token)
+        {
+            var traineroff = await SwitchConnection.PointerRelative(MyStatusBlockPointer, token).ConfigureAwait(false);
+            var sav = new SAV9SV();
+            var info = sav.MyStatus;
+            var read = await Connection.ReadBytesAsync((uint)traineroff, 0x68, token).ConfigureAwait(false);
+            read.CopyTo(info.Data, 0);
+            return sav;
         }
 
 

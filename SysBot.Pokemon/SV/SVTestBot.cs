@@ -61,7 +61,8 @@ namespace SysBot.Pokemon
                     PokeRoutineType.SVInject => inject1(token),
                     PokeRoutineType.SVShinify => Shinify(token),
                     PokeRoutineType.SVCloneShinify => Cloneshinify(token),
-                    PokeRoutineType.svdump => Dumps1(token)
+                    PokeRoutineType.svdump => Dumps1(token),
+                    PokeRoutineType.files => changefilesformesysbot(token),
 
 
                 } ;
@@ -112,13 +113,32 @@ namespace SysBot.Pokemon
             var pksh = EntityFormat.GetFromBytes(pkb);
             File.WriteAllBytes($"{Directory.GetCurrentDirectory()}/dump.pk9", pksh.DecryptedPartyData);
         }
+        public async Task changefilesformesysbot(CancellationToken token)
+        {
+            var allthefiles = Directory.GetFiles("C:/Users/jordan/source/repos/Resources/Pokémon/");
+            foreach (var tempfile in allthefiles)
+            {
+                var file = File.ReadAllBytes(tempfile);
+                var newname = tempfile.Replace("C:/Users/jordan/source/repos/Resources/Pokémon/", "");
+                newname = newname.Substring(2, 4);
+                var allthenewfiles = Directory.GetFiles("C:/Users/jordan/source/repos/Resources/RenamedPokemon/");
+                int i = 1;
+                while (allthenewfiles.Contains($"C:/Users/jordan/source/repos/Resources/RenamedPokemon/{newname}.png"))
+                {
+                    newname = newname.Substring(0,4);
+                    newname = $"{newname}-{i:00}";
+                    i++;
+                }
+                File.WriteAllBytes($"C:/Users/jordan/source/repos/Resources/RenamedPokemon/{newname}.png", file);
+            }
+        }
 
-        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        public override Task<PK9> ReadPokemon(ulong offset, CancellationToken token)
         {
             throw new NotImplementedException();
         }
 
-        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        public override Task<PK9> ReadBoxPokemon(int box, int slot, CancellationToken token)
         {
             throw new NotImplementedException();
         }

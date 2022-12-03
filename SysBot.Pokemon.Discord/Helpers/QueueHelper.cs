@@ -35,8 +35,15 @@ namespace SysBot.Pokemon.Discord
                 // Notify in channel
                 await context.Interaction.FollowupAsync(msg).ConfigureAwait(false);
                 // Notify in PM to mirror what is said in the channel.
-                var (thefile,lgcodeembed) = CreateLGLinkCodeSpriteEmbed(lgcode);
-                await trader.SendFileAsync(thefile,$"{msg}\nYour trade code will be.",embed:lgcodeembed).ConfigureAwait(false);
+                if (trade is PB7)
+                {
+                    var (thefile, lgcodeembed) = CreateLGLinkCodeSpriteEmbed(lgcode);
+                    await trader.SendFileAsync(thefile, $"{msg}\nYour trade code will be.", embed: lgcodeembed).ConfigureAwait(false);
+                }
+                else
+                {
+                    await trader.SendMessageAsync($"{msg}\nYour trade code will be: {code}");
+                }
 
          
             }
