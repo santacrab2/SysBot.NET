@@ -61,7 +61,7 @@ namespace SysBot.Pokemon.Discord
                     pk.ResetPartyStats();
 
                     var sig = Context.User.GetFavor();
-                    await Context.Channel.SendPKMAsShowdownSetAsync(pk);
+               
                     await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User,lgcode).ConfigureAwait(false);
                 }
 #pragma warning disable CA1031 // Do not catch general exception types

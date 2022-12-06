@@ -315,7 +315,7 @@ namespace SysBot.Pokemon.Discord
                         var bots = Runner.Bots;
                         foreach (var bot in bots)
                         {
-                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                            if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.FlexTrade)
                             {
                                 foreach (var channel in Hub.Config.Discord.announcementchannels)
                                 {
@@ -339,7 +339,7 @@ namespace SysBot.Pokemon.Discord
                                     await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
                                 }
                             }
-                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH)
+                            if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
                             {
                                 foreach (var chan in Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels)
                                 {
@@ -364,7 +364,7 @@ namespace SysBot.Pokemon.Discord
                         var bots = Runner.Bots;
                         foreach (var bot in bots)
                         {
-                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade)
+                            if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.FlexTrade)
                             {
                                 foreach (var chan in Hub.Config.Discord.announcementchannels)
                                 {
@@ -384,7 +384,7 @@ namespace SysBot.Pokemon.Discord
                                     }
                                 }
                             }
-                            if(bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH)
+                            if(bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
                             {
                                 foreach(var chan in Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels)
                                 {

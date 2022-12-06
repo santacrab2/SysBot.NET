@@ -35,7 +35,7 @@ namespace SysBot.Pokemon
             var data = await Connection.ReadBytesAsync((uint)offset, size, token).ConfigureAwait(false);
             return new PK9(data);
         }
-        public async Task SetBoxPokemon(PK8 pkm, int box, int slot, CancellationToken token, ITrainerInfo? sav = null)
+        public async Task SetBoxPokemon(PK9 pkm, int box, int slot, CancellationToken token, ITrainerInfo? sav = null)
         {
             if (sav != null)
             {
@@ -44,17 +44,16 @@ namespace SysBot.Pokemon
                 pkm.Trade(sav, Date.Day, Date.Month, Date.Year);
                 pkm.RefreshChecksum();
             }
-            var (valid, offset) = await ValidatePointerAll(BoxStartPokemonPointer, token);
-            var ofs = GetBoxSlotOffset(offset,box, slot);
-            pkm.ResetPartyStats();
-            await Connection.WriteBytesAsync(pkm.EncryptedPartyData, ofs, token).ConfigureAwait(false);
+            var offset = await SwitchConnection.PointerRelative(BoxStartPokemonPointer, token);
+            
+            //pkm.ResetPartyStats();
+            await SwitchConnection.WriteBytesAsync(pkm.EncryptedPartyData, (uint)offset, token).ConfigureAwait(false);
         }
         public override async Task<PK9> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
         {
-            var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
-            if (!valid)
-                return new PK9();
-            return await ReadPokemon(offset, token).ConfigureAwait(false);
+            var offset = await SwitchConnection.PointerRelative(jumps, token).ConfigureAwait(false);
+            
+            return await ReadPokemon(offset,size, token).ConfigureAwait(false);
         }
 
         public async Task<SAV9SV> SCVIIdentifyTrainer(CancellationToken token)
@@ -88,7 +87,7 @@ namespace SysBot.Pokemon
                 throw new Exception($"{title} is not a valid SWSH title. Is your mode correct?");
 
             Log("Grabbing trainer data of host console...");
-            var sav = SaveUtil.GetBlankSAV(EntityContext.Gen9, "test");
+            var sav = await SCVIGetFakeTrainerSAV(token);
             InitSaveData(sav);
 
             if (!IsValidTrainerData())
