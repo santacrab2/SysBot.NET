@@ -232,7 +232,15 @@ namespace SysBot.Pokemon
             if(time.ElapsedMilliseconds > 30_000)
             {
                 await Click(B, 1000, token);
-                await ExitTrade(false, token);
+                for (int j = 0; j < 10; j++)
+                {
+                    await Click(B, 500, token);
+                    await Click(A, 500, token);
+                    for (int n = 0; n < 5; n++)
+                    {
+                        await Click(B, 1000, token);
+                    }
+                }
                 return PokeTradeResult.TrainerTooSlow;
             }
             for(int j = 0; j<10;j++)
