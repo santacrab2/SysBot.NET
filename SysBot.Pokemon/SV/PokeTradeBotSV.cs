@@ -194,7 +194,7 @@ namespace SysBot.Pokemon
             Log("Selecting Link Trade");
             await Click(DDOWN, 1000, token).ConfigureAwait(false);
             await Click(DDOWN, 1000, token).ConfigureAwait(false);
-            await Click(A, 1000, token).ConfigureAwait(false);
+            await Click(A, 2000, token).ConfigureAwait(false);
             Log("clearing any residual link codes");
             await Click(X, 500, token);
             if (poke.Type != PokeTradeType.Random)
@@ -232,26 +232,10 @@ namespace SysBot.Pokemon
             if(time.ElapsedMilliseconds > 30_000)
             {
                 await Click(B, 1000, token);
-                for (int j = 0; j < 10; j++)
-                {
-                    await Click(B, 500, token);
-                    await Click(A, 500, token);
-                    for (int n = 0; n < 5; n++)
-                    {
-                        await Click(B, 1000, token);
-                    }
-                }
+                await ExitTrade(false, token);
                 return PokeTradeResult.TrainerTooSlow;
             }
-            for(int j = 0; j<10;j++)
-            {
-                await Click(B, 500, token);
-                await Click(A, 500, token);
-                for(int n =0;n<5;n++)
-                {
-                    await Click(B, 1000, token);
-                }
-            }
+            await ExitTrade(false, token);
             poke.Notifier.TradeFinished(this,poke,received);
             return PokeTradeResult.Success;
         }
@@ -338,11 +322,14 @@ namespace SysBot.Pokemon
         }
         private async Task ExitTrade(bool unexpected, CancellationToken token)
         {
-            await Click(B, 1000, token);
-            await Click(A, 1000, token);
-            for (int i = 0; i < 10; i++)
+            for (int j = 0; j < 10; j++)
             {
-                await Click(B, 1000, token);
+                await Click(B, 500, token);
+                await Click(A, 500, token);
+                for (int n = 0; n < 5; n++)
+                {
+                    await Click(B, 1000, token);
+                }
             }
         }
     }
