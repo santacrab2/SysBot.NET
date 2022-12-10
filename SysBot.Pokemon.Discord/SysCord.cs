@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PKHeX.Core;
 using SysBot.Base;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -341,10 +342,13 @@ namespace SysBot.Pokemon.Discord
                             }
                             if (bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
                             {
-                                foreach (var chan in Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels)
+                                List<ulong> channels = new();
+                                List<ITextChannel> embedChannels = new();
+                                var chStrings = Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels.Split(',');
+                                foreach (var chan in chStrings)
                                 {
-
-                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
+                                    var cid = ulong.Parse(chan);
+                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(cid);
                                     if (districhan.Name.Contains("✅"))
                                     {
 
@@ -386,9 +390,13 @@ namespace SysBot.Pokemon.Discord
                             }
                             if(bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
                             {
-                                foreach(var chan in Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels)
+                                List<ulong> channels = new();
+                                List<ITextChannel> embedChannels = new();
+                                var chStrings = Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels.Split(',');
+                                foreach (var chan in chStrings)
                                 {
-                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
+                                    var cid = ulong.Parse(chan);
+                                    var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(cid);
                                     if (districhan.Name.Contains("❌"))
                                     {
                                         

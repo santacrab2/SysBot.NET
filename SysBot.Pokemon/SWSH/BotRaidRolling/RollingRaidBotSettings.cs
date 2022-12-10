@@ -101,7 +101,7 @@ namespace SysBot.Pokemon
         public bool RaidLog { get; set; } = false;
 
         [Category(Hosting), Description("Enter Discord channel ID(s) to post raid embeds to. Feature has to be initialized via \"$raidEmbed\" after every client restart.")]
-        public List<ulong> RollingRaidEmbedChannels { get; set; } = new();
+        public string RollingRaidEmbedChannels { get; set; } = "";
 
         /// <summary>
         /// Gets a random trade code based on the range settings.

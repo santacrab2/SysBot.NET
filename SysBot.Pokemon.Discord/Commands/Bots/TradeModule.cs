@@ -31,6 +31,7 @@ namespace SysBot.Pokemon.Discord
                 if (set.InvalidLines.Count != 0)
                 {
                     var msg = $"Unable to parse Showdown Set:\n{string.Join("\n", set.InvalidLines)}";
+                    msg += "\nDouble Check your spelling and text format. <#872614034619367444> for more info.";
                     await FollowupAsync(msg, ephemeral: true).ConfigureAwait(false);
                     return;
                 }
@@ -63,6 +64,7 @@ namespace SysBot.Pokemon.Discord
                     var sig = Context.User.GetFavor();
                
                     await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User,lgcode).ConfigureAwait(false);
+                    return;
                 }
 #pragma warning disable CA1031 // Do not catch general exception types
                 catch (Exception ex)
@@ -70,7 +72,9 @@ namespace SysBot.Pokemon.Discord
                 {
                     LogUtil.LogSafe(ex, nameof(TradeModule<T>));
                     var msg = $"Oops! An unexpected problem happened with this Showdown Set:\n```{string.Join("\n", set.GetSetLines())}```";
+                    msg += "\nDouble Check your spelling and text format. <#872614034619367444> for more info."; 
                     await FollowupAsync(msg,ephemeral:true).ConfigureAwait(false);
+                    return;
                 }
             }
             if(PKM != default)
@@ -80,7 +84,9 @@ namespace SysBot.Pokemon.Discord
                 var lgcode = Info.GetRandomLGTradeCode();
                 var sig = Context.User.GetFavor();
                 await TradeAsyncAttach(PKM,code, sig, Context.User,lgcode).ConfigureAwait(false);
+                return;
             }
+            await FollowupAsync("You did not include any pokemon information, Please make sure the command boxes are filled out. See <#872614034619367444> for instructions and examples");
         }
 
 

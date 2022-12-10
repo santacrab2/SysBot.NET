@@ -95,54 +95,94 @@ namespace SysBot.Pokemon.Discord
         }
 
         [SlashCommand("raidembedstart", "Initialize posting of RollingRaidBot embeds to specified Discord channels.")]
-  
+
         public async Task InitializeRaidEmbeds()
         {
-            RollingRaidBot.RollingRaidEmbedsInitialized = true;
             await DeferAsync(ephemeral:true);
-            if (RollingRaidSettings.RollingRaidEmbedChannels.Count == 0)
+            if (RollingRaidSettings.RollingRaidEmbedChannels == string.Empty)
             {
-                await FollowupAsync("No channels to post embeds in.",ephemeral:true).ConfigureAwait(false);
+                await FollowupAsync("No channels to post embeds in.").ConfigureAwait(false);
                 return;
             }
 
-      
-
-            if (RollingRaidSettings.RollingRaidEmbedChannels.Count == 0)
+            List<ulong> channels = new();
+            List<ITextChannel> embedChannels = new();
+            if (!RollingRaidBot.RollingRaidEmbedsInitialized)
             {
-                await FollowupAsync("No valid channels found.",ephemeral:true).ConfigureAwait(false);
+                var chStrings = RollingRaidSettings.RollingRaidEmbedChannels.Split(',');
+                foreach (var channel in chStrings)
+                {
+                    if (ulong.TryParse(channel, out ulong result) && !channels.Contains(result))
+                        channels.Add(result);
+                }
+
+                if (channels.Count == 0)
+                {
+                    await FollowupAsync("No valid channels found.").ConfigureAwait(false);
+                    return;
+                }
+
+                foreach (var guild in Context.Client.Guilds)
+                {
+                    foreach (var id in channels)
+                    {
+                        var channel = guild.Channels.FirstOrDefault(x => x.Id == id);
+                        if (channel is not null && channel is ITextChannel ch)
+                            embedChannels.Add(ch);
+                    }
+                }
+
+                if (embedChannels.Count == 0)
+                {
+                    await FollowupAsync("No matching guild channels found.").ConfigureAwait(false);
+                    return;
+                }
+            }
+
+            RollingRaidBot.RollingRaidEmbedsInitialized ^= true;
+            await FollowupAsync(!RollingRaidBot.RollingRaidEmbedsInitialized ? "RollingRaid Embed task stopped!" : "RollingRaid Embed task started!",ephemeral:true).ConfigureAwait(false);
+
+            if (!RollingRaidBot.RollingRaidEmbedsInitialized)
+            {
+                RollingRaidBot.RaidEmbedSource.Cancel();
                 return;
             }
 
-            await FollowupAsync("RollingRaid Embed task started!",ephemeral:true).ConfigureAwait(false);
+            RollingRaidBot.RaidEmbedSource = new();
+            _ = Task.Run(async () => await RollingRaidEmbedLoop(embedChannels).ConfigureAwait(false));
+        }
+
+        private static async Task RollingRaidEmbedLoop(List<ITextChannel> channels)
+        {
             while (!RollingRaidBot.RaidEmbedSource.IsCancellationRequested)
             {
-                if (RollingRaidBot.EmbedQueue.Count != 0)
+                if (RollingRaidBot.EmbedQueue.TryDequeue(out var embedInfo))
                 {
-                    var embedInfo = RollingRaidBot.EmbedQueue[0];
-                  
                     var url = TradeExtensions<T>.PokeImg(embedInfo.RaidPk, embedInfo.RaidPk.CanGigantamax, false);
                     var embed = new EmbedBuilder
                     {
                         Title = embedInfo.EmbedName,
                         Description = embedInfo.EmbedString,
                         Color = Color.Blue,
-                        ImageUrl = url,
+                        ThumbnailUrl = url,
                     };
 
-                  
-                        var ch = (ITextChannel)SysCord<T>._client.GetChannel(872611744521007155);
-                     
-                        await ch.SendMessageAsync(embed: embed.Build()).ConfigureAwait(false);
-                    
-                    RollingRaidBot.EmbedQueue = new();
+                    foreach (var channel in channels)
+                    {
+                        try
+                        {
+                            await channel.SendMessageAsync(null, false, embed: embed.Build()).ConfigureAwait(false);
+                        }
+                        catch { }
+                    }
                 }
-                else await Task.Delay(0_500, RollingRaidBot.RaidEmbedSource.Token).ConfigureAwait(false);
+                else await Task.Delay(0_500).ConfigureAwait(false);
             }
         }
 
-       
 
-       
+
+
+
     }
 }

@@ -30,7 +30,7 @@ namespace SysBot.Pokemon
 
         public static CancellationTokenSource RaidEmbedSource = new();
         public static bool RollingRaidEmbedsInitialized;
-        public static List<EmbedInfo> EmbedQueue = new();
+        public static Queue<EmbedInfo> EmbedQueue = new();
 
         private int encounterCount;
         private bool deleteFriends;
@@ -245,7 +245,7 @@ namespace SysBot.Pokemon
             if (RollingRaidEmbedsInitialized)
             {
                 info.EmbedName = string.IsNullOrEmpty(Settings.RaidDescription) ? $"{RaidInfo.TrainerInfo.OT}'s Raid" : raiddescmsg;
-                EmbedQueue.Add(info);
+                EmbedQueue.Enqueue(info);
             }
 
             // Invite others and wait

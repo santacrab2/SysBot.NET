@@ -26,7 +26,7 @@ namespace SysBot.Pokemon
         public int FailedBarrier { get; private set; }
        
         public static SAV9SV sav = new();
-    
+       
         public static PK9 pkm = new();
         public static PokeTradeHub<PK9> Hub;
         public static TradePartnerSV TradeReceiver;
@@ -220,16 +220,26 @@ namespace SysBot.Pokemon
             }
             Log($"Found Link Trade partner: {TradeReceiver.TrainerName}-{TradeReceiver.TID7}");
             poke.SendNotification(this, $"Found Link Trade partner: {TradeReceiver.TrainerName} TID: {TradeReceiver.TID7} SID: {TradeReceiver.SID7}. Waiting for a Pokémon...");
+      
+           PK9 received = await ReadPokemonPointer(BoxStartPokemonPointer, 344, token);
 
-            PK9 received = await ReadPokemonPointer(BoxStartPokemonPointer, 344, token);
+            if (poke.Type == PokeTradeType.Clone)
+            {
+                PK9 offered = await ReadPokemonPointer(OfferedPokemonPointer, 344, token);
+                var cloneresult = await Handleclones(sav,poke,offered,token);
+                if(cloneresult != PokeTradeResult.Success)
+                {
+                    return cloneresult;
+                }
+            }
             Stopwatch time = new();
             time.Restart();
-            while(SearchUtil.HashByDetails(toSend) == SearchUtil.HashByDetails(received) && time.ElapsedMilliseconds < 30_000)
+            while(SearchUtil.HashByDetails(toSend) == SearchUtil.HashByDetails(received) && time.ElapsedMilliseconds < 45_000)
             {
                 await Click(A, 500, token);
                 received = await ReadPokemonPointer(BoxStartPokemonPointer, 344, token);
             }
-            if(time.ElapsedMilliseconds > 30_000)
+            if(time.ElapsedMilliseconds > 45_000)
             {
                 await Click(B, 1000, token);
                 await ExitTrade(false, token);
@@ -331,6 +341,57 @@ namespace SysBot.Pokemon
                     await Click(B, 1000, token);
                 }
             }
+        }
+        public async Task<PokeTradeResult> Handleclones(SAV9SV sav, PokeTradeDetail<PK9> poke, PK9 offered,CancellationToken token)
+        {
+            PK9 newoffer = await ReadPokemonPointer(OfferedPokemonPointer, 344, token);
+            Stopwatch thetime = new();
+            thetime.Restart();
+            while(SearchUtil.HashByDetails(newoffer) == SearchUtil.HashByDetails(offered) && thetime.ElapsedMilliseconds < 45_000)
+            {
+                newoffer = await ReadPokemonPointer(OfferedPokemonPointer, 344, token);
+            }
+            if (thetime.ElapsedMilliseconds > 45_000)
+                return PokeTradeResult.TrainerTooSlow;
+            if (Hub.Config.Discord.ReturnPKMs)
+                poke.SendNotification(this, newoffer, "Here's what you showed me!");
+            var la = new LegalityAnalysis(offered);
+            if (!la.Valid)
+            {
+                Log($"Clone request (from {poke.Trainer.TrainerName}) has detected an invalid Pokémon: {(Species)offered.Species}.");
+                if (DumpSetting.Dump)
+                    DumpPokemon(DumpSetting.DumpFolder, "hacked", offered);
+
+                var report = la.Report();
+                Log(report);
+                poke.SendNotification(this, "This Pokémon is not legal per PKHeX's legality checks. I am forbidden from cloning this. Exiting trade.");
+                poke.SendNotification(this, report);
+
+                return PokeTradeResult.IllegalTrade;
+            }
+            var clone = (PK9)newoffer.Clone();
+            if (Hub.Config.Legality.ResetHOMETracker)
+                clone.Tracker = 0;
+            poke.SendNotification(this, $"**Cloned your {(Species)clone.Species}!**\nNow press B to cancel your offer and trade me a Pokémon you don't want.");
+            Log($"Cloned a {(Species)clone.Species}. Waiting for user to change their Pokémon...");
+            newoffer = await ReadPokemonPointer(OfferedPokemonPointer, 344, token);
+            
+            thetime.Restart();
+            while (SearchUtil.HashByDetails(newoffer) == SearchUtil.HashByDetails(clone) && thetime.ElapsedMilliseconds < 30_000)
+            {
+                newoffer = await ReadPokemonPointer(OfferedPokemonPointer, 344, token);
+                if(thetime.ElapsedMilliseconds > 15_000)
+                {
+                    poke.SendNotification(this, "**HEY CHANGE IT NOW OR I AM LEAVING!!!**");
+                }
+            }
+            if (thetime.ElapsedMilliseconds > 45_000)
+            {
+                Log("Trade partner did not change their Pokémon.");
+                return PokeTradeResult.TrainerTooSlow;
+            }
+            await SetBoxPokemon(clone, 1, 1, token).ConfigureAwait(false);
+            return PokeTradeResult.Success;
         }
     }
 }
