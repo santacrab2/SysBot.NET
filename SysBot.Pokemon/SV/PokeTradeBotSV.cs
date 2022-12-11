@@ -182,7 +182,7 @@ namespace SysBot.Pokemon
 
         private async Task<PokeTradeResult> PerformLinkCodeTrade(SAV9SV sav, PokeTradeDetail<PK9> poke, CancellationToken token)
         {
-            
+            TradeReceiver = await GetTradePartnerInfo(token);
             UpdateBarrier(poke.IsSynchronized);
             poke.TradeInitialize(this);
             var toSend = poke.TradeData;
@@ -304,8 +304,13 @@ namespace SysBot.Pokemon
         }
         private async Task<TradePartnerSV> GetTradePartnerInfo(CancellationToken token)
         {
-
-            var traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer, token).ConfigureAwait(false);
+            string title = await SwitchConnection.GetTitleID(token).ConfigureAwait(false);
+            var trainerpointer = title switch
+            {
+                ScarletID => ScarletTradePartnerStatusBlock,
+                VioletID => TradePartnerStatusBlockPointer
+            };
+            var traineroff = await SwitchConnection.PointerRelative(trainerpointer, token).ConfigureAwait(false);
             var partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
             var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
             return new TradePartnerSV(partnerread, partnernameread);
