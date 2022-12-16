@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Pokemon.PokeDataOffsetsSCVI;
+using Newtonsoft.Json.Linq;
 
 namespace SysBot.Pokemon
 {
@@ -127,6 +128,37 @@ namespace SysBot.Pokemon
                 Log("Turning off screen.");
                 await SetScreen(ScreenState.Off, token).ConfigureAwait(false);
             }
+            await Click(X, 2000, token);
+            await Click(DRIGHT, 500, token);
+            await PressAndHold(DUP, 3000,500, token);
+            for(int i = 0; i < 3; i++)
+            {
+                await Click(DDOWN, 1000, token);
+            }
+            await Click(B, 500, token); 
+            
+
         }
+        public async Task<bool> IsConnected(CancellationToken token)
+        {
+            var offs = await SwitchConnection.PointerRelative(ConnectionPointer, token).ConfigureAwait(false);
+           
+
+            var bytes = await SwitchConnection.ReadBytesAsync((uint)offs, 4, token).ConfigureAwait(false);
+            var connectedState = BitConverter.ToUInt32(bytes, 0);
+            return connectedState == 1;
+        }
+        public async Task<bool> CanPlayerMove(CancellationToken token)
+        {
+            (var valid, var offs) = await ValidatePointerAll(OverworldPointer, token).ConfigureAwait(false);
+            if (!valid)
+                return false;
+
+            var bytes = await SwitchConnection.ReadBytesAbsoluteAsync(offs, 4, token).ConfigureAwait(false);
+            var canMoveState = BitConverter.ToUInt32(bytes, 0);
+            return canMoveState == 0;
+        }
+        public async Task<bool> IsSearching(CancellationToken token) => (await SwitchConnection.PointerPeek(4, IsSearchingPointer, token).ConfigureAwait(false))[0] != 0;
+
     }
 }

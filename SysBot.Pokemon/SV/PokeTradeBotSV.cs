@@ -182,6 +182,14 @@ namespace SysBot.Pokemon
 
         private async Task<PokeTradeResult> PerformLinkCodeTrade(SAV9SV sav, PokeTradeDetail<PK9> poke, CancellationToken token)
         {
+            if(!await IsConnected(token))
+            {
+                await Click(X, 2000, token);
+                await Click(L, 10_000, token);
+                await Click(A, 500, token);
+                await Click(B, 1500, token);
+            }
+        
             TradeReceiver = await GetTradePartnerInfo(token);
             UpdateBarrier(poke.IsSynchronized);
             poke.TradeInitialize(this);
@@ -211,13 +219,13 @@ namespace SysBot.Pokemon
       
             
             poke.TradeSearching(this);
-            var partnerFound = await WaitForTradePartner(token).ConfigureAwait(false);
-            if(!partnerFound)
+          while(await IsSearching(token))
             {
-                await ExitTrade(false, token);
-                return PokeTradeResult.NoTrainerFound;
-
+                await Task.Delay(100);
             }
+            TradeReceiver = await GetTradePartnerInfo(token);
+            if (TradeReceiver.TrainerName == sav.OT || TradeReceiver.TrainerName == string.Empty)
+                TradeReceiver = await GetTradePartnerInfo2(token);
             Log($"Found Link Trade partner: {TradeReceiver.TrainerName}-{TradeReceiver.TID7}");
             poke.SendNotification(this, $"Found Link Trade partner: {TradeReceiver.TrainerName} TID: {TradeReceiver.TID7} SID: {TradeReceiver.SID7}. Waiting for a Pokémon...");
       
@@ -310,36 +318,31 @@ namespace SysBot.Pokemon
             var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
             return new TradePartnerSV(partnerread, partnernameread);
         }
-        protected virtual async Task<bool> WaitForTradePartner(CancellationToken token)
+        private async Task<TradePartnerSV> GetTradePartnerInfo2(CancellationToken token)
         {
-    
-                var oldreceiver = TradeReceiver;
-                Log("Waiting for trainer...");
-                int ctr = Hub.Config.Trade.TradeWaitTime * 1_000;
-               
-                while (TradeReceiver.TID7 == oldreceiver.TID7 && ctr > 0)
-                {
-                    TradeReceiver = await GetTradePartnerInfo(token);
-                    Log(TradeReceiver.TrainerName);
-                    await Task.Delay(1_000, token).ConfigureAwait(false);
-                    ctr -= 1_000;
-                  
-                }
-                if(TradeReceiver.TID7 != oldreceiver.TID7)
-                    return true;
-                else 
-                    return false;
-          
+
+            var traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer2, token).ConfigureAwait(false);
+            var partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
+            var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
+            return new TradePartnerSV(partnerread, partnernameread);
         }
+       
         private async Task ExitTrade(bool unexpected, CancellationToken token)
         {
-            for (int j = 0; j < 10; j++)
+            Stopwatch tim = new();
+            tim.Restart();
+            while(!await CanPlayerMove(token).ConfigureAwait(false))
             {
                 await Click(B, 500, token);
                 await Click(A, 500, token);
                 for (int n = 0; n < 5; n++)
                 {
                     await Click(B, 1000, token);
+                }
+                if (tim.ElapsedMilliseconds > 60_000) 
+                { 
+                    await resetgame(token);
+                    return;
                 }
             }
         }
@@ -393,6 +396,37 @@ namespace SysBot.Pokemon
             }
             await SetBoxPokemon(clone, 1, 1, token).ConfigureAwait(false);
             return PokeTradeResult.Success;
+        }
+        public async Task resetgame(CancellationToken token)
+        {
+            Log("Restarting the game!");
+            //not on overworld - restart game
+            await Click(B, 700, token).ConfigureAwait(false);
+            await Click(HOME, 3_000, token).ConfigureAwait(false);
+            await Click(X, 1_000, token).ConfigureAwait(false);
+            await Click(A, 5_000, token).ConfigureAwait(false);
+
+            await Task.Delay(3_000);
+            await Click(A, 1_000, token).ConfigureAwait(false);
+            if (Hub.Config.Timings.AvoidSystemUpdate)
+            {
+                await Click(DUP, 0_600, token).ConfigureAwait(false);
+                await Click(A, 1_000, token).ConfigureAwait(false);
+            }
+            await Click(A, 1_000, token).ConfigureAwait(false);
+            await Task.Delay(25_000, token).ConfigureAwait(false);
+            await Click(A, 1_000, token).ConfigureAwait(false);
+
+            await Task.Delay(15_000, token).ConfigureAwait(false);
+            //navigate back to 'pokeportal selection upon restart
+            await Click(X, 2000, token);
+            await Click(DRIGHT, 500, token);
+            await PressAndHold(DUP, 3000, 500, token);
+            for (int i = 0; i < 3; i++)
+            {
+                await Click(DDOWN, 1000, token);
+            }
+            await Click(B, 500, token);
         }
     }
 }

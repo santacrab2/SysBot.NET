@@ -55,7 +55,7 @@ namespace SysBot.Pokemon.Discord
                         var reason = result == "Timeout" ? $"That {spec} set took too long to generate." : $"I wasn't able to create a {spec} from that set.";
                         var imsg = $"Oops! {reason}";
                         if (result == "Failed")
-                            imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)} game: {(GameVersion)pkm.Version}";
+                            imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)}";
                         await FollowupAsync(imsg, ephemeral: true).ConfigureAwait(false);
                         return;
                     }
