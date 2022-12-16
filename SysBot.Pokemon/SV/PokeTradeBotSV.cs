@@ -339,7 +339,7 @@ namespace SysBot.Pokemon
                 {
                     await Click(B, 1000, token);
                 }
-                if (tim.ElapsedMilliseconds > 60_000) 
+                if (tim.ElapsedMilliseconds > 120_000) 
                 { 
                     await resetgame(token);
                     return;
