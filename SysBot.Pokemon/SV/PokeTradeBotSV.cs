@@ -77,7 +77,7 @@ namespace SysBot.Pokemon
         }
         private async Task InnerLoop(SAV9SV sav, CancellationToken token)
         {
-            TradeReceiver = await GetTradePartnerInfo(token).ConfigureAwait(false);
+            
             while (!token.IsCancellationRequested)
             {
                 Config.IterateNextRoutine();
@@ -192,7 +192,7 @@ namespace SysBot.Pokemon
             Log("Navigating to PokePortal");
             await Click(A, 10000, token).ConfigureAwait(false);
             Log("Selecting Link Trade");
-            await Click(DDOWN, 1000, token).ConfigureAwait(false);
+            await Click(DDOWN, 1500, token).ConfigureAwait(false);
             await Click(DDOWN, 1000, token).ConfigureAwait(false);
             await Click(A, 2000, token).ConfigureAwait(false);
             Log("clearing any residual link codes");
@@ -304,13 +304,8 @@ namespace SysBot.Pokemon
         }
         private async Task<TradePartnerSV> GetTradePartnerInfo(CancellationToken token)
         {
-            string title = await SwitchConnection.GetTitleID(token).ConfigureAwait(false);
-            var trainerpointer = title switch
-            {
-                ScarletID => ScarletTradePartnerStatusBlock,
-                VioletID => TradePartnerStatusBlockPointer
-            };
-            var traineroff = await SwitchConnection.PointerRelative(trainerpointer, token).ConfigureAwait(false);
+         
+            var traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer, token).ConfigureAwait(false);
             var partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
             var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
             return new TradePartnerSV(partnerread, partnernameread);
@@ -320,11 +315,12 @@ namespace SysBot.Pokemon
     
                 var oldreceiver = TradeReceiver;
                 Log("Waiting for trainer...");
-                int ctr = (Hub.Config.Trade.TradeWaitTime * 1_000) - 2_000;
+                int ctr = Hub.Config.Trade.TradeWaitTime * 1_000;
                
                 while (TradeReceiver.TID7 == oldreceiver.TID7 && ctr > 0)
                 {
                     TradeReceiver = await GetTradePartnerInfo(token);
+                    Log(TradeReceiver.TrainerName);
                     await Task.Delay(1_000, token).ConfigureAwait(false);
                     ctr -= 1_000;
                   
