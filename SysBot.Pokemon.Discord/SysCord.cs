@@ -3,10 +3,12 @@ using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualBasic;
 using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -435,6 +437,7 @@ namespace SysBot.Pokemon.Discord
                 var result = await _interactionService.ExecuteCommandAsync(ctx, null);
             };
             _client.SlashCommandExecuted += slashtask;
+            _client.ModalSubmitted += modalsubmit;
             if (MessageChannelsLoaded)
                 return;
 
@@ -454,7 +457,31 @@ namespace SysBot.Pokemon.Discord
                 await _client.SetGameAsync(game).ConfigureAwait(false);
         }
 
-       
-       
+        private async Task modalsubmit(SocketModal arg)
+        {
+            if (!File.Exists($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt")) File.Create($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt");
+            if (!File.ReadAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt").Contains($"{arg.User.Id}"))
+            {
+                List<SocketMessageComponentData> components =
+                arg.Data.Components.ToList();
+                string species = components.First(x => x.CustomId == "species").Value;
+                string stars = components.First(x => x.CustomId == "star").Value;
+                string terat = components.First(x => x.CustomId == "tera").Value;
+                string reward = components.First(x => x.CustomId == "reward").Value;
+                var chan = (ITextChannel)await _client.GetChannelAsync(872606380434026508);
+
+                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nStars: {stars}\nTeraType: {terat}\n Reward Requests: {reward}\n");
+              
+                var therecordsarr = File.ReadAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt");
+                var therecordslist = therecordsarr!=null ? therecordsarr.ToList():new();
+                therecordslist.Add($"{arg.User.Id}\n{arg.User.Username}\n");
+                File.WriteAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt", therecordslist);
+                await arg.RespondAsync("Your Request has been submitted!", ephemeral: true);
+            }
+            await arg.RespondAsync("One Request at a time! Please wait until your current request has been fulfilled.", ephemeral: true);
+
+
+
+        }
     }
 }

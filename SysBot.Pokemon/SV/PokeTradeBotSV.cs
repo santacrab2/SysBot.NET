@@ -190,7 +190,7 @@ namespace SysBot.Pokemon
             Log("Opening Menu");
             await Click(X, 2000, token).ConfigureAwait(false);
             Log("Navigating to PokePortal");
-            await Click(A, 8000, token).ConfigureAwait(false);
+            await Click(A, 10000, token).ConfigureAwait(false);
             Log("Selecting Link Trade");
             await Click(DDOWN, 1000, token).ConfigureAwait(false);
             await Click(DDOWN, 1000, token).ConfigureAwait(false);
