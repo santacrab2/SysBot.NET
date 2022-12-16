@@ -29,7 +29,7 @@ namespace SysBot.Pokemon
        
         public static PK9 pkm = new();
         public static PokeTradeHub<PK9> Hub;
-        public static TradePartnerSV TradeReceiver;
+        
 
         public PokeTradeBotSV(PokeTradeHub<PK9> hub, PokeBotState cfg) : base(cfg)
         {
@@ -190,7 +190,7 @@ namespace SysBot.Pokemon
                 await Click(B, 1500, token);
             }
         
-            TradeReceiver = await GetTradePartnerInfo(token);
+           
             UpdateBarrier(poke.IsSynchronized);
             poke.TradeInitialize(this);
             var toSend = poke.TradeData;
@@ -223,8 +223,9 @@ namespace SysBot.Pokemon
             {
                 await Task.Delay(100);
             }
-            TradeReceiver = await GetTradePartnerInfo(token);
-            if (TradeReceiver.TrainerName == sav.OT || TradeReceiver.TrainerName == string.Empty)
+            await Task.Delay(5000);
+            var TradeReceiver = await GetTradePartnerInfo(token);
+            if (TradeReceiver.TrainerName == sav.OT || TradeReceiver.TID7 == "000000")
                 TradeReceiver = await GetTradePartnerInfo2(token);
             Log($"Found Link Trade partner: {TradeReceiver.TrainerName}-{TradeReceiver.TID7}");
             poke.SendNotification(this, $"Found Link Trade partner: {TradeReceiver.TrainerName} TID: {TradeReceiver.TID7} SID: {TradeReceiver.SID7}. Waiting for a Pokémon...");
