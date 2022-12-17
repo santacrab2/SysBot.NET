@@ -470,7 +470,7 @@ namespace SysBot.Pokemon.Discord
                 string reward = components.First(x => x.CustomId == "reward").Value;
                 var chan = (ITextChannel)await _client.GetChannelAsync(872606380434026508);
 
-                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nStars: {stars}\nTeraType: {terat}\n Reward Requests: {reward}\n");
+                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nStars: {stars}\nTeraType: {terat}\nReward Requests: {reward}\n");
               
                 var therecordsarr = File.ReadAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt");
                 var therecordslist = therecordsarr!=null ? therecordsarr.ToList():new();

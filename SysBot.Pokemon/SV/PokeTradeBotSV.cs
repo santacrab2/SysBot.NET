@@ -120,6 +120,7 @@ namespace SysBot.Pokemon
             //await SetCurrentBox(0, token).ConfigureAwait(false);
             while (!token.IsCancellationRequested && Config.NextRoutineType == type)
             {
+                await AttemptClearTradePartnerPointer(token);
                 var (detail, priority) = GetTradeData(type);
                 if (detail is null)
                 {
@@ -225,8 +226,7 @@ namespace SysBot.Pokemon
             }
             await Task.Delay(5000);
             var TradeReceiver = await GetTradePartnerInfo(token);
-            if (TradeReceiver.TrainerName == sav.OT || TradeReceiver.TID7 == "000000")
-                TradeReceiver = await GetTradePartnerInfo2(token);
+         
             Log($"Found Link Trade partner: {TradeReceiver.TrainerName}-{TradeReceiver.TID7}");
             poke.SendNotification(this, $"Found Link Trade partner: {TradeReceiver.TrainerName} TID: {TradeReceiver.TID7} SID: {TradeReceiver.SID7}. Waiting for a Pokémon...");
       
@@ -313,20 +313,21 @@ namespace SysBot.Pokemon
         }
         private async Task<TradePartnerSV> GetTradePartnerInfo(CancellationToken token)
         {
-         
+            
             var traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer, token).ConfigureAwait(false);
             var partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
             var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
-            return new TradePartnerSV(partnerread, partnernameread);
+            var partnersav = new TradePartnerSV(partnerread, partnernameread);
+            if(BitConverter.ToInt32(partnerread) == sav.TID || partnerread == new byte[4])
+            {
+                traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer2, token).ConfigureAwait(false);
+                partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
+                partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
+                partnersav = new TradePartnerSV(partnerread, partnernameread);
+            }
+            return partnersav;
         }
-        private async Task<TradePartnerSV> GetTradePartnerInfo2(CancellationToken token)
-        {
-
-            var traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer2, token).ConfigureAwait(false);
-            var partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
-            var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
-            return new TradePartnerSV(partnerread, partnernameread);
-        }
+       
        
         private async Task ExitTrade(bool unexpected, CancellationToken token)
         {
@@ -425,7 +426,7 @@ namespace SysBot.Pokemon
             await PressAndHold(DUP, 3000, 500, token);
             for (int i = 0; i < 3; i++)
             {
-                await Click(DDOWN, 1000, token);
+                await Click(DUP, 1000, token);
             }
             await Click(B, 500, token);
         }

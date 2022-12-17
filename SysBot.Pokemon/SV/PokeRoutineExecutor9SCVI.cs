@@ -133,7 +133,7 @@ namespace SysBot.Pokemon
             await PressAndHold(DUP, 3000,500, token);
             for(int i = 0; i < 3; i++)
             {
-                await Click(DDOWN, 1000, token);
+                await Click(DUP, 1000, token);
             }
             await Click(B, 500, token); 
             
@@ -159,6 +159,24 @@ namespace SysBot.Pokemon
             return canMoveState == 0;
         }
         public async Task<bool> IsSearching(CancellationToken token) => (await SwitchConnection.PointerPeek(4, IsSearchingPointer, token).ConfigureAwait(false))[0] != 0;
+        public async Task AttemptClearTradePartnerPointer(CancellationToken token)
+        {
+          
 
+            var (valid, offs) = await ValidatePointerAll(TradePartnerStatusBlockPointer, token).ConfigureAwait(false);
+            if (valid)
+            {
+                await SwitchConnection.WriteBytesAbsoluteAsync(new byte[4], offs, token).ConfigureAwait(false);
+                await SwitchConnection.WriteBytesAbsoluteAsync(new byte[24],offs+0x08,token).ConfigureAwait(false);
+            }
+
+            (valid, offs) = await ValidatePointerAll(TradePartnerStatusBlockPointer2, token).ConfigureAwait(false);
+            if (valid)
+            {
+                await SwitchConnection.WriteBytesAbsoluteAsync(new byte[4], offs, token).ConfigureAwait(false);
+                await SwitchConnection.WriteBytesAbsoluteAsync(new byte[24], offs + 0x08, token).ConfigureAwait(false);
+            }
+
+        }
     }
 }
