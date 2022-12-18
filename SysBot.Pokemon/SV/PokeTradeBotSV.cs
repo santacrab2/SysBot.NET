@@ -25,7 +25,7 @@ namespace SysBot.Pokemon
         /// </summary>
         public int FailedBarrier { get; private set; }
        
-        public static SAV9SV sav = new();
+       
        
         public static PK9 pkm = new();
         public static PokeTradeHub<PK9> Hub;
@@ -225,7 +225,7 @@ namespace SysBot.Pokemon
                 await Task.Delay(100);
             }
             await Task.Delay(5000);
-            var TradeReceiver = await GetTradePartnerInfo(token);
+            var TradeReceiver = await GetTradePartnerInfo(sav,token);
          
             Log($"Found Link Trade partner: {TradeReceiver.TrainerName}-{TradeReceiver.TID7}");
             poke.SendNotification(this, $"Found Link Trade partner: {TradeReceiver.TrainerName} TID: {TradeReceiver.TID7} SID: {TradeReceiver.SID7}. Waiting for a Pokémon...");
@@ -311,14 +311,14 @@ namespace SysBot.Pokemon
             }
             // Confirm Code outside of this method (allow synchronization)
         }
-        private async Task<TradePartnerSV> GetTradePartnerInfo(CancellationToken token)
+        private async Task<TradePartnerSV> GetTradePartnerInfo(SAV9SV sav,CancellationToken token)
         {
             
             var traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer, token).ConfigureAwait(false);
             var partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);
             var partnernameread = await SwitchConnection.ReadBytesAsync((uint)traineroff + 0x08, 24, token);
             var partnersav = new TradePartnerSV(partnerread, partnernameread);
-            if(BitConverter.ToInt32(partnerread) == sav.TID || partnerread == new byte[4])
+            if(BitConverter.ToInt32(partnerread) == sav.TID || BitConverter.ToUInt32(partnerread) == 0 || partnerread == null)
             {
                 traineroff = await SwitchConnection.PointerRelative(TradePartnerStatusBlockPointer2, token).ConfigureAwait(false);
                 partnerread = await SwitchConnection.ReadBytesAsync((uint)traineroff, 4, token);

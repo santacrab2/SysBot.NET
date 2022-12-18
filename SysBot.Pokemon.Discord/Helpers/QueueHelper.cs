@@ -42,7 +42,7 @@ namespace SysBot.Pokemon.Discord
                 }
                 else
                 {
-                    await trader.SendMessageAsync($"{msg}\nYour trade code will be: {code}");
+                    await trader.SendMessageAsync($"{msg}\nYour trade code will be: {code:0000 0000}");
                 }
 
          
