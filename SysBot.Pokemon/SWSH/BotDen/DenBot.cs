@@ -108,7 +108,7 @@ namespace SysBot.Pokemon
             }
 
             var species = RaidInfo.Den.IsEvent ? RaidInfo.RaidDistributionEncounter.Species : RaidInfo.RaidEncounter.Species;
-            var results = $"\n\nDesired species: {(uint)RaidInfo.Den.Stars + 1}★ - {specName}{form}\n" +
+            var results = $"\n\nDesired species: {(uint)RaidInfo.Den.Stars + 1}★ - {(Species)species}\n" +
                           $"\n{ivSpread}\n" +
                           $"\nStarting seed: {RaidInfo.Den.Seed:X16}\n" +
                           $"Target frame seed: {seed:X16}\n" +

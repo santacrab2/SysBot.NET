@@ -256,18 +256,21 @@ namespace SysBot.Pokemon
             if (poke.Type != PokeTradeType.Random || !LastTradeDistributionFixed)
             {
                 await Click(X, 1_000, token).ConfigureAwait(false);
-                await Click(PLUS, 1_000, token).ConfigureAwait(false);
+                if (poke.Code >= 0)
+                {
+                    await Click(PLUS, 1_000, token).ConfigureAwait(false);
 
-                // Loading code entry.
-                if (poke.Type != PokeTradeType.Random)
-                    Hub.Config.Stream.StartEnterCode(this);
-                await Task.Delay(Hub.Config.Timings.ExtraTimeOpenCodeEntry, token).ConfigureAwait(false);
+                    // Loading code entry.
+                    if (poke.Type != PokeTradeType.Random)
+                        Hub.Config.Stream.StartEnterCode(this);
+                    await Task.Delay(Hub.Config.Timings.ExtraTimeOpenCodeEntry, token).ConfigureAwait(false);
 
-                var code = poke.Code;
-                Log($"Entering Link Trade code: {code:0000 0000}...");
-                await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
+                    var code = poke.Code;
+                    Log($"Entering Link Trade code: {code:0000 0000}...");
+                    await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
 
-                await Click(PLUS, 3_000, token).ConfigureAwait(false);
+                    await Click(PLUS, 3_000, token).ConfigureAwait(false);
+                }
                 StartFromOverworld = false;
             }
 
