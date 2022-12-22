@@ -277,7 +277,7 @@ namespace SysBot.Pokemon
             LastTradeDistributionFixed = poke.Type == PokeTradeType.Random && !Hub.Config.Distribution.RandomCode;
 
             // Search for a trade partner for a Link Trade.
-            await Click(A, 1_000, token).ConfigureAwait(false);
+            await Click(A, 1_500, token).ConfigureAwait(false);
 
             // Clear it so we can detect it loading.
             await ClearTradePartnerNID(TradePartnerNIDOffset, token).ConfigureAwait(false);
