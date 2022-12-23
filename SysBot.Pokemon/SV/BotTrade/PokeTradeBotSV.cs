@@ -122,10 +122,16 @@ namespace SysBot.Pokemon
 
         private async Task DoNothing(CancellationToken token)
         {
+            int waitCounter = 0;
             while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.Idle)
             {
-                Log("No task assigned. Waiting for new task assignment.");
-                await Task.Delay(1_000, token).ConfigureAwait(false);
+                if (waitCounter == 0)
+                    Log("No task assigned. Waiting for new task assignment.");
+                waitCounter++;
+                if (waitCounter % 10 == 0 && Hub.Config.AntiIdle)
+                    await Click(B, 1_000, token).ConfigureAwait(false);
+                else
+                    await Task.Delay(1_000, token).ConfigureAwait(false);
             }
         }
 
@@ -163,7 +169,11 @@ namespace SysBot.Pokemon
                 Log("Nothing to check, waiting for new users...");
             }
 
-            await Task.Delay(1_000, token).ConfigureAwait(false);
+            const int interval = 10;
+            if (waitCounter % interval == interval - 1 && Hub.Config.AntiIdle)
+                await Click(B, 1_000, token).ConfigureAwait(false);
+            else
+                await Task.Delay(1_000, token).ConfigureAwait(false);
         }
 
         protected virtual (PokeTradeDetail<PK9>? detail, uint priority) GetTradeData(PokeRoutineType type)
@@ -246,28 +256,25 @@ namespace SysBot.Pokemon
             if (poke.Type != PokeTradeType.Random || !LastTradeDistributionFixed)
             {
                 await Click(X, 1_000, token).ConfigureAwait(false);
-                if (poke.Code >= 0)
-                {
-                    await Click(PLUS, 1_000, token).ConfigureAwait(false);
+                await Click(PLUS, 1_000, token).ConfigureAwait(false);
 
-                    // Loading code entry.
-                    if (poke.Type != PokeTradeType.Random)
-                        Hub.Config.Stream.StartEnterCode(this);
-                    await Task.Delay(Hub.Config.Timings.ExtraTimeOpenCodeEntry, token).ConfigureAwait(false);
+                // Loading code entry.
+                if (poke.Type != PokeTradeType.Random)
+                    Hub.Config.Stream.StartEnterCode(this);
+                await Task.Delay(Hub.Config.Timings.ExtraTimeOpenCodeEntry, token).ConfigureAwait(false);
 
-                    var code = poke.Code;
-                    Log($"Entering Link Trade code: {code:0000 0000}...");
-                    await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
+                var code = poke.Code;
+                Log($"Entering Link Trade code: {code:0000 0000}...");
+                await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
 
-                    await Click(PLUS, 3_000, token).ConfigureAwait(false);
-                }
+                await Click(PLUS, 3_000, token).ConfigureAwait(false);
                 StartFromOverworld = false;
             }
 
             LastTradeDistributionFixed = poke.Type == PokeTradeType.Random && !Hub.Config.Distribution.RandomCode;
 
             // Search for a trade partner for a Link Trade.
-            await Click(A, 1_500, token).ConfigureAwait(false);
+            await Click(A, 1_000, token).ConfigureAwait(false);
 
             // Clear it so we can detect it loading.
             await ClearTradePartnerNID(TradePartnerNIDOffset, token).ConfigureAwait(false);
@@ -575,8 +582,8 @@ namespace SysBot.Pokemon
 
             Log("Adjusting the cursor in the Portal.");
             // Move down to Link Trade.
-            await Click(DDOWN, 1_000, token).ConfigureAwait(false);
-            await Click(DDOWN, 1_000, token).ConfigureAwait(false);
+            await Click(DDOWN, 0_300, token).ConfigureAwait(false);
+            await Click(DDOWN, 0_300, token).ConfigureAwait(false);
         }
 
         // Connects online if not already. Assumes the user to be in the X menu to avoid a news screen.
