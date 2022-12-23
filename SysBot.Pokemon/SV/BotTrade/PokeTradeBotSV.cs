@@ -623,8 +623,8 @@ namespace SysBot.Pokemon
 
             Log("Adjusting the cursor in the Portal.");
             // Move down to Link Trade.
-            await Click(DDOWN, 0_300, token).ConfigureAwait(false);
-            await Click(DDOWN, 0_300, token).ConfigureAwait(false);
+            await Click(DDOWN, 1_000, token).ConfigureAwait(false);
+            await Click(DDOWN, 1_000, token).ConfigureAwait(false);
             return true;
         }
 
