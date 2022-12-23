@@ -575,8 +575,8 @@ namespace SysBot.Pokemon
 
             Log("Adjusting the cursor in the Portal.");
             // Move down to Link Trade.
-            await Click(DDOWN, 0_300, token).ConfigureAwait(false);
-            await Click(DDOWN, 0_300, token).ConfigureAwait(false);
+            await Click(DDOWN, 1_000, token).ConfigureAwait(false);
+            await Click(DDOWN, 1_000, token).ConfigureAwait(false);
         }
 
         // Connects online if not already. Assumes the user to be in the X menu to avoid a news screen.
