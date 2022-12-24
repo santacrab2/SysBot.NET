@@ -301,7 +301,11 @@ namespace SysBot.Pokemon
             }
             if (!partnerFound)
             {
-                await RecoverToPortal(token).ConfigureAwait(false);
+                if (!await RecoverToPortal(token).ConfigureAwait(false))
+                {
+                    Log("Failed to recover to portal.");
+                    await RecoverToOverworld(token).ConfigureAwait(false);
+                }
                 return PokeTradeResult.NoTrainerFound;
             }
 
@@ -315,7 +319,11 @@ namespace SysBot.Pokemon
                 if (++cnt > 20) // Didn't make it in after 10 seconds.
                 {
                     await Click(A, 1_000, token).ConfigureAwait(false); // Ensures we dismiss a popup.
-                    await RecoverToPortal(token).ConfigureAwait(false);
+                    if (!await RecoverToPortal(token).ConfigureAwait(false))
+                    {
+                        Log("Failed to recover to portal.");
+                        await RecoverToOverworld(token).ConfigureAwait(false);
+                    }
                     return PokeTradeResult.RecoverOpenBox;
                 }
             }
@@ -513,6 +521,10 @@ namespace SysBot.Pokemon
                 await RestartGameSV(token).ConfigureAwait(false);
             }
             await Task.Delay(1_000, token).ConfigureAwait(false);
+
+            // Force the bot to go through all the motions again on its first pass.
+            StartFromOverworld = true;
+            LastTradeDistributionFixed = false;
             return true;
         }
 
@@ -525,17 +537,18 @@ namespace SysBot.Pokemon
             var attempts = 0;
             while (await IsInPokePortal(PortalOffset, token).ConfigureAwait(false))
             {
-                attempts++;
-                if (attempts >= 30)
-                    break;
                 await Click(B, 1_500, token).ConfigureAwait(false);
+                if (++attempts >= 30)
+                {
+                    Log("Failed to recover to Poké Portal.");
+                    return false;
+                }
             }
 
             // Should be in the X menu hovered over Poké Portal.
             await Click(A, 1_000, token).ConfigureAwait(false);
 
-            await SetUpPortalCursor(token).ConfigureAwait(false);
-            return true;
+            return await SetUpPortalCursor(token).ConfigureAwait(false);
         }
 
         // Should be used from the overworld. Opens X menu, attempts to connect online, and enters the Portal.
@@ -564,16 +577,23 @@ namespace SysBot.Pokemon
             await Click(DUP, 0_200, token).ConfigureAwait(false);
             await Click(A, 1_000, token).ConfigureAwait(false);
 
-            await SetUpPortalCursor(token).ConfigureAwait(false);
-            return true;
+            return await SetUpPortalCursor(token).ConfigureAwait(false);
         }
 
         // Waits for the Portal to load (slow) and then moves the cursor down to link trade.
-        private async Task SetUpPortalCursor(CancellationToken token)
+        private async Task<bool> SetUpPortalCursor(CancellationToken token)
         {
             // Wait for the portal to load.
+            var attempts = 0;
             while (!await IsInPokePortal(PortalOffset, token).ConfigureAwait(false))
+            {
                 await Task.Delay(0_500, token).ConfigureAwait(false);
+                if (++attempts > 20)
+                {
+                    Log("Failed to load the Poké Portal.");
+                    return false;
+                }
+            }
             await Task.Delay(2_000 + Hub.Config.Timings.ExtraTimeLoadPortal, token).ConfigureAwait(false);
 
             // Handle the news popping up.
@@ -588,6 +608,7 @@ namespace SysBot.Pokemon
             // Move down to Link Trade.
             await Click(DDOWN, 0_300, token).ConfigureAwait(false);
             await Click(DDOWN, 0_300, token).ConfigureAwait(false);
+            return true;
         }
 
         // Connects online if not already. Assumes the user to be in the X menu to avoid a news screen.
@@ -651,7 +672,8 @@ namespace SysBot.Pokemon
                 if (++attempts > 20)
                 {
                     Log("Failed to exit box, rebooting the game.");
-                    await RestartGameSV(token).ConfigureAwait(false);
+                    if (!await RecoverToOverworld(token).ConfigureAwait(false))
+                        await RestartGameSV(token).ConfigureAwait(false);
                     await ConnectAndEnterPortal(Hub.Config, token).ConfigureAwait(false);
                     return;
                 }
@@ -670,7 +692,8 @@ namespace SysBot.Pokemon
                 if (++attempts > 40)
                 {
                     Log("Failed to load the portal, rebooting the game.");
-                    await RestartGameSV(token).ConfigureAwait(false);
+                    if (!await RecoverToOverworld(token).ConfigureAwait(false))
+                        await RestartGameSV(token).ConfigureAwait(false);
                     await ConnectAndEnterPortal(Hub.Config, token).ConfigureAwait(false);
                     return;
                 }
