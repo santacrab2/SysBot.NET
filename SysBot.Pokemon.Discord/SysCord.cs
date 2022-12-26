@@ -279,38 +279,6 @@ namespace SysBot.Pokemon.Discord
             UserStatus state = UserStatus.Idle;
             while (!token.IsCancellationRequested)
             {
-                var time = DateTime.Now;
-                var lastLogged = LogUtil.LastLogged;
-                if (Hub.Config.Discord.BotColorStatusTradeOnly)
-                {
-                    var recent = Hub.Bots.ToArray()
-                        .Where(z => z.Config.InitialRoutine.IsTradeBot())
-                        .OrderByDescending(z => z.LastTime)
-                        .FirstOrDefault();
-                    lastLogged = recent?.LastTime ?? time;
-                }
-                var delta = time - lastLogged;
-                var gap = TimeSpan.FromSeconds(Interval) - delta;
-
-                bool noQueue = !Hub.Queues.Info.GetCanQueue();
-                if (gap <= TimeSpan.Zero)
-                {
-                    var idle = noQueue ? UserStatus.DoNotDisturb : UserStatus.Idle;
-                    if (idle != state)
-                    {
-                        state = idle;
-                        await _client.SetStatusAsync(state).ConfigureAwait(false);
-                    }
-                    await Task.Delay(2_000, token).ConfigureAwait(false);
-                    continue;
-                }
-
-                var active = noQueue ? UserStatus.DoNotDisturb : UserStatus.Online;
-                if (active != state)
-                {
-                    state = active;
-                    await _client.SetStatusAsync(state).ConfigureAwait(false);
-                }
                 if (Hub.Config.Discord.announcements)
                 {
                     if (!Runner.IsRunning)
@@ -320,11 +288,14 @@ namespace SysBot.Pokemon.Discord
                         {
                             if (bot.Bot.Config.NextRoutineType == PokeRoutineType.FlexTrade || bot.Bot.Config.CurrentRoutineType == PokeRoutineType.FlexTrade)
                             {
+                                
                                 foreach (var channel in Hub.Config.Discord.announcementchannels)
                                 {
+                                   
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(channel);
                                     if (districhan.Name.Contains("✅"))
                                     {
+
                                         var role = districhan.Guild.EveryoneRole;
                                         await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
@@ -334,22 +305,15 @@ namespace SysBot.Pokemon.Discord
                                         await districhan.SendMessageAsync(embed: offembed.Build());
                                     }
                                 }
-                                var wtpchan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(Hub.Config.Discord.WTPchannelid);
-                                if (wtpchan.Name.Contains("✅"))
-                                {
-                                    WTPSB<T>.WTPsource.Cancel();
-                                    await wtpchan.ModifyAsync(x => x.Name = wtpchan.Name.Replace("✅", "❌"));
-                                    await wtpchan.AddPermissionOverwriteAsync(wtpchan.Guild.EveryoneRole, new OverwritePermissions(sendMessages: PermValue.Deny));
-                                }
+                                
                             }
                             if (bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH || bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
                             {
                                 List<ulong> channels = new();
                                 List<ITextChannel> embedChannels = new();
-                                var chStrings = Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels.Split(',');
-                                foreach (var chan in chStrings)
-                                {
-                                    var cid = ulong.Parse(chan);
+                                var chStrings = Hub.Config.RollingRaidSWSH.RollingRaidEmbedChannels;
+                               
+                                    var cid = ulong.Parse(chStrings);
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(cid);
                                     if (districhan.Name.Contains("✅"))
                                     {
@@ -358,10 +322,10 @@ namespace SysBot.Pokemon.Discord
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Raid Bot is Offline");
-                                        await districhan.SendMessageAsync( embed: offembed.Build());
+                                        await districhan.SendMessageAsync(embed: offembed.Build());
                                     }
-                                }
                                 
+
                             }
                         }
                     }
@@ -385,12 +349,11 @@ namespace SysBot.Pokemon.Discord
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Trade Bot is Online");
                                         await districhan.SendMessageAsync($"<@&{Hub.Config.Discord.pingroleid}>", embed: offembed.Build());
 
-                                        if (SysCord<T>.Runner.Config.Discord.WTPbool)
-                                            WTPSB<T>.WhoseThatPokemon();
+                                       
                                     }
                                 }
                             }
-                            if(bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH || bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
+                            if (bot.Bot.Config.NextRoutineType == PokeRoutineType.RollingRaidSWSH || bot.Bot.Config.CurrentRoutineType == PokeRoutineType.RollingRaidSWSH)
                             {
                                 List<ulong> channels = new();
                                 List<ITextChannel> embedChannels = new();
@@ -401,7 +364,7 @@ namespace SysBot.Pokemon.Discord
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(cid);
                                     if (districhan.Name.Contains("❌"))
                                     {
-                                        
+
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
@@ -414,6 +377,29 @@ namespace SysBot.Pokemon.Discord
                         }
                     }
                 }
+                var time = DateTime.Now;
+                var lastLogged = LogUtil.LastLogged;
+                if (Hub.Config.Discord.BotColorStatusTradeOnly)
+                {
+                    var recent = Hub.Bots.ToArray()
+                        .Where(z => z.Config.InitialRoutine.IsTradeBot())
+                        .OrderByDescending(z => z.LastTime)
+                        .FirstOrDefault();
+                    lastLogged = recent?.LastTime ?? time;
+                }
+                var delta = time - lastLogged;
+                var gap = TimeSpan.FromSeconds(Interval) - delta;
+
+                bool noQueue = !Hub.Queues.Info.GetCanQueue();
+         
+
+                var active = noQueue ? UserStatus.DoNotDisturb : UserStatus.Online;
+                if (active != state)
+                {
+                    state = active;
+                    await _client.SetStatusAsync(state).ConfigureAwait(false);
+                }
+                
                 await Task.Delay(20_000, token).ConfigureAwait(false);
             }
         }

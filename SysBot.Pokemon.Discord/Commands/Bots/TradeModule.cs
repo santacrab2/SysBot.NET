@@ -47,7 +47,7 @@ namespace SysBot.Pokemon.Discord
 
                     var la = new LegalityAnalysis(pkm);
                     var spec = GameInfo.Strings.Species[template.Species];
-                    pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
+                    //pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
                    
 
                     if (pkm is not T pk || !la.Valid)

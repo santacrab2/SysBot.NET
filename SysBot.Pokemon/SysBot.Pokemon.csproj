@@ -8,9 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="SWSH\BotDen\FlatbuffersResource\shieldEnc.bin" />
+    <None Remove="SWSH\BotDen\FlatbuffersResource\swordEnc.bin" />
+    <None Remove="SWSH\BotDen\flatc.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SWSH\BotDen\FlatbuffersResource\shieldEnc.bin" />
+    <EmbeddedResource Include="SWSH\BotDen\FlatbuffersResource\swordEnc.bin" />
+    <EmbeddedResource Include="SWSH\BotDen\flatc.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="KdSoft.FlatBuffers" Version="1.12.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="PKHeX.Core" Version="22.12.18" />
+    <PackageReference Include="PKHeX.Core" Version="22.12.19" />
     <ProjectReference Include="..\SysBot.Base\SysBot.Base.csproj" />
   </ItemGroup>
 
