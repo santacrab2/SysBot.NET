@@ -19,6 +19,8 @@ namespace SysBot.Pokemon
 
         [Category(TradeConfig), Description("Max amount of time in seconds pressing A to wait for a trade to process.")]
         public int MaxTradeConfirmTime { get; set; } = 25;
+        [Category(TradeConfig)]
+        public int TradeAnimationMaxDelaySeconds = 25;
 
         [Category(TradeCode), Description("Minimum Link Code.")]
         public int MinTradeCode { get; set; } = 8180;

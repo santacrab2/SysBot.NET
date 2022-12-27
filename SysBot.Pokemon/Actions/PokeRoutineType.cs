@@ -72,12 +72,9 @@
         /// <summary> Resets Swords Of Justice via the camp method. </summary>
         EtumrepDump = 6009,
         OnlineLairBot = 6010,
-        SVInject = 6011,
-        SVShinify = 6012,
-        SVCloneShinify = 6013,
+     
         OverWorldRNG = 6014,
-        svdump = 6015,
-        files = 6016,
+       
    
 
     }

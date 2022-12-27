@@ -56,7 +56,7 @@ namespace SysBot.Pokemon
 
             for (int i = 1; i < 9; i++)
             {
-                var versions = GameUtil.GetVersionsInGeneration(i,7);
+                var versions = GameUtil.GetVersionsInGeneration(i,i);
                 foreach (var v in versions)
                 {
                     var fallback = new SimpleTrainerInfo(v)
