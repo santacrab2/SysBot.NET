@@ -377,28 +377,7 @@ namespace SysBot.Pokemon.Discord
                         }
                     }
                 }
-                var time = DateTime.Now;
-                var lastLogged = LogUtil.LastLogged;
-                if (Hub.Config.Discord.BotColorStatusTradeOnly)
-                {
-                    var recent = Hub.Bots.ToArray()
-                        .Where(z => z.Config.InitialRoutine.IsTradeBot())
-                        .OrderByDescending(z => z.LastTime)
-                        .FirstOrDefault();
-                    lastLogged = recent?.LastTime ?? time;
-                }
-                var delta = time - lastLogged;
-                var gap = TimeSpan.FromSeconds(Interval) - delta;
-
-                bool noQueue = !Hub.Queues.Info.GetCanQueue();
-         
-
-                var active = noQueue ? UserStatus.DoNotDisturb : UserStatus.Online;
-                if (active != state)
-                {
-                    state = active;
-                    await _client.SetStatusAsync(state).ConfigureAwait(false);
-                }
+               
                 
                 await Task.Delay(20_000, token).ConfigureAwait(false);
             }
