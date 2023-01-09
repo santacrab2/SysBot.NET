@@ -272,7 +272,7 @@ namespace SysBot.Pokemon
 
             await Click(A, 1_500, token).ConfigureAwait(false);
             // Make sure we clear any Link Codes if we're not in Distribution with fixed code, and it wasn't entered last round.
-            if (poke.Type != PokeTradeType.Random || !LastTradeDistributionFixed)
+            if (poke.Type != PokeTradeType.Random || !LastTradeDistributionFixed )
             {
                 await Click(X, 1_000, token).ConfigureAwait(false);
                 await Click(PLUS, 1_000, token).ConfigureAwait(false);
@@ -283,9 +283,11 @@ namespace SysBot.Pokemon
                 await Task.Delay(Hub.Config.Timings.ExtraTimeOpenCodeEntry, token).ConfigureAwait(false);
 
                 var code = poke.Code;
-                Log($"Entering Link Trade code: {code:0000 0000}...");
-                await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
-
+                if (code >= 0)
+                {
+                    Log($"Entering Link Trade code: {code:0000 0000}...");
+                    await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
+                }
                 await Click(PLUS, 3_000, token).ConfigureAwait(false);
                 StartFromOverworld = false;
             }
@@ -619,6 +621,7 @@ namespace SysBot.Pokemon
             // Move down to Link Trade.
             await Click(DDOWN, 0_300, token).ConfigureAwait(false);
             await Click(DDOWN, 0_300, token).ConfigureAwait(false);
+            return true;
         }
 
         // Connects online if not already. Assumes the user to be in the X menu to avoid a news screen.
