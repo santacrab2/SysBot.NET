@@ -154,6 +154,7 @@ namespace SysBot.Pokemon
             await SetCurrentBox(0, token).ConfigureAwait(false);
             while (!token.IsCancellationRequested && Config.NextRoutineType == type)
             {
+                await SetCurrentBox(0, token).ConfigureAwait(false);
                 var (detail, priority) = GetTradeData(type);
                 if (detail is null)
                 {

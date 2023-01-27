@@ -25,6 +25,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
             PokeRoutineType.RollingRaidSWSH => new RollingRaidBot(cfg, Hub),
             PokeRoutineType.OnlineLairBot => new onlineLairBot(cfg, Hub),
+            PokeRoutineType.DenBotSWSH => new DenBot(cfg,Hub),
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
 
@@ -46,6 +47,7 @@ namespace SysBot.Pokemon
             or PokeRoutineType.Dogbot
             or PokeRoutineType.OverWorldRNG
             or PokeRoutineType.RemoteControl
+            or PokeRoutineType.DenBotSWSH
               => true,
             _ => false,
         };

@@ -95,7 +95,7 @@ namespace SysBot.Pokemon
         [Category(Operation), Description("WTP CHANNEL")]
         public ulong WTPchannelid { get; set; } = 0;
         [Category(Operation), Description("wtp")]
-        public bool WTPbool { get; set; } = true;
+        public string terarequestfolder { get; set; } = "";
         [Category(Operation)]
         public bool announcements { get; set; } = false;
         [Category(Channels)]

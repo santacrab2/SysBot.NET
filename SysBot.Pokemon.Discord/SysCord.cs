@@ -130,7 +130,7 @@ namespace SysBot.Pokemon.Discord
             _client.Ready += LoadLoggingAndEcho;
             // Centralize the logic for commands into a separate method.
             await InitCommands().ConfigureAwait(false);
-
+           
             // Login and connect.
             await _client.LoginAsync(TokenType.Bot, apiToken).ConfigureAwait(false);
             await _client.StartAsync().ConfigureAwait(false);
@@ -186,6 +186,7 @@ namespace SysBot.Pokemon.Discord
   
             _client.ButtonExecuted += handlebuttonpress;
         }
+   
         private async Task handlebuttonpress(SocketMessageComponent arg)
         {
           
@@ -424,8 +425,8 @@ namespace SysBot.Pokemon.Discord
 
         private async Task modalsubmit(SocketModal arg)
         {
-            if (!File.Exists($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt")) File.Create($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt");
-            if (!File.ReadAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt").Contains($"{arg.User.Id}"))
+            if (!File.Exists($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt")) File.Create($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt");
+            if (!File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt").Contains($"{arg.User.Id}"))
             {
                 List<SocketMessageComponentData> components =
                 arg.Data.Components.ToList();
@@ -437,10 +438,10 @@ namespace SysBot.Pokemon.Discord
 
                 await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nStars: {stars}\nTeraType: {terat}\nReward Requests: {reward}\n");
               
-                var therecordsarr = File.ReadAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt");
+                var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt");
                 var therecordslist = therecordsarr!=null ? therecordsarr.ToList():new();
                 therecordslist.Add($"{arg.User.Id}\n{arg.User.Username}\n");
-                File.WriteAllLines($"{Directory.GetCurrentDirectory()}/Tera-Raid-Request.txt", therecordslist);
+                File.WriteAllLines($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt", therecordslist);
                 await arg.RespondAsync("Your Request has been submitted!", ephemeral: true);
             }
             await arg.RespondAsync("One Request at a time! Please wait until your current request has been fulfilled.", ephemeral: true);

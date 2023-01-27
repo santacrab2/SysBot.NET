@@ -64,8 +64,6 @@ namespace SysBot.Pokemon
         // Miscellaneous settings.
         [Category(Misc), Description("[SWSH/SV] Extra time in milliseconds to wait after clicking + to connect to Y-Comm (SWSH) or L to connect online (SV).")]
         public int ExtraTimeConnectOnline { get; set; } = 0;
-        [Category(Misc), Description("[SWSH/SV] Extra time in milliseconds to wait after clicking + to connect to Y-Comm (SWSH) or L to connect online (SV).")]
-        public int ExtraTimeConnectOnline { get; set; }
 
         [Category(Misc), Description("Number of times to attempt reconnecting to a socket connection after a connection is lost. Set this to -1 to try indefinitely.")]
         public int ReconnectAttempts { get; set; } = 30;
@@ -85,8 +83,7 @@ namespace SysBot.Pokemon
         [Category(Misc), Description("[SV] Extra time in milliseconds to wait for the Poké Portal to load.")]
         public int ExtraTimeLoadPortal { get; set; } = 1000;
 
-        [Category(Misc), Description("[SV] Extra time in milliseconds to wait for the Poké Portal to load.")]
-        public int ExtraTimeLoadPortal { get; set; } = 1000;
+ 
 
         [Category(Misc), Description("Extra time in milliseconds to wait for the box to load after finding a trade.")]
         public int ExtraTimeOpenBox { get; set; } = 1000;
