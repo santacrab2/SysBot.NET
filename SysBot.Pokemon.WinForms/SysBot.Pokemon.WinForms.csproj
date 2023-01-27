@@ -19,6 +19,16 @@
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <DebugType>portable</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <SelfContained>false</SelfContained>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.8.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
