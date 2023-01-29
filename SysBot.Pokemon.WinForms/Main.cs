@@ -54,9 +54,8 @@ namespace SysBot.Pokemon.WinForms
                 ProgramMode.SV => Properties.Resources.iconsv,
             };
             Task.Run(BotMonitor);
-#if NETFRAMEWORK
+
             InitUtil.InitializeStubs(Config.Mode);
-#endif
         }
 
         private static IPokeBotRunner GetRunner(ProgramConfig cfg) => cfg.Mode switch
