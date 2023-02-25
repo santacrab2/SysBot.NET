@@ -120,7 +120,7 @@ namespace SysBot.Pokemon
 
             pk.IsEgg = true;
             pk.Egg_Location = pk is PK8 ? 60002 : 60010;
-            pk.MetDate = DateTime.Parse("2020/10/20");
+            pk.MetDate = DateOnly.Parse("2020/10/20");
             pk.EggMetDate = pk.MetDate;
             pk.HeldItem = 0;
             pk.CurrentLevel = 1;
@@ -189,7 +189,7 @@ namespace SysBot.Pokemon
 
             lock (_syncLog)
             {
-                bool mark = pk is PK8 pk8 && pk8.HasMark();
+                bool mark = pk is PK8 pk8 && pk8.HasMarkEncounter8;
                 var content = File.ReadAllText(filepath).Split('\n').ToList();
                 var splitTotal = content[0].Split(',');
                 content.RemoveRange(0, 3);
@@ -247,7 +247,7 @@ namespace SysBot.Pokemon
         {
             var pkMet = (T)pkm.Clone();
             if (pkMet.Version != (int)GameVersion.GO)
-                pkMet.MetDate = DateTime.Parse("2020/10/20");
+                pkMet.MetDate = DateOnly.Parse("2020/10/20");
 
             var analysis = new LegalityAnalysis(pkMet);
             var pkTrash = (T)pkMet.Clone();
@@ -272,10 +272,10 @@ namespace SysBot.Pokemon
             if (mgPkm != null)
             {
                 
-                if (mgPkm.TID == 0 && mgPkm.SID == 0)
+                if (mgPkm.TID16 == 0 && mgPkm.SID16 == 0)
                 {
-                    mgPkm.TID = info.TID;
-                    mgPkm.SID = info.SID;
+                    mgPkm.TID16 = info.TID16;
+                    mgPkm.SID16 = info.SID16;
                 }
 
                 mgPkm.CurrentLevel = mg.LevelMin;

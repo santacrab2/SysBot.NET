@@ -1,4 +1,6 @@
-﻿using Discord.Interactions;
+﻿using Discord;
+using Discord.Interactions;
+using Discord.WebSocket;
 using PKHeX.Core;
 using System.Threading.Tasks;
 
@@ -12,7 +14,8 @@ namespace SysBot.Pokemon.Discord
         {
             var str = SysCordSettings.Settings.HelloResponse;
             var msg = string.Format(str, Context.User.Mention);
-            await ReplyAsync(msg).ConfigureAwait(false);
+            await RespondAsync(msg, ephemeral:true).ConfigureAwait(false);
+      
         }
     }
 }

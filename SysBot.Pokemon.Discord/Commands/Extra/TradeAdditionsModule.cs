@@ -185,11 +185,11 @@ namespace SysBot.Pokemon.Discord
         [SlashCommand("terarequest","Displays a Form to fill out to request a Shiny Tera Raid to be Hosted")]
         public async Task Terarequest()
         {
+
             var teramodal = new ModalBuilder().WithCustomId("terarequest").WithTitle("Tera Raid Request");
             teramodal.AddTextInput("Species", "species", placeholder: "Species",required:false);
-            teramodal.AddTextInput("Star Level", "star", placeholder: "must be >3", required: false);
             teramodal.AddTextInput("Tera Type", "tera", placeholder: "Tera Type", required: false);
-            teramodal.AddTextInput("Rewards", "reward", TextInputStyle.Paragraph, placeholder: "Species will be favored over rewards, leave species blank if rewards are your focus.", required: false);
+            teramodal.AddTextInput("Rewards", "reward", TextInputStyle.Paragraph, placeholder: "Rewards will be fulfilled over species. Leave Blank for shinies.", required: false);
             
             
             await RespondWithModalAsync(teramodal.Build());

@@ -28,7 +28,7 @@ namespace SysBot.Pokemon.Discord
     {
         public static PokeBotRunner<T> Runner { get; private set; } = default!;
 
-        public static DiscordSocketClient _client;
+        public static DiscordSocketClient _client = new();
         private readonly DiscordManager Manager;
         public readonly PokeTradeHub<T> Hub;
 
@@ -276,9 +276,8 @@ namespace SysBot.Pokemon.Discord
 
         private async Task MonitorStatusAsync(CancellationToken token)
         {
-            const int Interval = 20; // seconds
-            // Check datetime for update
-            UserStatus state = UserStatus.Idle;
+            
+           
             while (!token.IsCancellationRequested)
             {
                 if (Hub.Config.Discord.announcements)
@@ -432,12 +431,11 @@ namespace SysBot.Pokemon.Discord
                 List<SocketMessageComponentData> components =
                 arg.Data.Components.ToList();
                 string species = components.First(x => x.CustomId == "species").Value;
-                string stars = components.First(x => x.CustomId == "star").Value;
                 string terat = components.First(x => x.CustomId == "tera").Value;
                 string reward = components.First(x => x.CustomId == "reward").Value;
                 var chan = (ITextChannel)await _client.GetChannelAsync(872606380434026508);
 
-                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nStars: {stars}\nTeraType: {terat}\nReward Requests: {reward}\n");
+                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nTeraType: {terat}\nReward Requests: {reward}\n");
               
                 var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt");
                 var therecordslist = therecordsarr!=null ? therecordsarr.ToList():new();

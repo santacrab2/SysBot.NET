@@ -531,8 +531,8 @@ namespace SysBot.Pokemon
                     Nature = data[8],
                     Gender = (data[10] == 1) ? 0 : 1,
                     OT_Name = TrainerData.OT,
-                    TID = TrainerData.TID,
-                    SID = TrainerData.SID,
+                    TID16 = TrainerData.TID16,
+                    SID16 = TrainerData.SID16,
                     OT_Gender = TrainerData.Gender,
                     HT_Name = TrainerData.OT,
                     HT_Gender = TrainerData.Gender,
@@ -574,14 +574,14 @@ namespace SysBot.Pokemon
             var pid = (uint)xoro.NextInt(uint.MaxValue);
             if (shiny == FakeShiny.Never)
             {
-                if (GetIsShiny(pk.TID, pk.SID, pid))
+                if (GetIsShiny(pk.TID16, pk.SID16, pid))
                     pid ^= 0x1000_0000;
             }
 
             else if (shiny != FakeShiny.Random)
             {
-                if (!GetIsShiny(pk.TID, pk.SID, pid))
-                    pid = GetShinyPID(pk.TID, pk.SID, pid, 0);
+                if (!GetIsShiny(pk.TID16, pk.SID16, pid))
+                    pid = GetShinyPID(pk.TID16, pk.SID16, pid, 0);
             }
 
             pk.PID = pid;
