@@ -77,7 +77,7 @@ namespace SysBot.Pokemon
         public bool KeepPath { get; set; } = false;
 
         [Category(Lair), Description("Personal screen offset values for LairBot."), DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        public LairScreenValueCategory LairScreenValues { get; set; } = new();
+        public LairOnlineScreenValueCategory LairScreenValues { get; set; } = new();
 
         [Category(FeatureToggle), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
         public bool ScreenOff { get; set; } = false;
@@ -105,8 +105,8 @@ namespace SysBot.Pokemon
         }
 
         [Category(Lair)]
-        [TypeConverter(typeof(LairScreenValueCategoryConverter))]
-        public class LairScreenValueCategory
+        [TypeConverter(typeof(LairOnlineScreenValueCategoryConverter))]
+        public class LairOnlineScreenValueCategory
         {
             public override string ToString() => "LairBot Screen Values";
 
@@ -139,11 +139,11 @@ namespace SysBot.Pokemon
 
             public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType != typeof(string) && base.CanConvertTo(context, destinationType);
         }
-        private sealed class LairScreenValueCategoryConverter : TypeConverter
+        private sealed class LairOnlineScreenValueCategoryConverter : TypeConverter
         {
             public override bool GetPropertiesSupported(ITypeDescriptorContext context) => true;
 
-            public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes) => TypeDescriptor.GetProperties(typeof(LairScreenValueCategory));
+            public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes) => TypeDescriptor.GetProperties(typeof(LairOnlineScreenValueCategory));
 
             public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType != typeof(string) && base.CanConvertTo(context, destinationType);
         }

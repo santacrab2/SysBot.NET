@@ -72,20 +72,6 @@ namespace SysBot.Pokemon
             get => _completedAdventures;
             set => _completedAdventures = value;
         }
-
-        [Category(Counts), Description("When enabled, the counts will be emitted when a status check is requested.")]
-        public bool EmitCountsOnStatusCheck { get; set; }
-
-        public int AddCompletedAdventures() => Interlocked.Increment(ref _completedAdventures);
-
-        public IEnumerable<string> GetNonZeroCounts()
-        {
-            if (!EmitCountsOnStatusCheck)
-                yield break;
-            if (CompletedAdventures != 0)
-                yield return $"Adventures Completed: {CompletedAdventures}";
-        }
-
         [Category(Lair)]
         [TypeConverter(typeof(LairScreenValueCategoryConverter))]
         public class LairScreenValueCategory
@@ -113,6 +99,20 @@ namespace SysBot.Pokemon
             [Category(Lair), Description("Lair Rewards Screen (CurrentScreen).")]
             public string LairRewardsScreenValue { get; set; } = "0x00008DC0";
         }
+        [Category(Counts), Description("When enabled, the counts will be emitted when a status check is requested.")]
+        public bool EmitCountsOnStatusCheck { get; set; }
+
+        public int AddCompletedAdventures() => Interlocked.Increment(ref _completedAdventures);
+
+        public IEnumerable<string> GetNonZeroCounts()
+        {
+            if (!EmitCountsOnStatusCheck)
+                yield break;
+            if (CompletedAdventures != 0)
+                yield return $"Adventures Completed: {CompletedAdventures}";
+        }
+
+        
 
         private sealed class LairScreenValueCategoryConverter : TypeConverter
         {

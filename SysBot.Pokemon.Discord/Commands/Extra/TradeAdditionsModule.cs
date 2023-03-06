@@ -195,6 +195,23 @@ namespace SysBot.Pokemon.Discord
             await RespondWithModalAsync(teramodal.Build());
            
         }
+        [SlashCommand("botrequest","Request a bot to be turned on")]
+        public async Task botrequest()
+        {
+            await DeferAsync();
+            var menubuilder = new SelectMenuBuilder().WithCustomId("botmenu")
+                .WithMaxValues(1)
+                .WithMinValues(1)
+                .WithPlaceholder("Select a Bot")
+                .AddOption("Articuno LGPE", "Articuno LGPE")
+                .AddOption("Empoleon SWSH", "Empoleon SWSH")
+                .AddOption("Spiritomb BDSP", "Spiritomb BDSP")
+                .AddOption("Basculegion LA", "Basculegion LA");
+             //   .AddOption("Klawf SV", "Klawf SV");
+            var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
+            await FollowupAsync(ephemeral: true, components: builder.Build());
+
+        }
 
 
     }

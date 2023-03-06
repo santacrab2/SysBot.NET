@@ -278,7 +278,7 @@ namespace SysBot.Pokemon
 
             await Click(A, 1_500, token).ConfigureAwait(false);
             // Make sure we clear any Link Codes if we're not in Distribution with fixed code, and it wasn't entered last round.
-            if (poke.Type != PokeTradeType.Random || !LastTradeDistributionFixed )
+            if (poke.Code>=0)
             {
                 await Click(X, 1_000, token).ConfigureAwait(false);
                 await Click(PLUS, 1_000, token).ConfigureAwait(false);
@@ -289,11 +289,10 @@ namespace SysBot.Pokemon
                 await Task.Delay(Hub.Config.Timings.ExtraTimeOpenCodeEntry, token).ConfigureAwait(false);
 
                 var code = poke.Code;
-                if (code >= 0)
-                {
+             
                     Log($"Entering Link Trade code: {code:0000 0000}...");
                     await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
-                }
+                
                 await Click(PLUS, 3_000, token).ConfigureAwait(false);
                 StartFromOverworld = false;
             }
@@ -338,7 +337,7 @@ namespace SysBot.Pokemon
             var cnt = 0;
             while (!await IsInBox(PortalOffset, token).ConfigureAwait(false))
             {
-                await Task.Delay(0_500, token).ConfigureAwait(false);
+                await Task.Delay(1000, token).ConfigureAwait(false);
                 if (++cnt > 20) // Didn't make it in after 10 seconds.
                 {
                     await Click(A, 1_000, token).ConfigureAwait(false); // Ensures we dismiss a popup.

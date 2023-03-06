@@ -3,7 +3,7 @@ using Discord.WebSocket;
 using PKHeX.Core;
 using PKHeX.Core.AutoMod;
 using PKHeX.Drawing.PokeSprite;
-using System.Drawing.Drawing2D;
+
 using System.Drawing;
 using System;
 using System.Linq;
