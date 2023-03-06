@@ -206,8 +206,8 @@ namespace SysBot.Pokemon.Discord
                 .AddOption("Articuno LGPE", "Articuno LGPE")
                 .AddOption("Empoleon SWSH", "Empoleon SWSH")
                 .AddOption("Spiritomb BDSP", "Spiritomb BDSP")
-                .AddOption("Basculegion LA", "Basculegion LA");
-             //   .AddOption("Klawf SV", "Klawf SV");
+                .AddOption("Basculegion LA", "Basculegion LA")
+                .AddOption("Klawf SV", "Klawf SV");
             var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
             await FollowupAsync(ephemeral: true, components: builder.Build());
 
