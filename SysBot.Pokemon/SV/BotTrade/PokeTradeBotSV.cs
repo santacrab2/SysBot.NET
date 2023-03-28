@@ -278,9 +278,10 @@ namespace SysBot.Pokemon
 
             await Click(A, 1_500, token).ConfigureAwait(false);
             // Make sure we clear any Link Codes if we're not in Distribution with fixed code, and it wasn't entered last round.
-            if (poke.Code>=0)
-            {
+         
                 await Click(X, 1_000, token).ConfigureAwait(false);
+            if (poke.Code >= 0)
+            {
                 await Click(PLUS, 1_000, token).ConfigureAwait(false);
 
                 // Loading code entry.

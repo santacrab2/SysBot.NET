@@ -22,6 +22,15 @@ namespace SysBot.Pokemon.Discord
             {
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 var pkm = sav.GetLegal(template, out var result);
+                if (pkm is PB7)
+                {
+                    if (pkm.Species == 151)
+                    {
+                        set = ShowdownUtil.ConvertToShowdown("Mew Level: 1");
+                        template = AutoLegalityWrapper.GetTemplate(set);
+                        pkm = sav.GetLegal(template, out result);
+                    }
+                }
                 var la = new LegalityAnalysis(pkm);
                 var spec = GameInfo.Strings.Species[template.Species];
                 if (!la.Valid)

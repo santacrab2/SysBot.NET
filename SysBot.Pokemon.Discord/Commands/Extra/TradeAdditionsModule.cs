@@ -209,7 +209,7 @@ namespace SysBot.Pokemon.Discord
                 .AddOption("Basculegion LA", "Basculegion LA")
                 .AddOption("Klawf SV", "Klawf SV");
             var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
-            await FollowupAsync(ephemeral: true, components: builder.Build());
+            await FollowupAsync("Choose the bot you would like",ephemeral: true, components: builder.Build());
 
         }
 

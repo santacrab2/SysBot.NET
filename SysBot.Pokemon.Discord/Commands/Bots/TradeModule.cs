@@ -22,6 +22,7 @@ namespace SysBot.Pokemon.Discord
         public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment PKM = default)
         {
             await DeferAsync();
+           
             if (content != "")
             {
                 var code = Info.GetRandomTradeCode();
@@ -41,7 +42,15 @@ namespace SysBot.Pokemon.Discord
                     var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
                     var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                     var pkm = sav.GetLegal(template, out var result);
-               
+                    if(pkm is PB7)
+                    {
+                        if (pkm.Species == 151)
+                        {
+                            set = ShowdownUtil.ConvertToShowdown("Mew Level: 1");
+                            template = AutoLegalityWrapper.GetTemplate(set);
+                            pkm = sav.GetLegal(template, out result);
+                        }
+                    }
 
             
 

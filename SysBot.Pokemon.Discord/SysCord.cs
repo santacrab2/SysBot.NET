@@ -28,7 +28,7 @@ namespace SysBot.Pokemon.Discord
     {
         public static PokeBotRunner<T> Runner { get; private set; } = default!;
 
-        public static DiscordSocketClient _client = new();
+        public static DiscordSocketClient _client;
         private readonly DiscordManager Manager;
         public readonly PokeTradeHub<T> Hub;
 
@@ -56,7 +56,7 @@ namespace SysBot.Pokemon.Discord
             {
                 // How much logging do you want to see?
                 LogLevel = LogSeverity.Info,
-                GatewayIntents = Guilds | GuildMessages | DirectMessages | GuildMembers | GuildPresences | MessageContent,
+                
                 // If you or another service needs to do anything with messages
                 // (eg. checking Reactions, checking the content of edited/deleted messages),
                 // you must set the MessageCacheSize. You may adjust the number as needed.
@@ -142,10 +142,7 @@ namespace SysBot.Pokemon.Discord
             // Wait infinitely so your bot actually stays connected.
             await MonitorStatusAsync(token).ConfigureAwait(false);
         }
-        public async Task ready()
-        {
-          
-        }
+   
         public Task slashtask(SocketSlashCommand arg1)
         {
 
@@ -185,27 +182,9 @@ namespace SysBot.Pokemon.Discord
           
             _client.MessageReceived += HandleMessageAsync;
   
-            _client.ButtonExecuted += handlebuttonpress;
         }
    
-        private async Task handlebuttonpress(SocketMessageComponent arg)
-        {
-          
-            if (arg.Data.CustomId == "wtpyes")
-            {
-                WTPSB<T>.buttonpressed = true;
-                WTPSB<T>.tradepokemon = true;
-                await arg.Message.DeleteAsync();
-                return;
-            }
-            if (arg.Data.CustomId == "wtpno")
-            {
-                WTPSB<T>.buttonpressed = true;
-                WTPSB<T>.tradepokemon = false;
-                await arg.Message.DeleteAsync();
-                return;
-            }
-        }
+       
         private async Task HandleMessageAsync(SocketMessage arg)
         {
             // Bail out if it's a System Message.
@@ -404,6 +383,7 @@ namespace SysBot.Pokemon.Discord
             };
             _client.SlashCommandExecuted += slashtask;
             _client.ModalSubmitted += modalsubmit;
+            _client.SelectMenuExecuted += MyMenuHandler;
             if (MessageChannelsLoaded)
                 return;
 
@@ -447,6 +427,23 @@ namespace SysBot.Pokemon.Discord
 
 
 
+        }
+        public async Task MyMenuHandler(SocketMessageComponent arg)
+        {
+            if (!File.Exists($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt")) File.Create($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt");
+            if (!File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt").Contains($"{arg.User.Id}"))
+            {
+                var chan =(ITextChannel) _client.GetChannel(1081994925635289131);
+                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nBot Request: {arg.Data.Values.First()}");
+                var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt");
+                var therecordslist = therecordsarr != null ? therecordsarr.ToList() : new();
+                therecordslist.Add($"{arg.User.Id}\n{arg.User.Username}\n");
+                File.WriteAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt", therecordslist);
+                await arg.RespondAsync("Your Request has been submitted!", ephemeral: true);
+                await arg.Message.DeleteAsync();
+            }
+            await arg.RespondAsync("One Request at a time! Please wait until your current request has been fulfilled.", ephemeral: true);
+            await arg.Message.DeleteAsync();
         }
     }
 }
