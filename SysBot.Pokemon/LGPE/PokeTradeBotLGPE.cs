@@ -88,7 +88,8 @@ namespace SysBot.Pokemon
                 catch (SocketException e)
                 {
                     Log(e.Message);
-                    Connection.Reset();
+                    break;
+                   
                 }
             }
         }
@@ -321,7 +322,7 @@ namespace SysBot.Pokemon
             if (token.IsCancellationRequested)
             {
                 await ExitTrade(false, token).ConfigureAwait(false);
-                return PokeTradeResult.RoutineCancel;
+                return PokeTradeResult.ExceptionInternal;
             }
             //trade was successful
             var received = await ReadPokemon(GetSlotOffset(0,0), token);
