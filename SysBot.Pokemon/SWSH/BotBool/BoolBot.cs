@@ -1,5 +1,6 @@
 ﻿using PKHeX.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace SysBot.Pokemon
         {
             Log("Starting main BoolBot loop.");
             Config.IterateNextRoutine();
-
+            await InitializeSessionOffsets(token);
             var task = Settings.BoolType switch
             {
                 BoolMode.Skipper => Skipper(token),
@@ -31,7 +32,11 @@ namespace SysBot.Pokemon
             };
             await task.ConfigureAwait(false);
         }
-
+        private async Task InitializeSessionOffsets(CancellationToken token)
+        {
+            Log("Caching session offsets...");
+            OverworldOffset = await SwitchConnection.PointerAll(Offsets.OverworldPointer, token).ConfigureAwait(false);
+        }
         private async Task ResetLegendaryLairFlags(CancellationToken token)
         {
             var enumVal = Enum.GetNames(typeof(LairSpeciesBlock));
@@ -200,9 +205,29 @@ namespace SysBot.Pokemon
                     }
                 }
 
-                while (!await IsOnOverworld(Hub.Config, token).ConfigureAwait(false))
+                while (!await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                     await Click(B, 0_500, token).ConfigureAwait(false);
             }
+        }
+
+        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            throw new NotImplementedException();
         }
     }
 }

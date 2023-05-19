@@ -15,12 +15,11 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.SeedCheck
                 => new PokeTradeBot(Hub, cfg),
 
-            PokeRoutineType.EggFetch => new EggBot(cfg, Hub),
-            PokeRoutineType.FossilBot => new FossilBot(cfg, Hub),
+            
             PokeRoutineType.RaidBotSWSH => new RaidBot(cfg, Hub),
             PokeRoutineType.EncounterLine => new EncounterBotLine(cfg, Hub),
             PokeRoutineType.Reset => new EncounterBotReset(cfg, Hub),
-            PokeRoutineType.Dogbot => new EncounterBotDog(cfg, Hub),
+            PokeRoutineType.DogBot => new EncounterBotDog(cfg, Hub),
             PokeRoutineType.OverWorldRNG => new OverworldRNG(cfg, Hub),
             PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
             PokeRoutineType.RollingRaidSWSH => new RollingRaidBot(cfg, Hub),
@@ -44,7 +43,7 @@ namespace SysBot.Pokemon
             or PokeRoutineType.RaidBotSWSH
             or PokeRoutineType.EncounterLine
             or PokeRoutineType.Reset
-            or PokeRoutineType.Dogbot
+            or PokeRoutineType.DogBot
             or PokeRoutineType.OverWorldRNG
             or PokeRoutineType.RemoteControl
             or PokeRoutineType.DenBotSWSH

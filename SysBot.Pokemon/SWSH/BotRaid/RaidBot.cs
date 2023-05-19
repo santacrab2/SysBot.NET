@@ -1,6 +1,7 @@
 ﻿using PKHeX.Core;
 using SysBot.Base;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -19,7 +20,25 @@ namespace SysBot.Pokemon
             Hub = hub;
             Settings = hub.Config.RaidSWSH;
         }
+        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
 
+        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
         // Cached offsets that stay the same per session.
         private ulong OverworldOffset;
 

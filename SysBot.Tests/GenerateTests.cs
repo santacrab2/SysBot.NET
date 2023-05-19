@@ -10,16 +10,17 @@ namespace SysBot.Tests
         static GenerateTests() => AutoLegalityWrapper.EnsureInitialized(new LegalitySettings());
 
         [Theory]
-        [InlineData(Gengar)]
+        [InlineData(Chesnaught)]
         [InlineData(Braviary)]
         [InlineData(Drednaw)]
         public void CanGenerate(string set)
         {
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+            var sav = AutoLegalityWrapper.GetTrainerInfo<PK9>();
             var s = new ShowdownSet(set);
             var template = AutoLegalityWrapper.GetTemplate(s);
             var pk = sav.GetLegal(template, out _);
-            pk.Should().NotBeNull();
+            var la = new LegalityAnalysis(pk);
+            la.Valid.Should().Be(true);
         }
 
         [Theory]
@@ -62,7 +63,8 @@ namespace SysBot.Tests
                 pk!.AbilityNumber.Should().Be(abilNumber);
             }
         }
-
+        private const string Chesnaught =
+@"Chesnaught";
         private const string Gengar =
 @"Gengar-Gmax @ Life Orb 
 Ability: Cursed Body 

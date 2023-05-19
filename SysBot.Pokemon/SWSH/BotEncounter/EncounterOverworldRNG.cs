@@ -127,7 +127,7 @@ namespace SysBot.Pokemon
                             await Click(B, 1000, token);
 
                         }
-                        while(!await IsOnOverworld(Hub.Config,token))
+                        while(!await IsOnOverworld(OverworldOffset,token))
                             await Click(B, 1000, token);
                         secondrun = false;
                     }

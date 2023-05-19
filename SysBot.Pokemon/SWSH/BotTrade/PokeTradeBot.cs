@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Pokemon.PokeDataOffsets;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
@@ -38,7 +39,27 @@ namespace SysBot.Pokemon
         /// Tracks failed synchronized starts to attempt to re-sync.
         /// </summary>
         public int FailedBarrier { get; private set; }
+        public override async Task<PK8> ReadPokemon(ulong offset, CancellationToken token) => await ReadPokemon(offset, BoxFormatSlotSize, token).ConfigureAwait(false);
 
+        public override async Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            var data = await Connection.ReadBytesAsync((uint)offset, size, token).ConfigureAwait(false);
+            return new PK8(data);
+        }
+
+        public override async Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return new PK8();
+            return await ReadPokemon(offset, token).ConfigureAwait(false);
+        }
+
+        public override async Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            var ofs = GetBoxSlotOffset(box, slot);
+            return await ReadPokemon(ofs, BoxFormatSlotSize, token).ConfigureAwait(false);
+        }
         public PokeTradeBot(PokeTradeHub<PK8> hub, PokeBotState cfg) : base(cfg)
         {
             Hub = hub;
@@ -134,7 +155,7 @@ namespace SysBot.Pokemon
                 {
                     await SetCurrentBox(0, token).ConfigureAwait(false);
                     var pkm = Hub.Ledy.Pool.GetRandomSurprise();
-                    await EnsureConnectedToYComm(Hub.Config, token).ConfigureAwait(false);
+                    await EnsureConnectedToYComm(OverworldOffset, Hub.Config, token).ConfigureAwait(false);
                     await PerformSurpriseTrade(sav, pkm, token).ConfigureAwait(false);
                     await WaitForQueueStep(waitCounter++, token).ConfigureAwait(false);
                     continue;
@@ -332,12 +353,6 @@ namespace SysBot.Pokemon
                 return partnerCheck;
             }
 
-            if (!await IsInBox(token).ConfigureAwait(false))
-            {
-                await ExitTrade(true, token).ConfigureAwait(false);
-                return PokeTradeResult.RecoverOpenBox;
-            }
-
             // Confirm Box 1 Slot 1
             if (poke.Type == PokeTradeType.Specific)
             {
@@ -412,6 +427,7 @@ namespace SysBot.Pokemon
 
         private async Task<PokeTradeResult> CheckPartnerReputation(PokeTradeDetail<PK8> poke, ulong TrainerNID, string TrainerName, CancellationToken token)
         {
+            return PokeTradeResult.Success;
             bool quit = false;
             var user = poke.Trainer;
             var isDistribution = poke.Type == PokeTradeType.Random;

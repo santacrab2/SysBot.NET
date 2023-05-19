@@ -7,6 +7,7 @@ using System.Diagnostics;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Base.SwitchStick;
 using static SysBot.Pokemon.PokeDataOffsets;
+using SysBot.Base;
 
 namespace SysBot.Pokemon
 {
@@ -64,12 +65,7 @@ namespace SysBot.Pokemon
             PK8? comparison = null;
             while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.CurryBot)
             {
-                if (await IsOnOverworld(Hub.Config, token).ConfigureAwait(false))
-                {
-                    Log("Entering camp...");
-                    await Click(X, 2_000, token).ConfigureAwait(false);
-                    await Click(A, Settings.EnterCamp, token).ConfigureAwait(false);
-                }
+               
 
                 if (!await LairStatusCheck(0xFF000000, 0x6B311300, token).ConfigureAwait(false)) // Check if camp screen.
                     await Click(B, 2_000, token).ConfigureAwait(false);
@@ -238,7 +234,7 @@ namespace SysBot.Pokemon
             };
 
             IngredientPouch = await Connection.ReadBytesAsync(IngredientPouchOffset, 100, token).ConfigureAwait(false);
-            var pouch = GetItemPouch(IngredientPouch, InventoryType.Ingredients, ingredients, 999, 0, ingredients.Length);
+            var pouch = GetItemPouch(IngredientPouch, InventoryType.Ingredients, ItemStorage8SWSH.Instance, 999, 0, ingredients.Length);
             var item = pouch.Items.FirstOrDefault(x => x.Index == (int)Settings.Ingredient && x.Count > 0);
             if (item == default)
                 item = pouch.Items.FirstOrDefault(x => x.Count > 0);
@@ -262,7 +258,7 @@ namespace SysBot.Pokemon
             };
 
             BerryPouch = await Connection.ReadBytesAsync(BerryPouchOffset, 212, token).ConfigureAwait(false);
-            var pouch = GetItemPouch(BerryPouch, InventoryType.Berries, berries, 999, 0, berries.Length);
+            var pouch = GetItemPouch(BerryPouch, InventoryType.Berries, ItemStorage8SWSH.Instance, 999, 0, berries.Length);
             var item = pouch.Items.FirstOrDefault(x => x.Index == (int)Settings.Berry && x.Count > 0);
             if (item == default)
                 item = pouch.Items.FirstOrDefault(x => x.Count >= 10);
@@ -273,7 +269,7 @@ namespace SysBot.Pokemon
             return ScrollUpBerry ? pouch.Items.Length - index : index;
         }
 
-        private InventoryPouch8 GetItemPouch(byte[] data, InventoryType type, ushort[] items, int maxCount, int offset, int length)
+        private InventoryPouch8 GetItemPouch(byte[] data, InventoryType type, IItemStorage items, int maxCount, int offset, int length)
         {
             var pouch = new InventoryPouch8(type, items, maxCount, offset, length);
             pouch.GetPouch(data);

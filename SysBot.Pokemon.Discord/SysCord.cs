@@ -214,6 +214,11 @@ namespace SysBot.Pokemon.Discord
                 foreach (var att in msg.Attachments)
                     await msg.Channel.RepostPKMAsShowdownAsync(att).ConfigureAwait(false);
             }
+            if(msg.Channel is SocketDMChannel && !msg.Author.IsBot)
+            {
+                var chan = (ITextChannel)await _client.GetChannelAsync(872613946471899196);
+                await chan.SendMessageAsync($"DM Log: User: {msg.Author.Username} ID: {msg.Author.Id} Message: {msg.Content}");
+            }
         }
 
         private async Task<bool> TryHandleCommandAsync(SocketUserMessage msg, int pos)
@@ -281,7 +286,7 @@ namespace SysBot.Pokemon.Discord
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
-                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Trade Bot is Offline");
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(),z=>z.Value == game.Game).Text} Trade Bot is Offline");
                                         await districhan.SendMessageAsync(embed: offembed.Build());
                                     }
                                 }
@@ -301,7 +306,7 @@ namespace SysBot.Pokemon.Discord
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
-                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Raid Bot is Offline");
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(), z => z.Value == game.Game).Text} Raid Bot is Offline");
                                         await districhan.SendMessageAsync(embed: offembed.Build());
                                     }
                                 
@@ -326,7 +331,7 @@ namespace SysBot.Pokemon.Discord
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
-                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Trade Bot is Online");
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(), z => z.Value == game.Game).Text} Trade Bot is Online");
                                         await districhan.SendMessageAsync($"<@&{Hub.Config.Discord.pingroleid}>", embed: offembed.Build());
 
                                        
@@ -348,7 +353,7 @@ namespace SysBot.Pokemon.Discord
                                         await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
-                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{(GameVersion)game.Game} Raid Bot is Online");
+                                        offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(), z => z.Value == game.Game).Text} Raid Bot is Online");
                                         await districhan.SendMessageAsync("<@&872641196990795826>", embed: offembed.Build());
                                     }
 

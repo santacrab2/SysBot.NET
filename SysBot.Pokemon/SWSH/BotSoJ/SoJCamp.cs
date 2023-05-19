@@ -1,4 +1,5 @@
 ﻿using PKHeX.Core;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -11,7 +12,25 @@ namespace SysBot.Pokemon
         public SoJCamp(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg, hub)
         {
         }
+        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
 
+        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
         protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
         {
             bool campEntered = false;
@@ -50,7 +69,7 @@ namespace SysBot.Pokemon
                 while (await IsInBattle(token).ConfigureAwait(false))
                     await FleeToOverworld(token).ConfigureAwait(false);
 
-                while (!await IsOnOverworld(Hub.Config, token).ConfigureAwait(false))
+                while (!await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                     await Task.Delay(2_000).ConfigureAwait(false);
             }
         }

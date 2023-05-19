@@ -202,12 +202,17 @@ namespace SysBot.Pokemon.Discord
             var menubuilder = new SelectMenuBuilder().WithCustomId("botmenu")
                 .WithMaxValues(1)
                 .WithMinValues(1)
-                .WithPlaceholder("Select a Bot")
-                .AddOption("Articuno LGPE", "Articuno LGPE")
-                .AddOption("Empoleon SWSH", "Empoleon SWSH")
-                .AddOption("Spiritomb BDSP", "Spiritomb BDSP")
-                .AddOption("Basculegion LA", "Basculegion LA")
-                .AddOption("Klawf SV", "Klawf SV");
+                .WithPlaceholder("Select a Bot");
+            if (typeof(T) != typeof(PB7))
+                menubuilder.AddOption("Articuno LGPE", "Articuno LGPE");
+            if (typeof(T) != typeof(PK8))
+                menubuilder.AddOption("Empoleon SWSH", "Empoleon SWSH");
+            if (typeof(T) != typeof(PB8))
+                menubuilder.AddOption("Spiritomb BDSP", "Spiritomb BDSP");
+            if (typeof(T) != typeof(PA8))
+                menubuilder.AddOption("Basculegion LA", "Basculegion LA");
+            if(typeof(T) != typeof(PK9))
+                menubuilder.AddOption("Klawf SV", "Klawf SV");
             var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
             await FollowupAsync("Choose the bot you would like",ephemeral: true, components: builder.Build());
 

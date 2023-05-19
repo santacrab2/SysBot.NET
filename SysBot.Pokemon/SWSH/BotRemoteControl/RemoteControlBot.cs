@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using PKHeX.Core;
 using SysBot.Base;
 
 namespace SysBot.Pokemon
@@ -10,7 +12,28 @@ namespace SysBot.Pokemon
         public RemoteControlBot(PokeBotState cfg) : base(cfg)
         {
         }
+        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+     
 
+        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+    
         public override async Task MainLoop(CancellationToken token)
         {
             try

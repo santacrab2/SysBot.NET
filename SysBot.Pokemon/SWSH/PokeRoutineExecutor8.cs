@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using PKHeX.Core;
 using SysBot.Base;
+using System.Threading;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Pokemon.PokeDataOffsets;
 
@@ -18,7 +19,7 @@ namespace SysBot.Pokemon
     {
         protected PokeRoutineExecutor8(PokeBotState cfg) : base(cfg) { }
 
-        private static uint GetBoxSlotOffset(int box, int slot) => BoxStartOffset + (uint)(BoxFormatSlotSize * ((30 * box) + slot));
+        public static uint GetBoxSlotOffset(int box, int slot) => BoxStartOffset + (uint)(BoxFormatSlotSize * ((30 * box) + slot));
 
         public override async Task<PK8> ReadPokemon(ulong offset, CancellationToken token) => await ReadPokemon(offset, BoxFormatSlotSize, token).ConfigureAwait(false);
 
@@ -81,18 +82,14 @@ namespace SysBot.Pokemon
 
         public async Task<SAV8SWSH> IdentifyTrainer(CancellationToken token)
         {
-            // Check if botbase is on the correct version or later.
-            await VerifyBotbaseVersion(token).ConfigureAwait(false);
+            
 
             // Check title so we can warn if mode is incorrect.
             string title = await SwitchConnection.GetTitleID(token).ConfigureAwait(false);
             if (title is not (SwordID or ShieldID))
                 throw new Exception($"{title} is not a valid SWSH title. Is your mode correct?");
 
-            // Verify the game version.
-            var game_version = await SwitchConnection.GetGameInfo("version", token).ConfigureAwait(false);
-            if (!game_version.SequenceEqual(SWSHGameVersion))
-                throw new Exception($"Game version is not supported. Expected version {SWSHGameVersion}, and current game version is {game_version}.");
+            
 
             Log("Grabbing trainer data of host console...");
             var sav = await GetFakeTrainerSAV(token).ConfigureAwait(false);
@@ -383,13 +380,13 @@ namespace SysBot.Pokemon
                 ));
         }
 
-        public async Task SaveGame(PokeTradeHubConfig config, CancellationToken token)
+        public async Task SaveGame(ulong offset, CancellationToken token)
         {
             await Click(B, 0_200, token).ConfigureAwait(false);
             Log("Saving the game...");
             await Click(X, 2_000, token).ConfigureAwait(false);
             await Click(R, 0_250, token).ConfigureAwait(false);
-            while (!await IsOnOverworld(config, token).ConfigureAwait(false))
+            while (!await IsOnOverworld(offset,token).ConfigureAwait(false))
                 await Click(A, 0_500, token).ConfigureAwait(false);
             Log("Game saved!");
         }

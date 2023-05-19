@@ -1,6 +1,7 @@
 ﻿using PKHeX.Core;
 using SysBot.Base;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace SysBot.Pokemon
             var denBytes = await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false);
             RaidInfo.DenID = DenUtil.GetDenID(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType);
 
-            var eventOfs = DenUtil.GetEventDenOffset((int)Hub.Config.ConsoleLanguage, RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, out _);
+            var eventOfs = DenUtil.GetEventDenOffset(2, RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, out _);
             var eventDenBytes = RaidInfo.Settings.DenBeamType == BeamType.Event ? await Connection.ReadBytesAsync(eventOfs, 0x23D4, token).ConfigureAwait(false) : new byte[] { };
             RaidInfo = DenUtil.GetRaid(RaidInfo, denBytes, eventDenBytes);
 
@@ -186,5 +187,25 @@ namespace SysBot.Pokemon
         }
 
         private async Task<byte[]> DenData(uint id, DenType type, CancellationToken token) => await Connection.ReadBytesAsync(DenUtil.GetDenOffset(id, type, out _), 0x18, token).ConfigureAwait(false);
+
+        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

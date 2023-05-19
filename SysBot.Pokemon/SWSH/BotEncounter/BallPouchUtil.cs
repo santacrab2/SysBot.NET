@@ -17,7 +17,7 @@ namespace SysBot.Pokemon
 
         private InventoryPouch8 GetBallPouch(byte[] ballBlock)
         {
-            var pouch = new InventoryPouch8(InventoryType.Balls, Pouch_Ball_SWSH, 999, 0, 28);
+            var pouch = new InventoryPouch8(InventoryType.Balls, ItemStorage8SWSH.Instance, 999, 0, 28);
             pouch.GetPouch(ballBlock);
             return pouch;
         }
