@@ -5,6 +5,10 @@ using System.Text.Json.Serialization;
 using PKHeX.Core;
 using SysBot.Base;
 using SysBot.Pokemon.Z3;
+using System;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace SysBot.Pokemon.ConsoleApp
 {
@@ -77,7 +81,7 @@ namespace SysBot.Pokemon.ConsoleApp
 
         private static IPokeBotRunner GetRunner(ProgramConfig prog) => prog.Mode switch
         {
-            ProgramMode.SWSH => new PokeBotRunnerImpl<PK8>(prog.Hub, new BotFactory8()),
+            ProgramMode.SWSH => new PokeBotRunnerImpl<PK8>(prog.Hub, new BotFactory8SWSH()),
             ProgramMode.BDSP => new PokeBotRunnerImpl<PB8>(prog.Hub, new BotFactory8BS()),
             ProgramMode.LA => new PokeBotRunnerImpl<PA8>(prog.Hub, new BotFactory8LA()),
             ProgramMode.LGPE => new PokeBotRunnerImpl<PB7>(prog.Hub,new BotFactory7LGPE()),

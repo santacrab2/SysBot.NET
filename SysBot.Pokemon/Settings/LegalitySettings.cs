@@ -1,4 +1,5 @@
 ﻿using PKHeX.Core;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace SysBot.Pokemon
@@ -47,10 +48,13 @@ namespace SysBot.Pokemon
         public bool SetAllLegalRibbons { get; set; }
 
         [Category(Generate), Description("Set a matching ball (based on color) for any generated Pokémon.")]
-        public bool SetMatchingBalls { get; set; }
+        public bool SetMatchingBalls { get; set; } = true;
 
         [Category(Generate), Description("Force the specified ball if legal.")]
-        public bool ForceSpecifiedBall { get; set; }
+        public bool ForceSpecifiedBall { get; set; } = true;
+
+        [Category(Generate), Description("The order in which Pokémon encounter types are attempted.")]
+        public List<EncounterTypeGroup> PrioritizeEncounters { get; set; } = new List<EncounterTypeGroup>() { EncounterTypeGroup.Egg, EncounterTypeGroup.Slot, EncounterTypeGroup.Static, EncounterTypeGroup.Mystery, EncounterTypeGroup.Trade };
 
         [Category(Generate), Description("Allow XOROSHIRO when generating Gen 8 Raid Pokémon.")]
         public bool UseXOROSHIRO { get; set; } = true;
@@ -72,7 +76,7 @@ namespace SysBot.Pokemon
 
         // Misc
 
-        [Category(Misc), Description("Zero out HOME tracker regardless of current tracker value. Applies to user requested PKM files as well.")]
-        public bool ResetHOMETracker { get; set; } = true;
+        [Category(Misc), Description("Zero out HOME trackers for cloned and user-requested PKM files. It is recommended to leave this disabled to avoid creating invalid HOME data.")]
+        public bool ResetHOMETracker { get; set; } = false;
     }
 }

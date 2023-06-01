@@ -1,12 +1,12 @@
-﻿using System;
+﻿using PKHeX.Core;
+using SysBot.Base;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PKHeX.Core;
-using SysBot.Base;
-using static SysBot.Pokemon.PokeDataOffsetsLA;
 using static SysBot.Base.SwitchButton;
+using static SysBot.Pokemon.PokeDataOffsetsLA;
 
 namespace SysBot.Pokemon
 {
@@ -61,7 +61,7 @@ namespace SysBot.Pokemon
 
         public async Task SetCurrentBox(byte box, CancellationToken token)
         {
-            await SwitchConnection.PointerPoke(BitConverter.GetBytes((Half)box), Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
+            await SwitchConnection.PointerPoke(new[] { box }, Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
         }
 
         public async Task<byte> GetCurrentBox(CancellationToken token)

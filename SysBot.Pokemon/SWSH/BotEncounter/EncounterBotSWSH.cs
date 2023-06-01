@@ -1,15 +1,15 @@
 ﻿using PKHeX.Core;
+using SysBot.Base;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using SysBot.Base;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Base.SwitchStick;
 
 namespace SysBot.Pokemon
 {
-    public abstract class EncounterBot : PokeRoutineExecutor8, IEncounterBot
+    public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
     {
         protected readonly PokeTradeHub<PK8> Hub;
         private readonly IDumper DumpSetting;
@@ -20,7 +20,7 @@ namespace SysBot.Pokemon
         public ICountSettings Counts => Settings;
         public readonly IReadOnlyList<string> UnwantedMarks;
 
-        protected EncounterBot(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg)
+        protected EncounterBotSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg)
         {
             Hub = hub;
             Settings = Hub.Config.EncounterSWSH;

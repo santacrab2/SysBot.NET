@@ -3,8 +3,10 @@ using SysBot.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Threading;
+using static SysBot.Base.SwitchButton;
 using static SysBot.Pokemon.PokeDataOffsetsSV;
 using static SysBot.Base.SwitchButton;
 
@@ -61,7 +63,7 @@ namespace SysBot.Pokemon
 
         public async Task SetCurrentBox(byte box, CancellationToken token)
         {
-            await SwitchConnection.PointerPoke(BitConverter.GetBytes((short)box), Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
+            await SwitchConnection.PointerPoke(new[] { box }, Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
         }
 
         public async Task<byte> GetCurrentBox(CancellationToken token)
@@ -72,14 +74,20 @@ namespace SysBot.Pokemon
 
         public async Task<SAV9SV> IdentifyTrainer(CancellationToken token)
         {
-            
+            // Check if botbase is on the correct version or later.
+            await VerifyBotbaseVersion(token).ConfigureAwait(false);
+
 
             // Check title so we can warn if mode is incorrect.
             string title = await SwitchConnection.GetTitleID(token).ConfigureAwait(false);
             if (title is not (ScarletID or VioletID))
                 throw new Exception($"{title} is not a valid SV title. Is your mode correct?");
 
-            
+            // Verify the game version.
+            var game_version = await SwitchConnection.GetGameInfo("version", token).ConfigureAwait(false);
+            if (!game_version.SequenceEqual(SVGameVersion))
+                throw new Exception($"Game version is not supported. Expected version {SVGameVersion}, and current game version is {game_version}.");
+
 
             var sav = await GetFakeTrainerSAV(token).ConfigureAwait(false);
             InitSaveData(sav);
@@ -124,7 +132,7 @@ namespace SysBot.Pokemon
         {
           
                 Log("Turning on screen.");
-                await SetScreen(ScreenState.On, token).ConfigureAwait(false);
+            await SetScreen(ScreenState.On, token).ConfigureAwait(false);
             
             Log("Detaching controllers on routine exit.");
             await DetachController(token).ConfigureAwait(false);
@@ -252,7 +260,7 @@ namespace SysBot.Pokemon
         public async Task<bool> IsInBox(ulong offset, CancellationToken token)
         {
             var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, 1, token).ConfigureAwait(false);
-            return data[0] < 9;
+            return data[0] < 8;
         }
 
         public async Task<TextSpeedOption> GetTextSpeed(CancellationToken token)

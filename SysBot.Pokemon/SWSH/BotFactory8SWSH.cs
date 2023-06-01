@@ -1,9 +1,9 @@
-﻿using System;
-using PKHeX.Core;
+﻿using PKHeX.Core;
+using System;
 
 namespace SysBot.Pokemon
 {
-    public sealed class BotFactory8 : BotFactory<PK8>
+    public sealed class BotFactory8SWSH : BotFactory<PK8>
     {
         public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PK8> Hub, PokeBotState cfg) => cfg.NextRoutineType switch
         {
@@ -13,7 +13,7 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.Clone
                 or PokeRoutineType.Dump
                 or PokeRoutineType.SeedCheck
-                => new PokeTradeBot(Hub, cfg),
+                => new PokeTradeBotSWSH(Hub, cfg),
 
             
             PokeRoutineType.RaidBotSWSH => new RaidBot(cfg, Hub),

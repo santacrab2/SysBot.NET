@@ -1,13 +1,14 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using PKHeX.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Discord;
 
 namespace SysBot.Pokemon.Discord
 {
-    public class SudoModule : ModuleBase<SocketCommandContext>
+    public class SudoModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new()
     {
         
 

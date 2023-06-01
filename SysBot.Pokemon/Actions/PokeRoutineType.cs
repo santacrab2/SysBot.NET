@@ -22,19 +22,13 @@
         /// <summary> Exports files for all data shown to the bot. </summary>
         Dump = 6,
 
-        /// <summary> Retrieves eggs from the Day Care. </summary>
-        EggFetch = 7,
-
-        /// <summary> Revives fossils until the criteria is satisfied. </summary>
-        FossilBot = 8,
-
         /// <summary> Performs group battles as a host. </summary>
         RaidBotSWSH = 9,
 
-        /// <summary> Triggers encounters until the criteria is satisfied. </summary>
+        /// <summary> Triggers walking encounters until the criteria is satisfied. </summary>
         EncounterLine = 1_000,
 
-        /// <summary> Triggers encounters with Eternatus until the criteria is satisfied. </summary>
+        /// <summary> Triggers reset encounters until the criteria is satisfied. </summary>
         Reset = 1_001,
 
         /// <summary> Triggers encounters with Sword &amp; Shield box legend until the criteria is satisfied. </summary>

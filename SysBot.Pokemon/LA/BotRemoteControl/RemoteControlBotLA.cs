@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SysBot.Base;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using SysBot.Base;
@@ -31,7 +32,7 @@ namespace SysBot.Pokemon
                 Log(e.Message);
             }
 
-            Log($"Ending {nameof(PokeTradeBot)} loop.");
+            Log($"Ending {nameof(RemoteControlBotLA)} loop.");
             await HardStop().ConfigureAwait(false);
         }
 

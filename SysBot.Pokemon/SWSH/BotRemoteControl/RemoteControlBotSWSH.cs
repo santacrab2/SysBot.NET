@@ -1,39 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SysBot.Base;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using PKHeX.Core;
-using SysBot.Base;
 
 namespace SysBot.Pokemon
 {
-    public class RemoteControlBot : PokeRoutineExecutor8
+    public class RemoteControlBotSWSH : PokeRoutineExecutor8SWSH
     {
-        public RemoteControlBot(PokeBotState cfg) : base(cfg)
+        public RemoteControlBotSWSH(PokeBotState cfg) : base(cfg)
         {
-        }
-        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
-        {
-            throw new System.NotImplementedException();
-        }
-     
-
-        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
-        {
-            throw new System.NotImplementedException();
         }
 
-        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
-        {
-            throw new System.NotImplementedException();
-        }
-
-    
         public override async Task MainLoop(CancellationToken token)
         {
             try
@@ -54,7 +31,7 @@ namespace SysBot.Pokemon
                 Log(e.Message);
             }
 
-            Log($"Ending {nameof(PokeTradeBot)} loop.");
+            Log($"Ending {nameof(RemoteControlBotSWSH)} loop.");
             await HardStop().ConfigureAwait(false);
         }
 

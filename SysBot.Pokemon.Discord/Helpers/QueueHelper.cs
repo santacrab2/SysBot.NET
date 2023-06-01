@@ -2,6 +2,7 @@
 using Discord.Interactions;
 using Discord.WebSocket;
 using Discord.Net;
+using Discord.WebSocket;
 using PKHeX.Core;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -87,7 +88,7 @@ namespace SysBot.Pokemon.Discord
 
             var pokeName = "";
             if (t == PokeTradeType.Specific && pk.Species != 0)
-                pokeName = $" Receiving: {(Species)pk.Species}.";
+                pokeName = $" Receiving: {GameInfo.GetStrings(1).Species[pk.Species]}.";
             msg = $"{user.Mention} - Added to the {type} queue{ticketID}. Current Position: {position.Position}.{pokeName}";
 
             var botct = Info.Hub.Bots.Count;

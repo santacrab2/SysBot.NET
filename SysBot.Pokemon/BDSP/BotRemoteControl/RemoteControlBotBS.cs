@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using PKHeX.Core;
 using SysBot.Base;
+========
+﻿using SysBot.Base;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+>>>>>>>> master:SysBot.Pokemon/BDSP/BotRemoteControl/RemoteControlBotBS.cs
 
 namespace SysBot.Pokemon
 {
@@ -10,7 +17,28 @@ namespace SysBot.Pokemon
         public RemoteControlBotBS(PokeBotState cfg) : base(cfg)
         {
         }
+        public override Task<PK8> ReadPokemon(ulong offset, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+     
 
+        public override Task<PK8> ReadPokemon(ulong offset, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            throw new System.NotImplementedException();
+        }
+
+    
         public override async Task MainLoop(CancellationToken token)
         {
             try
@@ -31,7 +59,7 @@ namespace SysBot.Pokemon
                 Log(e.Message);
             }
 
-            Log($"Ending {nameof(PokeTradeBot)} loop.");
+            Log($"Ending {nameof(RemoteControlBotBS)} loop.");
             await HardStop().ConfigureAwait(false);
         }
 
