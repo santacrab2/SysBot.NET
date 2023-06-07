@@ -16,12 +16,12 @@ namespace SysBot.Pokemon
                 => new PokeTradeBotSWSH(Hub, cfg),
 
             
-            PokeRoutineType.RaidBotSWSH => new RaidBot(cfg, Hub),
-            PokeRoutineType.EncounterLine => new EncounterBotLine(cfg, Hub),
-            PokeRoutineType.Reset => new EncounterBotReset(cfg, Hub),
-            PokeRoutineType.DogBot => new EncounterBotDog(cfg, Hub),
+            PokeRoutineType.RaidBotSWSH => new RaidBotSWSH(cfg, Hub),
+            PokeRoutineType.EncounterLine => new EncounterBotLineSWSH(cfg, Hub),
+            PokeRoutineType.Reset => new EncounterBotResetSWSH(cfg, Hub),
+            PokeRoutineType.DogBot => new EncounterBotDogSWSH(cfg, Hub),
             PokeRoutineType.OverWorldRNG => new OverworldRNG(cfg, Hub),
-            PokeRoutineType.RemoteControl => new RemoteControlBot(cfg),
+            PokeRoutineType.RemoteControl => new RemoteControlBotSWSH(cfg),
             PokeRoutineType.RollingRaidSWSH => new RollingRaidBot(cfg, Hub),
             PokeRoutineType.OnlineLairBot => new onlineLairBot(cfg, Hub),
             PokeRoutineType.DenBotSWSH => new DenBot(cfg,Hub),

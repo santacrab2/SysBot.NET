@@ -7,12 +7,12 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using static SysBot.Base.SwitchButton;
-using static SysBot.Pokemon.PokeDataOffsets;
+using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon
 {
     // Thanks to Anubis and Zyro for providing offsets and ideas for LairBot, and Elvis for endless testing with PinkBot!
-    public sealed class onlineLairBot : EncounterBot
+    public sealed class onlineLairBot : EncounterBotSWSH
     {
         int nogocount = 1;
         private StopConditionSettings NewSCSettings = new();

@@ -42,8 +42,7 @@ namespace SysBot.Pokemon
         // Cached offsets that stay the same per session.
         private ulong OverworldOffset;
 
-        // Cached offsets that stay the same per session.
-        private ulong OverworldOffset;
+      
 
         private int encounterCount;
         private bool deleteFriends;

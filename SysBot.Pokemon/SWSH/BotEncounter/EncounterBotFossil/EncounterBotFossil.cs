@@ -4,11 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using SysBot.Base;
 using static SysBot.Base.SwitchButton;
-using static SysBot.Pokemon.PokeDataOffsets;
+using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon
 {
-    public class EncounterBotFossil : EncounterBot
+    public class EncounterBotFossil : EncounterBotSWSH
     {
         private readonly FossilSettings Settings;
         private readonly IDumper DumpSetting;

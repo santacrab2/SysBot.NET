@@ -57,7 +57,7 @@ namespace SysBot.Pokemon
         {
             Log("Walking around until an egg is ready...");
             int attempts = 0;
-            while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.EggFetch)
+            while (!token.IsCancellationRequested)
             {
                 await SetEggStepCounter(token).ConfigureAwait(false);
 

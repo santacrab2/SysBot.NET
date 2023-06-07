@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 using PKHeX.Core;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Base.SwitchStick;
-using static SysBot.Pokemon.PokeDataOffsets;
+using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 using SWSH_OWRNG_Generator.Core;
 
 namespace SysBot.Pokemon
 {
-    public sealed class OverworldRNG : EncounterBot
+    public sealed class OverworldRNG : EncounterBotSWSH
     {
 
         public OverworldRNG(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg, hub)

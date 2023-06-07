@@ -669,5 +669,20 @@ namespace SysBot.Pokemon
             /// </summary>
             AlwaysSquare = 6,
         }
+        public async Task SetupBoxState(IDumper DumpSetting, CancellationToken token)
+        {
+            await SetCurrentBox(0, token).ConfigureAwait(false);
+
+            var existing = await ReadBoxPokemon(0, 0, token).ConfigureAwait(false);
+            if (existing.Species != 0 && existing.ChecksumValid)
+            {
+                Log("Destination slot is occupied! Dumping the Pokémon found there...");
+                DumpPokemon(DumpSetting.DumpFolder, "saved", existing);
+            }
+
+            Log("Clearing destination slot to start the bot.");
+            PK8 blank = new();
+            await SetBoxPokemon(blank, 0, 0, token).ConfigureAwait(false);
+        }
     }
 }

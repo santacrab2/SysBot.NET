@@ -9,13 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using static SysBot.Base.SwitchButton;
-using static SysBot.Pokemon.PokeDataOffsets;
+using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 using PKHeX.Core.AutoMod;
 using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
-    public class RollingRaidBot : PokeRoutineExecutor8, ICountBot
+    public class RollingRaidBot : PokeRoutineExecutor8SWSH, ICountBot
     {
         private readonly PokeTradeHub<PK8> Hub;
         private readonly RollingRaidSettings Settings;

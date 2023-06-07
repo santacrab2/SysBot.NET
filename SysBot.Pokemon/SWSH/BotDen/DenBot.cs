@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SysBot.Pokemon
 {
-    public sealed class DenBot : EncounterBot
+    public sealed class DenBot : EncounterBotSWSH
     {
         private readonly DenSettings Settings;
         private DenUtil.RaidData RaidInfo = new();

@@ -136,6 +136,7 @@ namespace SysBot.Pokemon
 
         private async Task DoNothing(CancellationToken token)
         {
+            int waitCounter = 0;
             Log("No task assigned. Waiting for new task assignment.");
             while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.Idle)
             {
@@ -437,7 +438,7 @@ namespace SysBot.Pokemon
             UpdateCountsAndExport(poke, received, toSend);
 
             // Log for Trade Abuse tracking.
-            LogSuccessfulTrades(poke, trainerNID, tradePartner.TrainerName);
+            
 
             // Sometimes they offered another mon, so store that immediately upon leaving Union Room.
             lastOffered = await SwitchConnection.ReadBytesAbsoluteAsync(TradePartnerOfferedOffset, 8, token).ConfigureAwait(false);
@@ -982,25 +983,7 @@ namespace SysBot.Pokemon
             var useridmsg = isDistribution ? "" : $" ({user.ID})";
             var list = isDistribution ? PreviousUsersDistribution : PreviousUsers;
 
-            var cooldown = list.TryGetPrevious(TrainerNID);
-            if (cooldown != null)
-            {
-                var delta = DateTime.Now - cooldown.Time;
-                Log($"Last saw {user.TrainerName} {delta.TotalMinutes:F1} minutes ago (OT: {TrainerName}).");
-
-                var cd = AbuseSettings.TradeCooldown;
-                if (cd != 0 && TimeSpan.FromMinutes(cd) > delta)
-                {
-                    poke.Notifier.SendNotification(this, poke, "You have ignored the trade cooldown set by the bot owner. The owner has been notified.");
-                    var msg = $"Found {user.TrainerName}{useridmsg} ignoring the {cd} minute trade cooldown. Last encountered {delta.TotalMinutes:F1} minutes ago.";
-                    if (AbuseSettings.EchoNintendoOnlineIDCooldown)
-                        msg += $"\nID: {TrainerNID}";
-                    if (!string.IsNullOrWhiteSpace(AbuseSettings.CooldownAbuseEchoMention))
-                        msg = $"{AbuseSettings.CooldownAbuseEchoMention} {msg}";
-                    EchoUtil.Echo(msg);
-                    quit = true;
-                }
-            }
+            
 
             if (!isDistribution)
             {

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Base.SwitchStick;
-using static SysBot.Pokemon.PokeDataOffsets;
+using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 using SysBot.Base;
 
 namespace SysBot.Pokemon
 {
-    public sealed class CurryBot : EncounterBot
+    public sealed class CurryBot : EncounterBotSWSH
     {
         private readonly CurryBotSettings Settings;
         private readonly StopConditionSettings StopSettings;

@@ -148,7 +148,8 @@ namespace SysBot.Pokemon.Discord
 
 
                 var showdown = new ShowdownSet(cd.ToString());
-                PKM pk = SaveUtil.GetBlankSAV(EntityContext.Gen7b, "pip").GetLegalFromSet(showdown, out _);
+                var sav = SaveUtil.GetBlankSAV(EntityContext.Gen7b, "pip");
+                PKM pk = sav.GetLegalFromSet(showdown, out _);
                 System.Drawing.Image png = pk.Sprite();
                 var destRect = new Rectangle(-40, -65, 137, 130);
                 var destImage = new Bitmap(137, 130);

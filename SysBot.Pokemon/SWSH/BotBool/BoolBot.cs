@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
-using static SysBot.Pokemon.PokeDataOffsets;
+using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon
 {
-    public sealed class BoolBot : EncounterBot
+    public sealed class BoolBot : EncounterBotSWSH
     {
         private readonly BoolSettings Settings;
 
