@@ -8,6 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using SysBot.Base;
 using System.Collections.Generic;
+using System.Drawing.Printing;
+using PKHeX.Core.AutoMod;
+using System.Diagnostics;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -29,6 +32,13 @@ namespace SysBot.Pokemon.Discord
                 var code = Info.GetRandomTradeCode();
                 var lgcode = Info.GetRandomLGTradeCode();
                 var set = ShowdownUtil.ConvertToShowdown(content);
+                if(set == null)
+                {
+                    await FollowupAsync("Your text was in an incorrect format. Please go read ⁠<#872614034619367444> while you are muted for the next hour. Consider using the /simpletrade command once you are unmuted! <:happypip:872674980222107649> \nIf you feel this is in error DM the bot to appeal and santacrab will review.");
+                    var user = (SocketGuildUser)Context.Interaction.User;
+                    await user.SetTimeOutAsync(TimeSpan.FromHours(1));
+                    return;
+                }
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 if (set.InvalidLines.Count != 0)
                 {
@@ -45,11 +55,13 @@ namespace SysBot.Pokemon.Discord
                     var pkm = sav.GetLegal(template, out var result);
                     if(pkm is PB7)
                     {
-                        if (pkm.Species == 151)
+                        if(pkm.Species == (int)Species.Mew)
                         {
-                            set = ShowdownUtil.ConvertToShowdown("Mew Level: 1");
-                            template = AutoLegalityWrapper.GetTemplate(set);
-                            pkm = sav.GetLegal(template, out result);
+                            if (pkm.IsShiny)
+                            {
+                                await FollowupAsync("Mew can not be Shiny in this game. PoGo Mew does not transfer and Pokeball Plus Mew is shiny locked");
+                                return;
+                            }
                         }
                     }
 
@@ -98,11 +110,120 @@ namespace SysBot.Pokemon.Discord
             }
             await FollowupAsync("You did not include any pokemon information, Please make sure the command boxes are filled out. See <#872614034619367444> for instructions and examples");
         }
+        public static List<simpletradeobject> simpletradecache = new();
+        [SlashCommand("simpletrade","helps you build a pokemon with a simple form")]
+        
+        public async Task DumbassTrade()
+        {
+            await DeferAsync(ephemeral: true);
+            
+            var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
+            var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+            var pk =(T) EntityBlank.GetBlank(sav);
+            var datasource = new FilteredGameDataSource(sav, GameInfo.Sources);
+            var cache = new simpletradeobject();
+            cache.user = Context.User;
+            simpletradecache.Add(cache);
+            cache.currenttype = "species";
+            cache.opti = datasource.Species.Select(z => z.Text).ToArray();
+
+            var component = compo(cache.currenttype, cache.page=0, cache.opti );
+            await FollowupAsync("Choose", components: component, ephemeral: true);
+            while (!cache.responded)
+                await Task.Delay(250);
+            cache.responded = false;
+            var set = new ShowdownSet(cache.response.Data.Values.First());
+            pk = (T)sav.GetLegalFromSet(set,out var _);
+            cache.opti = FormConverter.GetFormList(pk.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, pk.Context);
+            if (cache.opti.Length > 1)
+            {
+                var tempspec = cache.response.Data.Values.First();
+                cache.currenttype = "Form";
+                cache.opti = FormConverter.GetFormList(pk.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, pk.Context);
+                await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page=0, cache.opti));
+                while (!cache.responded)
+                    await Task.Delay(250);
+                cache.responded = false;
+                var tempspecform = $"{tempspec}-{cache.response.Data.Values.First()}";
+                set = new ShowdownSet(tempspecform);
+            }
+            cache.currenttype = "Shiny";
+            cache.opti = new string[] { "Yes", "No" };
+            await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page=0, cache.opti));
+            while (!cache.responded)
+                await Task.Delay(250);
+            cache.responded = false;
+            set = new ShowdownSet($"{set.Text}\nShiny: {cache.response.Data.Values.First()}");
+            pk = (T)sav.GetLegalFromSet(set,out var _);
+            cache.currenttype = "Item";
+            cache.opti = datasource.Items.Select(z => z.Text).ToArray();
+            await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page=0, cache.opti));
+            while (!cache.responded)
+                await Task.Delay(250);
+            cache.responded = false;
+            var item = datasource.Items.Where(z => z.Text == cache.response.Data.Values.First()).First();
+           pk.ApplyHeldItem(item != null? item.Value : 0, sav.Context);
+            cache.currenttype = "Level";
+            cache.opti = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "100" };
+            await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page=0, cache.opti));
+            while (!cache.responded)
+                await Task.Delay(250);
+            cache.responded = false;
+            pk.CurrentLevel = int.Parse(cache.response.Data.Values.First());
+            await Context.Interaction.DeleteOriginalResponseAsync();
+           pk = (T)sav.Legalize(pk);
+            var code = Info.GetRandomTradeCode();
+            var lgcode = Info.GetRandomLGTradeCode();
+            var sig = Context.User.GetFavor();
+            simpletradecache.Remove(cache);
+            if (pk is PB7)
+            {
+                if (pk.Species == (int)Species.Mew)
+                {
+                    if (pk.IsShiny)
+                    {
+                        await Context.Interaction.ModifyOriginalResponseAsync(z=>z.Content ="Mew can not be Shiny in this game. PoGo Mew does not transfer and Pokeball Plus Mew is shiny locked");
+                        return;
+                    }
+                }
+            }
+            
+            await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User, lgcode).ConfigureAwait(false);
+            return;
+
+        }
+        public static SelectMenuBuilder GetSelectMenu(string type,int page, string[] options)
+        {
+            var returnMenu = new SelectMenuBuilder().WithCustomId(type).WithPlaceholder($"Select a {type}");
+            if (options.Length > 25)
+            {
+                for (var i = page * 25; i < (page * 25) + 25; i++)
+                    returnMenu.AddOption(options[i], options[i]);
+            }
+            else
+            {
+                foreach(var option in options)
+                    returnMenu.AddOption(option, option);
+            }
+            return returnMenu;
+
+        }
+        public static MessageComponent compo(string type,int page, string[] options)
+        {
 
 
+            var nextbutton = new ActionRowBuilder().WithButton("Next 25", "next");
+            var previousbutton = new ActionRowBuilder().WithButton("Previous 25", "prev");
+            var select = new ComponentBuilder().WithSelectMenu(GetSelectMenu(type, page, options),0);
+            select.AddRow(nextbutton);
+            select.AddRow(previousbutton);
+           
+            
 
+            return select.Build();
+        }
 
-
+      
 
         private RemoteControlAccess GetReference(ulong id, string comment) => new()
         {
@@ -164,4 +285,18 @@ namespace SysBot.Pokemon.Discord
             await QueueHelper<T>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
         }
     }
+}
+public class simpletradeobject
+{
+    public int page { get; set; } = 0;
+    public string currenttype { get; set; } = "Species";
+    public string[] opti { get; set; } = Array.Empty<string>();
+    public SocketMessageComponent response { get; set; }
+    public bool responded { get; set; } = false;
+    public SocketUser user { get; set; }
+    public simpletradeobject()
+    {
+
+    }
+
 }

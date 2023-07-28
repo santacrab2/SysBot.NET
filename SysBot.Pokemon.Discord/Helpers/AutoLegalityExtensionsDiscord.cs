@@ -15,6 +15,7 @@ namespace SysBot.Pokemon.Discord
             if (set.Species <= 0)
             {
                 await channel.Interaction.FollowupAsync("Oops! I wasn't able to interpret your message! If you intended to convert something, please double check what you're pasting!").ConfigureAwait(false);
+                
                 return;
             }
 
@@ -24,11 +25,13 @@ namespace SysBot.Pokemon.Discord
                 var pkm = sav.GetLegal(template, out var result);
                 if (pkm is PB7)
                 {
-                    if (pkm.Species == 151)
+                    if (pkm.Species == (int)Species.Mew)
                     {
-                        set = ShowdownUtil.ConvertToShowdown("Mew Level: 1");
-                        template = AutoLegalityWrapper.GetTemplate(set);
-                        pkm = sav.GetLegal(template, out result);
+                        if (pkm.IsShiny)
+                        {
+                            await channel.Interaction.FollowupAsync("Mew can not be Shiny in this game. PoGo Mew does not transfer and Pokeball Plus Mew is shiny locked");
+                            return;
+                        }
                     }
                 }
                 var la = new LegalityAnalysis(pkm);
@@ -63,7 +66,7 @@ namespace SysBot.Pokemon.Discord
 
         public static async Task ReplyWithLegalizedSetAsync<T>(this SocketInteractionContext channel, string content) where T : PKM, new()
         {
-
+           
             var set = ShowdownUtil.ConvertToShowdown(content);
             var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
             var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);

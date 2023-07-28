@@ -1,11 +1,18 @@
-﻿using PKHeX.Core;
+﻿using NLog.Fluent;
+using PKHeX.Core;
 using PKHeX.Core.AutoMod;
+using SysBot.Base;
+using System;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
+using System.Windows.Input;
+
+
 
 namespace SysBot.Pokemon
 {
-    public static class ShowdownUtil
+    public static class ShowdownUtil 
     {
         /// <summary>
         /// Converts a single line to a showdown set
@@ -33,81 +40,200 @@ namespace SysBot.Pokemon
             }
 
             var finalset = restorenick + setstring;
-
+            
+            var setsplit = finalset.Split("\r\n");
             var TheShow = new ShowdownSet(finalset);
+            
             if (TheShow.Species == 0)
             {
-                if (finalset.Contains("Language:"))
+
+                
+                var langID = (LanguageID)0;
+
+                if (setsplit[0].IndexOf("(") > -1 && setsplit[0].IndexOf(")") - 2 != setsplit[0].IndexOf("("))
                 {
-                    var setsplit = finalset.Split("\r\n");
-                    var lang = setsplit.Where(z => z.Contains("Language:")).First().Replace("Language: ", "");
-                    var langID = Aesthetics.GetLanguageId(lang);
-                   
-                    if (setsplit[0].IndexOf("(") > -1 && setsplit[0].IndexOf(")") - 2 != setsplit[0].IndexOf("("))
+                    var spec = setsplit[0][(setsplit[0].IndexOf("(")+1)..setsplit[0].IndexOf(")")];
+                    var nick = setsplit[0][..setsplit[0].IndexOf("(")];
+                    var specid = -1;
+                    
+                    for (int i = 1; i < 11; i++)
                     {
-                        var spec = setsplit[0][(setsplit[0].IndexOf("(") + 1)..(setsplit[0].IndexOf(")") - 1)];
-                        var specid = SpeciesName.GetSpeciesID(spec, (int)langID);
+                        specid = SpeciesName.GetSpeciesID(spec, i);
+                        if (specid > -1)
+                        {
+                            langID = (LanguageID)i;
+                            break;
+                        }
+                    }
+                    if (specid == -1)
+                        return null;
+                    var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
+                    setsplit[0] = nick + $"({engspec})";
+                    
+                    if (!finalset.Contains("Language:"))
+                    {
+                        var langs = Enum.GetNames(typeof(LanguageID));
+                        if (setsplit.Length > 2)
+                        {
+                            var setlist = setsplit.ToList();
+                            setlist.Insert(1, $"Language: {langs[(int)langID]}");
+                            setsplit = setlist.ToArray();
+                        }
+                        else
+                            setsplit = setsplit.Append($"Language: {langs[(int)langID]}").ToArray();
+
+                    }
+                    var result = new StringBuilder();
+                    foreach (var item in setsplit)
+                    {
+                        result.Append(item + "\r\n");
+                    }
+                    finalset = result.ToString();
+                    TheShow = new ShowdownSet(finalset); 
+                }
+                else
+                {
+                    if (setsplit[0].IndexOf("(") > -1)
+                    {
+                       var spec = setsplit[0][..(setsplit[0].IndexOf("(") - 1)];
+                        var specid = -1;
+
+                        for (int i = 1; i < 11; i++)
+                        {
+                            specid = SpeciesName.GetSpeciesID(spec, i);
+                            if (specid > -1)
+                            {
+                                langID = (LanguageID)i;
+                                break;
+                            }
+                        }
+                        if (specid == -1)
+                            return null;
                         var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
-                        setsplit[0].Replace(spec, "");
-                        setsplit[0].Insert((setsplit[0].IndexOf("(") + 1), engspec);
-                        finalset = string.Empty;
+                        setsplit[0]=setsplit[0].Replace(spec, "");
+                        setsplit[0]=setsplit[0].Insert(0, engspec);
+                        if (!finalset.Contains("Language:"))
+                        {
+                            var langs = Enum.GetNames(typeof(LanguageID));
+                            if (setsplit.Length > 2)
+                            {
+                                var setlist = setsplit.ToList();
+                                setlist.Insert(1, $"Language: {langs[(int)langID]}");
+                                setsplit = setlist.ToArray();
+                            }
+                            else
+                                setsplit = setsplit.Append($"Language: {langs[(int)langID]}").ToArray();
+
+                        }
+                        var result = new StringBuilder();
                         foreach (var item in setsplit)
                         {
-                            finalset += item;
+                            result.Append(item + "\r\n");
                         }
-                        return new ShowdownSet(finalset);
+                        finalset = result.ToString();
+                        TheShow = new ShowdownSet(finalset);
+                    }
+                    else if (setsplit[0].Contains("@"))
+                    {
+                        var spec = setsplit[0][0..(setsplit[0].IndexOf("@") - 1)];
+                        var specid = -1;
+
+                        for (int i = 1; i < 11; i++)
+                        {
+                            specid = SpeciesName.GetSpeciesID(spec, i);
+                            if (specid > -1)
+                            {
+                                langID = (LanguageID)i;
+                                break;
+                            }
+
+                        }
+                        if (specid == -1)
+                            return null;
+                        var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
+                        setsplit[0]=setsplit[0].Replace(spec, "");
+                        setsplit[0]=setsplit[0].Insert(0, engspec);
+                        if (!finalset.Contains("Language:"))
+                        {
+                            var langs = Enum.GetNames(typeof(LanguageID));
+                            if (setsplit.Length > 2)
+                            {
+                                var setlist = setsplit.ToList();
+                                setlist.Insert(1, $"Language: {langs[(int)langID]}");
+                                setsplit = setlist.ToArray();
+                            }
+                            else
+                                setsplit = setsplit.Append($"Language: {langs[(int)langID]}").ToArray();
+
+                        }
+                       
+                        var result = new StringBuilder();
+                        foreach (var item in setsplit)
+                        {
+                            result.Append(item + "\r\n");
+                        }
+                        finalset = result.ToString();
+                        TheShow = new ShowdownSet(finalset);
                     }
                     else
                     {
-                        if (setsplit[0].IndexOf("(") > -1)
+                        var spec = setsplit[0].Trim();
+
+                        var specid = -1;
+
+                        for (int i = 1; i < 11; i++)
                         {
-                            var spec = setsplit[0][0..(setsplit[0].IndexOf("(") - 1)];
-                            var specid = SpeciesName.GetSpeciesID(spec, (int)langID);
-                            var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
-                            setsplit[0].Replace(spec, "");
-                            setsplit[0].Insert(0, engspec);
-                            finalset = string.Empty;
-                            foreach (var item in setsplit)
+                            specid = SpeciesName.GetSpeciesID(spec, i);
+                            if (specid > -1)
                             {
-                                finalset += item;
+                                langID = (LanguageID)i;
+                                break;
                             }
-                            return new ShowdownSet(finalset);
                         }
-                        else if (setsplit[0].Contains("@"))
+                        if (specid == -1)
+                            return null;
+                        var engspec = SpeciesName.GetSpeciesName((ushort)specid, (int)LanguageID.English);
+                           
+                        setsplit[0] = engspec;
+                        if (!finalset.Contains("Language:"))
                         {
-                            var spec = setsplit[0][0..(setsplit[0].IndexOf("@") - 2)];
-                            var specid = SpeciesName.GetSpeciesID(spec, (int)langID);
-                            var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
-                            setsplit[0].Replace(spec, "");
-                            setsplit[0].Insert(0, engspec);
-                            finalset = string.Empty;
-                            foreach (var item in setsplit)
+                            var langs = Enum.GetNames(typeof(LanguageID));
+                            if (setsplit.Length > 2)
                             {
-                                finalset += item;
+                                var setlist = setsplit.ToList();
+                                setlist.Insert(1, $"Language: {langs[(int)langID]}");
+                                setsplit = setlist.ToArray();
                             }
-                            return new ShowdownSet(finalset);
+                            else
+                            {
+                                setsplit = setsplit.Append($"Language: {langs[(int)langID]}").ToArray();
+                            }
+                            
                         }
-                        else
+                        var result = new StringBuilder();
+                        foreach (var item in setsplit)
                         {
-                            var spec = setsplit[0].Trim();
-                           
-                            SpeciesName.SpeciesDict[(int)langID].TryGetValue(spec, out var specid);
-                           
-                            var engspec = SpeciesName.GetSpeciesName((ushort)specid, (int)LanguageID.English);
-                           
-                            setsplit[0] = engspec;
-                            var result = new StringBuilder();
-                            foreach (var item in setsplit)
-                            {
-                                result.Append(item + "\n");
-                            }
-                            finalset = result.ToString();
-                          
-                            return new ShowdownSet(finalset);
+                            result.Append(item + "\r\n");
                         }
+                        finalset = result.ToString();
+                        TheShow = new ShowdownSet(finalset);
                     }
                 }
+                
+               
             }
+
+            foreach (var line in setsplit)
+            {
+                if (TheShow.Nickname != String.Empty)
+                    continue;
+                if (!char.IsUpper(line[0]))
+                {
+                    if (line[0] != '-')
+                        return null;
+                }
+            }
+          
             return TheShow;
         }
 
@@ -119,7 +245,7 @@ namespace SysBot.Pokemon
             "Careful Nature", "Docile Nature", "Gentle Nature", "Hardy Nature", "Hasty Nature",
             "Impish Nature", "Jolly Nature", "Lax Nature", "Lonely Nature", "Mild Nature",
             "Modest Nature", "Naive Nature", "Naughty Nature", "Quiet Nature", "Quirky Nature",
-            "Rash Nature", "Relaxed Nature", "Sassy Nature", "Serious Nature", "Timid Nature","Tera Type:","."
+            "Rash Nature", "Relaxed Nature", "Sassy Nature", "Serious Nature", "Timid Nature"
         };
     }
 }

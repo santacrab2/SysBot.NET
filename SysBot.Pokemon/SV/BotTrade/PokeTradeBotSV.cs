@@ -297,7 +297,7 @@ namespace SysBot.Pokemon
                 await EnterLinkCode(code, Hub.Config, token).ConfigureAwait(false);
 
                 await Click(PLUS, 3_000, token).ConfigureAwait(false);
-                StartFromOverworld = false;
+                StartFromOverworld = true;
             }
 
             LastTradeDistributionFixed = poke.Type == PokeTradeType.Random && !Hub.Config.Distribution.RandomCode;

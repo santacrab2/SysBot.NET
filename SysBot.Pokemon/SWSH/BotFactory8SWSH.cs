@@ -25,6 +25,8 @@ namespace SysBot.Pokemon
             PokeRoutineType.RollingRaidSWSH => new RollingRaidBot(cfg, Hub),
             PokeRoutineType.OnlineLairBot => new onlineLairBot(cfg, Hub),
             PokeRoutineType.DenBotSWSH => new DenBot(cfg,Hub),
+            PokeRoutineType.EggFetch => new EncounterBotEggSWSH(cfg, Hub),
+            PokeRoutineType.FossilBot => new EncounterBotFossilSWSH(cfg, Hub),
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
 

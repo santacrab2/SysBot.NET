@@ -13,7 +13,7 @@ namespace SysBot.Pokemon
 
         public EncounterBotFossilSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg, hub)
         {
-            Settings = Hub.Config.EncounterSWSH.Fossil;
+            Settings = Hub.Config.FossilSWSH;
             DumpSetting = Hub.Config.Folder;
         }
 

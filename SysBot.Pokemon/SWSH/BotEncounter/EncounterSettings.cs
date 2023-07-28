@@ -15,9 +15,7 @@ namespace SysBot.Pokemon
         [Category(Encounter), Description("The method used by the Line and Reset bots to encounter Pokémon.")]
         public EncounterMode EncounteringType { get; set; } = EncounterMode.VerticalLine;
 
-        [Category(Settings)]
-        [TypeConverter(typeof(ExpandableObjectConverter))]
-        public FossilSettings Fossil { get; set; } = new();
+       
 
         [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
         public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;

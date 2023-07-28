@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Threading.Channels;
 using NLog.Fluent;
+using Discord.WebSocket;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -95,7 +96,7 @@ namespace SysBot.Pokemon.Discord
         }
 
         [SlashCommand("raidembedstart", "Initialize posting of RollingRaidBot embeds to specified Discord channels.")]
-
+        [RequireOwner]
         public async Task InitializeRaidEmbeds()
         {
             await DeferAsync(ephemeral:true);
@@ -203,9 +204,10 @@ namespace SysBot.Pokemon.Discord
                 .WithMaxValues(1)
                 .WithMinValues(1)
                 .WithPlaceholder("Select a Bot");
+            var bot = SysCord<T>.Runner.Bots.Find(z => z.Bot is RollingRaidBot);
             if (typeof(T) != typeof(PB7))
                 menubuilder.AddOption("Articuno LGPE", "Articuno LGPE");
-            if (typeof(T) != typeof(PK8))
+            if (typeof(T) != typeof(PK8) || bot != null)
                 menubuilder.AddOption("Empoleon SWSH", "Empoleon SWSH");
             if (typeof(T) != typeof(PB8))
                 menubuilder.AddOption("Spiritomb BDSP", "Spiritomb BDSP");
@@ -213,11 +215,48 @@ namespace SysBot.Pokemon.Discord
                 menubuilder.AddOption("Basculegion LA", "Basculegion LA");
             if(typeof(T) != typeof(PK9))
                 menubuilder.AddOption("Klawf SV", "Klawf SV");
+            
+            if (bot == null)
+                menubuilder.AddOption("Empoleon's Shiny Dens", "Empoleon's Shiny Dens");
             var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
             await FollowupAsync("Choose the bot you would like",ephemeral: true, components: builder.Build());
 
         }
 
 
+        [SlashCommand("respond", "responds to appeals")]
+        [RequireOwner]
+        [DefaultMemberPermissions(GuildPermission.BanMembers)]
+
+        public async Task AppealResponse(SocketGuildUser user, AppealResponses response)
+        {
+            switch (response)
+            {
+                case AppealResponses.Approved: await user.SendMessageAsync("Upon review your appeal has been approved and your mute has been removed!"); break;
+                case AppealResponses.Denied: await user.SendMessageAsync("Upon review your appeal has been denied and your muted status will remain for the remainder of the original hour."); break;
+                case AppealResponses.Escalated: await user.SendMessageAsync("Upon review further infractions were discovered and your mute has been escalated to a ban. Have a good one."); break;
+            }
+            await ReplyAsync($"Appeal Response sent to {user.Username}. {response}");
+        }
+
+        public enum AppealResponses
+        {
+            Approved,
+            Denied,
+            Escalated,
+        }
+
+        [SlashCommand("message", "message users")]
+        [RequireOwner]
+        public async Task message(SocketGuildUser user, string message)
+        {
+            await user.SendMessageAsync(message);
+            await RespondAsync($"```{message}``` was sent to {user.Username}");
+        }
+        [SlashCommand("clearcache","clear simple trade cache")]
+        public async Task clearthecache() 
+        {
+            TradeModule<T>.simpletradecache.Clear();
+        }
     }
 }

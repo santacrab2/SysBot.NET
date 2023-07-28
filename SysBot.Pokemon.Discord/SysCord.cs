@@ -8,12 +8,14 @@ using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static Discord.GatewayIntents;
+
 
 namespace SysBot.Pokemon.Discord
 {
@@ -181,9 +183,40 @@ namespace SysBot.Pokemon.Discord
             // Subscribe a handler to see if a message invokes a command.
           
             _client.MessageReceived += HandleMessageAsync;
-  
+            _client.ButtonExecuted += HandleButtons;
         }
-   
+        private async Task HandleButtons(SocketMessageComponent arg)
+        {
+            var currentcache = TradeModule<T>.simpletradecache.Find(z => z.user == arg.User);
+            switch (arg.Data.CustomId)
+            {
+                case "next":
+                    if (currentcache.opti.Length > 25 && currentcache.page != (currentcache.opti.Length / 25) - 1)
+                    {
+                        currentcache.page++;
+                        await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
+                    }
+                    else
+                    {
+                        currentcache.page=0;
+                        await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
+                    }
+                        break;
+                case "prev":
+                    if (currentcache.page > 0)
+                    {
+                        currentcache.page--;
+                        await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
+                    }
+                    else if(currentcache.opti.Length > 25)
+                    {
+                        currentcache.page = (currentcache.opti.Length / 25)-1;
+                        await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
+                    }
+                    break;
+
+            }
+        }
        
         private async Task HandleMessageAsync(SocketMessage arg)
         {
@@ -420,7 +453,7 @@ namespace SysBot.Pokemon.Discord
                 string reward = components.First(x => x.CustomId == "reward").Value;
                 var chan = (ITextChannel)await _client.GetChannelAsync(872606380434026508);
 
-                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nSpecies: {species}\nTeraType: {terat}\nReward Requests: {reward}\n");
+                await chan.SendMessageAsync($"Requestor: {arg.User.Mention}\nSpecies: {species}\nTeraType: {terat}\nReward Requests: {reward}\n");
               
                 var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt");
                 var therecordslist = therecordsarr!=null ? therecordsarr.ToList():new();
@@ -435,20 +468,30 @@ namespace SysBot.Pokemon.Discord
         }
         public async Task MyMenuHandler(SocketMessageComponent arg)
         {
-            if (!File.Exists($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt")) File.Create($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt");
-            if (!File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt").Contains($"{arg.User.Id}"))
-            {
-                var chan =(ITextChannel) _client.GetChannel(1081994925635289131);
-                await chan.SendMessageAsync($"Requestor: {arg.User.Username}\nBot Request: {arg.Data.Values.First()}");
-                var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt");
-                var therecordslist = therecordsarr != null ? therecordsarr.ToList() : new();
-                therecordslist.Add($"{arg.User.Id}\n{arg.User.Username}\n");
-                File.WriteAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt", therecordslist);
-                await arg.RespondAsync("Your Request has been submitted!", ephemeral: true);
-                await arg.Message.DeleteAsync();
+            var currentcache = TradeModule<T>.simpletradecache.Find(z => z.user == arg.User);
+            switch (arg.Data.CustomId) {
+                case "botmenu":
+                    if (!File.Exists($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt")) File.Create($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt");
+                    if (!File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt").Contains($"{arg.User.Id}"))
+                    {
+                        var chan = (ITextChannel)_client.GetChannel(1081994925635289131);
+                        await chan.SendMessageAsync($"Requestor: {arg.User.Mention}\nBot Request: {arg.Data.Values.First()}");
+                        var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt");
+                        var therecordslist = therecordsarr != null ? therecordsarr.ToList() : new();
+                        therecordslist.Add($"{arg.User.Id}\n{arg.User.Username}\n");
+                        File.WriteAllLines($"{Hub.Config.Discord.terarequestfolder}/bot-Request.txt", therecordslist);
+                        await arg.RespondAsync("Your Request has been submitted!", ephemeral: true);
+                        await arg.Message.DeleteAsync();
+                    }
+                    await arg.RespondAsync("One Request at a time! Please wait until your current request has been fulfilled.", ephemeral: true);
+                    await arg.Message.DeleteAsync();
+                    break;
+                default:
+                    currentcache.response = arg;
+                    currentcache.responded = true;
+                    await arg.RespondAsync();
+                    break;
             }
-            await arg.RespondAsync("One Request at a time! Please wait until your current request has been fulfilled.", ephemeral: true);
-            await arg.Message.DeleteAsync();
         }
     }
 }

@@ -33,6 +33,12 @@
 
         /// <summary> Triggers encounters with Sword &amp; Shield box legend until the criteria is satisfied. </summary>
         DogBot = 1_002,
+        /// <summary> Retrieves eggs from the Day Care. </summary>
+        EggFetch = 1_003,
+
+        /// <summary> Revives fossils until the criteria is satisfied. </summary>
+        FossilBot = 1_004,
+
 
         /// <summary> Similar to idle, but identifies the bot as available for Remote input (Twitch Plays, etc). </summary>
         RemoteControl = 6_000,
