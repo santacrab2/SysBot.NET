@@ -155,6 +155,16 @@ namespace SysBot.Pokemon.Discord
             cache.responded = false;
             set = new ShowdownSet($"{set.Text}\nShiny: {cache.response.Data.Values.First()}");
             pk = (T)sav.GetLegalFromSet(set,out var _);
+            if (!pk.PersonalInfo.Genderless)
+            {
+                cache.currenttype = "Gender";
+                cache.opti = new string[] { "Male ♂", "Female ♀" };
+                await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page = 0, cache.opti));
+                while (!cache.responded)
+                    await Task.Delay(250);
+                cache.responded = false;
+                pk.Gender = cache.response.Data.Values.First() == "Male ♂" ? 0 : 1;
+            }
             cache.currenttype = "Item";
             cache.opti = datasource.Items.Select(z => z.Text).ToArray();
             await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page=0, cache.opti));
@@ -170,12 +180,26 @@ namespace SysBot.Pokemon.Discord
                 await Task.Delay(250);
             cache.responded = false;
             pk.CurrentLevel = int.Parse(cache.response.Data.Values.First());
+            cache.currenttype = "Ball";
+            List<string> balllist = datasource.Balls.Select(z => z.Text).ToList();
+            balllist.Insert(0, "Any");
+            cache.opti = balllist.ToArray();
+            await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page = 0, cache.opti));
+            while (!cache.responded)
+                await Task.Delay(250);
+            cache.responded = false;
+            if(cache.response.Data.Values.First() != "Any")
+            {
+                var ball = datasource.Balls.Where(z => z.Text == cache.response.Data.Values.First()).First();
+                pk.Ball = ball.Value;
+            }
             await Context.Interaction.DeleteOriginalResponseAsync();
-           pk = (T)sav.Legalize(pk);
+            simpletradecache.Remove(cache);
+            pk = (T)sav.Legalize(pk);
             var code = Info.GetRandomTradeCode();
             var lgcode = Info.GetRandomLGTradeCode();
             var sig = Context.User.GetFavor();
-            simpletradecache.Remove(cache);
+            
             if (pk is PB7)
             {
                 if (pk.Species == (int)Species.Mew)
