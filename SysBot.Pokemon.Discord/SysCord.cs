@@ -183,42 +183,48 @@ namespace SysBot.Pokemon.Discord
             // Subscribe a handler to see if a message invokes a command.
           
             _client.MessageReceived += HandleMessageAsync;
-            _client.ButtonExecuted += HandleButtons;
+            _client.ButtonExecuted += handlebuttonpress;
         }
-        private async Task HandleButtons(SocketMessageComponent arg)
+        public async Task handlebuttonpress(SocketMessageComponent arg)
         {
             var currentcache = TradeModule<T>.simpletradecache.Find(z => z.user == arg.User);
+            var lastpage = currentcache.opti.Length % 25 == 0 ? (currentcache.opti.Length / 25) - 1 : currentcache.opti.Length / 25;
             switch (arg.Data.CustomId)
             {
+
                 case "next":
-                    if (currentcache.opti.Length > 25 && currentcache.page != (currentcache.opti.Length / 25) - 1)
+                    if (currentcache.page < lastpage)
                     {
                         currentcache.page++;
+
                         await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
                     }
                     else
                     {
-                        currentcache.page=0;
+                        currentcache.page = 0;
                         await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
                     }
-                        break;
+                    break;
                 case "prev":
                     if (currentcache.page > 0)
                     {
                         currentcache.page--;
                         await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
                     }
-                    else if(currentcache.opti.Length > 25)
+                    else if (currentcache.opti.Length > 25)
                     {
-                        currentcache.page = (currentcache.opti.Length / 25)-1;
+                        if (currentcache.opti.Length % 25 == 0)
+                            currentcache.page = (currentcache.opti.Length / 25) - 1;
+                        else
+                            currentcache.page = (currentcache.opti.Length / 25);
                         await arg.UpdateAsync(z => z.Components = TradeModule<T>.compo(currentcache.currenttype, currentcache.page, currentcache.opti));
                     }
                     break;
 
             }
         }
-       
-        private async Task HandleMessageAsync(SocketMessage arg)
+
+            private async Task HandleMessageAsync(SocketMessage arg)
         {
             // Bail out if it's a System Message.
             if (arg is not SocketUserMessage msg)

@@ -181,7 +181,7 @@ namespace SysBot.Pokemon.Discord
             cache.responded = false;
             pk.CurrentLevel = int.Parse(cache.response.Data.Values.First());
             cache.currenttype = "Ball";
-            List<string> balllist = datasource.Balls.Select(z => z.Text).ToList();
+            List<string> balllist = BallApplicator.GetLegalBalls(pk).Select(z => z.ToString()).ToList();
             balllist.Insert(0, "Any");
             cache.opti = balllist.ToArray();
             await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page = 0, cache.opti));
@@ -190,8 +190,8 @@ namespace SysBot.Pokemon.Discord
             cache.responded = false;
             if(cache.response.Data.Values.First() != "Any")
             {
-                var ball = datasource.Balls.Where(z => z.Text == cache.response.Data.Values.First()).First();
-                pk.Ball = ball.Value;
+                var ball = BallApplicator.GetLegalBalls(pk).Where(z => z.ToString() == cache.response.Data.Values.First()).First();
+                pk.Ball = (int)ball;
             }
             await Context.Interaction.DeleteOriginalResponseAsync();
             simpletradecache.Remove(cache);
@@ -216,19 +216,16 @@ namespace SysBot.Pokemon.Discord
             return;
 
         }
-        public static SelectMenuBuilder GetSelectMenu(string type,int page, string[] options)
+        public static SelectMenuBuilder GetSelectMenu(string type, int page, string[] options)
         {
             var returnMenu = new SelectMenuBuilder().WithCustomId(type).WithPlaceholder($"Select a {type}");
-            if (options.Length > 25)
+            var newoptions = options.Skip(page * 25).Take(25);
+            foreach (var option in newoptions)
             {
-                for (var i = page * 25; i < (page * 25) + 25; i++)
-                    returnMenu.AddOption(options[i], options[i]);
+                returnMenu.AddOption(option, option);
             }
-            else
-            {
-                foreach(var option in options)
-                    returnMenu.AddOption(option, option);
-            }
+            
+            
             return returnMenu;
 
         }

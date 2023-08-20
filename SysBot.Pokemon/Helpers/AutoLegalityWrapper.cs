@@ -107,7 +107,7 @@ namespace SysBot.Pokemon
 
         public static bool IsFixedOT(IEncounterTemplate t, PKM pkm) => t switch
         {
-            EncounterTrade tr => tr.HasTrainerName,
+            IFixedTrainer tr => tr.IsFixedTrainer,
             MysteryGift g => !g.EggEncounter && g switch
             {
                 WC8 wc8 => wc8.GetHasOT(pkm.Language),
