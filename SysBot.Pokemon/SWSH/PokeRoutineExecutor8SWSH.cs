@@ -311,7 +311,7 @@ namespace SysBot.Pokemon
 
         public async Task<bool> IsOnOverworld(ulong offset, CancellationToken token)
         {
-            var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, 1, token).ConfigureAwait(false);
+            var data = await SwitchConnection.PointerPeek(1,Offsets.OverworldPointer, token).ConfigureAwait(false);
             return data[0] == 1;
         }
 

@@ -54,18 +54,18 @@ namespace SysBot.Pokemon
                 {
                     var spec = setsplit[0][(setsplit[0].IndexOf("(")+1)..setsplit[0].IndexOf(")")];
                     var nick = setsplit[0][..setsplit[0].IndexOf("(")];
-                    var specid = -1;
+                    ushort specid = 0;
                     
                     for (int i = 1; i < 11; i++)
                     {
-                        specid = SpeciesName.GetSpeciesID(spec, i);
-                        if (specid > -1)
+                        SpeciesName.TryGetSpecies(spec, i,out specid);
+                        if (specid > 0)
                         {
                             langID = (LanguageID)i;
                             break;
                         }
                     }
-                    if (specid == -1)
+                    if (specid == 0)
                         return null;
                     var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
                     setsplit[0] = nick + $"({engspec})";
@@ -96,18 +96,18 @@ namespace SysBot.Pokemon
                     if (setsplit[0].IndexOf("(") > -1)
                     {
                        var spec = setsplit[0][..(setsplit[0].IndexOf("(") - 1)];
-                        var specid = -1;
+                        ushort specid = 0;
 
                         for (int i = 1; i < 11; i++)
                         {
-                            specid = SpeciesName.GetSpeciesID(spec, i);
-                            if (specid > -1)
+                            SpeciesName.TryGetSpecies(spec, i,out specid);
+                            if (specid > 0)
                             {
                                 langID = (LanguageID)i;
                                 break;
                             }
                         }
-                        if (specid == -1)
+                        if (specid == 0)
                             return null;
                         var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
                         setsplit[0]=setsplit[0].Replace(spec, "");
@@ -136,19 +136,19 @@ namespace SysBot.Pokemon
                     else if (setsplit[0].Contains("@"))
                     {
                         var spec = setsplit[0][0..(setsplit[0].IndexOf("@") - 1)];
-                        var specid = -1;
+                        ushort specid = 0;
 
                         for (int i = 1; i < 11; i++)
                         {
-                            specid = SpeciesName.GetSpeciesID(spec, i);
-                            if (specid > -1)
+                            SpeciesName.TryGetSpecies(spec, i,out specid);
+                            if (specid > 0)
                             {
                                 langID = (LanguageID)i;
                                 break;
                             }
 
                         }
-                        if (specid == -1)
+                        if (specid == 0)
                             return null;
                         var engspec = SpeciesName.GetSpeciesNameGeneration((ushort)specid, 2, 9);
                         setsplit[0]=setsplit[0].Replace(spec, "");
@@ -179,18 +179,18 @@ namespace SysBot.Pokemon
                     {
                         var spec = setsplit[0].Trim();
 
-                        var specid = -1;
+                        ushort specid = 0;
 
                         for (int i = 1; i < 11; i++)
                         {
-                            specid = SpeciesName.GetSpeciesID(spec, i);
-                            if (specid > -1)
+                             SpeciesName.TryGetSpecies(spec, i,out specid);
+                            if (specid > 0)
                             {
                                 langID = (LanguageID)i;
                                 break;
                             }
                         }
-                        if (specid == -1)
+                        if (specid == 0)
                             return null;
                         var engspec = SpeciesName.GetSpeciesName((ushort)specid, (int)LanguageID.English);
                            
