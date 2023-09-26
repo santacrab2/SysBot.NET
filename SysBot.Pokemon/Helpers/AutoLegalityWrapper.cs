@@ -45,6 +45,9 @@ namespace SysBot.Pokemon
             APILegality.Timeout = cfg.Timeout;
             APILegality.AllowHOMETransferGeneration = cfg.AllowHomeless;
 
+            if (!(APILegality.AllowHOMETransferGeneration = cfg.AllowHOMETransferGeneration))
+                typeof(ParseSettings).GetProperty(nameof(ParseSettings.Gen8TransferTrackerNotPresent))!.SetValue(null, Severity.Invalid);
+
             // We need all the encounter types present, so add the missing ones at the end.
             var missing = EncounterPriority.Except(cfg.PrioritizeEncounters);
             cfg.PrioritizeEncounters.AddRange(missing);
@@ -140,7 +143,14 @@ namespace SysBot.Pokemon
         public static PKM GetLegal(this ITrainerInfo sav, IBattleTemplate set, out string res)
         {
             var result = sav.GetLegalFromSet(set);
-            res = result.Status.ToString();
+            res = result.Status switch
+            {
+                LegalizationResult.Regenerated     => "Regenerated",
+                LegalizationResult.Failed          => "Failed",
+                LegalizationResult.Timeout         => "Timeout",
+                LegalizationResult.VersionMismatch => "VersionMismatch",
+                _ => "",
+            };
             return result.Created;
         }
 
