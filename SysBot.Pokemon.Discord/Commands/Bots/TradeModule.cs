@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Drawing.Printing;
 using PKHeX.Core.AutoMod;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -18,6 +19,7 @@ namespace SysBot.Pokemon.Discord
     [DefaultMemberPermissions(GuildPermission.ViewChannel)]
     public class TradeModule<T> : InteractionModuleBase<SocketInteractionContext> where T : PKM,new()
     {
+      
         public static TradeQueueInfo<T> Info => SysCord<T>.Runner.Hub.Queues.Info;
 
 
@@ -25,6 +27,7 @@ namespace SysBot.Pokemon.Discord
    
         public async Task TradeAsync([Summary("PokemonText")]string content="",Attachment PKM = default)
         {
+            
             await DeferAsync();
            
             if (content != "")
@@ -53,7 +56,8 @@ namespace SysBot.Pokemon.Discord
                     var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
                     var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
                     var pkm = sav.GetLegal(template, out var result);
-                    if(pkm is PB7)
+                   
+                    if (pkm is PB7)
                     {
                         if(pkm.Species == (int)Species.Mew)
                         {
@@ -69,7 +73,8 @@ namespace SysBot.Pokemon.Discord
 
                     var la = new LegalityAnalysis(pkm);
                     var spec = GameInfo.Strings.Species[template.Species];
-                    //pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
+                    if(pkm is not T)
+                        pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
                    
 
                     if (pkm is not T pk || !la.Valid)
@@ -79,6 +84,11 @@ namespace SysBot.Pokemon.Discord
                         if (result == "Failed")
                             imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)}";
                         await FollowupAsync(imsg, ephemeral: true).ConfigureAwait(false);
+                        return;
+                    }
+                    if (pkm.RequiresHomeTracker() && !APILegality.AllowHOMETransferGeneration)
+                    {
+                        await FollowupAsync($"{SpeciesName.GetSpeciesName(pkm.Species, 2)}{(pkm.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pkm.Form, GameInfo.Strings, pkm.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game. You need to generate it in the correct origin game and transfer through Home.");
                         return;
                     }
                     pk.ResetPartyStats();
@@ -133,7 +143,7 @@ namespace SysBot.Pokemon.Discord
                 await Task.Delay(250);
             cache.responded = false;
             var set = new ShowdownSet(cache.response.Data.Values.First());
-            pk = (T)sav.GetLegalFromSet(set,out var _);
+            pk = (T)sav.GetLegalFromSet(set).Created;
             cache.opti = FormConverter.GetFormList(pk.Species, GameInfo.Strings.types, GameInfo.Strings.forms, GameInfo.GenderSymbolUnicode, pk.Context);
             if (cache.opti.Length > 1)
             {
@@ -154,7 +164,7 @@ namespace SysBot.Pokemon.Discord
                 await Task.Delay(250);
             cache.responded = false;
             set = new ShowdownSet($"{set.Text}\nShiny: {cache.response.Data.Values.First()}");
-            pk = (T)sav.GetLegalFromSet(set,out var _);
+            pk = (T)sav.GetLegalFromSet(set).Created;
             if (!pk.PersonalInfo.Genderless)
             {
                 cache.currenttype = "Gender";
@@ -211,10 +221,25 @@ namespace SysBot.Pokemon.Discord
                     }
                 }
             }
-            
+            var la = new LegalityAnalysis(pk);
+            var spec = GameInfo.Strings.Species[pk.Species];
+            //pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
+
+
+            if (pk is not T pkm || !la.Valid)
+            {
+                var reason = $"I wasn't able to create a {spec} from those options.";
+                var imsg = $"Oops! {reason}";
+                await FollowupAsync(imsg).ConfigureAwait(false);
+                return;
+            }
+            if (pk.RequiresHomeTracker() && APILegality.AllowHOMETransferGeneration)
+            {
+                await FollowupAsync($"{SpeciesName.GetSpeciesName(pk.Species,2)}{(pk.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pk.Form, GameInfo.Strings, pk.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game, You need to generate it in the correct origin game and transfer through Home.");
+                return;
+            }
             await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User, lgcode).ConfigureAwait(false);
             return;
-
         }
         public static SelectMenuBuilder GetSelectMenu(string type, int page, string[] options)
         {
@@ -302,7 +327,11 @@ namespace SysBot.Pokemon.Discord
                 await FollowupAsync($"{typeof(T).Name} attachment is not legal, Here's Why: {la.Report()}",ephemeral:true).ConfigureAwait(false);
                 return;
             }
-
+            if (pk.RequiresHomeTracker() && !APILegality.AllowHOMETransferGeneration && pk is IHomeTrack { HasTracker:false})
+            {
+                await FollowupAsync($"{SpeciesName.GetSpeciesName(pk.Species, 2)}{(pk.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pk.Form, GameInfo.Strings, pk.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game. You need to generate it in the correct origin game and transfer through Home.");
+                return;
+            }
             await QueueHelper<T>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
         }
     }

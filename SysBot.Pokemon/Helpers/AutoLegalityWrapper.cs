@@ -43,6 +43,7 @@ namespace SysBot.Pokemon
             APILegality.PrioritizeGameVersion= cfg.PrioritizeGameVersion;
             APILegality.SetBattleVersion = cfg.SetBattleVersion;
             APILegality.Timeout = cfg.Timeout;
+            APILegality.AllowHOMETransferGeneration = cfg.AllowHomeless;
 
             // We need all the encounter types present, so add the missing ones at the end.
             var missing = EncounterPriority.Except(cfg.PrioritizeEncounters);
@@ -96,11 +97,10 @@ namespace SysBot.Pokemon
            
             
         }
-
+        public static bool RequiresHomeTracker(this PKM pkm) => HomeTrackerUtil.IsRequired(new LegalityAnalysis(pkm).EncounterOriginal, pkm);
+        
         public static bool CanBeTraded(this PKM pkm)
         {
-            
-           
             return !FormInfo.IsFusedForm(pkm.Species, pkm.Form, pkm.Format);
         }
 
@@ -129,7 +129,7 @@ namespace SysBot.Pokemon
             if (typeof(T) == typeof(PA8))
                 return TrainerSettings.GetSavedTrainerData(GameVersion.PLA, 8);
             if (typeof(T) == typeof(PB7))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.GE, 7);
+                return TrainerSettings.GetSavedTrainerData(GameVersion.GG, 7);
             if (typeof(T) == typeof(PK9))
                 return TrainerSettings.GetSavedTrainerData(GameVersion.SV, 9);
             throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
@@ -139,9 +139,9 @@ namespace SysBot.Pokemon
 
         public static PKM GetLegal(this ITrainerInfo sav, IBattleTemplate set, out string res)
         {
-            var result = sav.GetLegalFromSet(set, out var type);
-            res = type.ToString();
-            return result;
+            var result = sav.GetLegalFromSet(set);
+            res = result.Status.ToString();
+            return result.Created;
         }
 
         public static string GetLegalizationHint(IBattleTemplate set, ITrainerInfo sav, PKM pk) => set.SetAnalysis(sav, pk);

@@ -5,6 +5,7 @@ using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Threading.Tasks;
+using PKHeX.Core.AutoMod;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -23,6 +24,11 @@ namespace SysBot.Pokemon.Discord
             {
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 var pkm = sav.GetLegal(template, out var result);
+                if (pkm.RequiresHomeTracker() && !APILegality.AllowHOMETransferGeneration)
+                {
+                    await channel.Interaction.FollowupAsync($"{SpeciesName.GetSpeciesName(pkm.Species, 2)}{(pkm.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pkm.Form, GameInfo.Strings, pkm.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game, You need to generate it in the correct origin game and transfer through Home.");
+                    return;
+                }
                 if (pkm is PB7)
                 {
                     if (pkm.Species == (int)Species.Mew)

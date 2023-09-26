@@ -253,14 +253,14 @@ namespace SysBot.Pokemon
         public async Task<bool> IsInPokePortal(ulong offset, CancellationToken token)
         {
             var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, 1, token).ConfigureAwait(false);
-            return data[0] >= 9;
+            return data[0] >= 0xC;
         }
 
         // Usually 4-6 in a box.
         public async Task<bool> IsInBox(ulong offset, CancellationToken token)
         {
             var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, 1, token).ConfigureAwait(false);
-            return data[0] < 8;
+            return data[0] >= 0x11;
         }
 
         public async Task<TextSpeedOption> GetTextSpeed(CancellationToken token)

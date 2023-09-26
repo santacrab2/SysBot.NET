@@ -533,7 +533,7 @@ namespace SysBot.Pokemon
                 if (attempts >= 30)
                     break;
 
-                await Click(B, 1_300, token).ConfigureAwait(false);
+                await Click(B, 2_000, token).ConfigureAwait(false);
                 if (await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                     break;
 
@@ -541,7 +541,7 @@ namespace SysBot.Pokemon
                 if (await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                     break;
 
-                await Click(A, 1_300, token).ConfigureAwait(false);
+                await Click(A, 2_000, token).ConfigureAwait(false);
                 if (await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                     break;
             }
