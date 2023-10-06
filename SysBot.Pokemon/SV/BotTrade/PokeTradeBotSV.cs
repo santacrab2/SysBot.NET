@@ -86,7 +86,7 @@ namespace SysBot.Pokemon
                 await InitializeSessionOffsets(token).ConfigureAwait(false);
 
                 // Force the bot to go through all the motions again on its first pass.
-                StartFromOverworld = true;
+                StartFromOverworld = false;
                 LastTradeDistributionFixed = false;
 
                 Log($"Starting main {nameof(PokeTradeBotSV)} loop.");

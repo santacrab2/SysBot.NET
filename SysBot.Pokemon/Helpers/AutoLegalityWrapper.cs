@@ -43,7 +43,7 @@ namespace SysBot.Pokemon
             APILegality.PrioritizeGameVersion= cfg.PrioritizeGameVersion;
             APILegality.SetBattleVersion = cfg.SetBattleVersion;
             APILegality.Timeout = cfg.Timeout;
-            APILegality.AllowHOMETransferGeneration = cfg.AllowHomeless;
+            
 
             if (!(APILegality.AllowHOMETransferGeneration = cfg.AllowHOMETransferGeneration))
                 typeof(ParseSettings).GetProperty(nameof(ParseSettings.Gen8TransferTrackerNotPresent))!.SetValue(null, Severity.Invalid);
@@ -100,8 +100,6 @@ namespace SysBot.Pokemon
            
             
         }
-        public static bool RequiresHomeTracker(this PKM pkm) => HomeTrackerUtil.IsRequired(new LegalityAnalysis(pkm).EncounterOriginal, pkm);
-        
         public static bool CanBeTraded(this PKM pkm)
         {
             return !FormInfo.IsFusedForm(pkm.Species, pkm.Form, pkm.Format);

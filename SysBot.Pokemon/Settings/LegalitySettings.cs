@@ -77,9 +77,6 @@ namespace SysBot.Pokemon
         [Category(Generate), Description("Maximum time in seconds to spend when generating a set before canceling. This prevents difficult sets from freezing the bot.")]
         public int Timeout { get; set; } = 15;
 
-        [Category(Generate), Description("block home tracker required stuff")]
-        public bool AllowHomeless { get; set; } = true;
-
         // Misc
 
         [Category(Misc), Description("Zero out HOME trackers for cloned and user-requested PKM files. It is recommended to leave this disabled to avoid creating invalid HOME data.")]

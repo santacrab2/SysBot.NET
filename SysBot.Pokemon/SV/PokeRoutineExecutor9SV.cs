@@ -237,7 +237,7 @@ namespace SysBot.Pokemon
         public async Task<bool> IsOnOverworld(ulong offset, CancellationToken token)
         {
             var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, 1, token).ConfigureAwait(false);
-            return data[0] != 0x0;
+            return data[0] == 0x11;
         }
 
         // Only used to check if we made it off the title screen; the pointer isn't viable until a few seconds after clicking A.

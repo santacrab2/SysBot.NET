@@ -13,6 +13,7 @@ using PKHeX.Core.AutoMod;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
+
 namespace SysBot.Pokemon.Discord
 {
     [EnabledInDm(false)]
@@ -73,24 +74,16 @@ namespace SysBot.Pokemon.Discord
 
                     var la = new LegalityAnalysis(pkm);
                     var spec = GameInfo.Strings.Species[template.Species];
-                    if(pkm is not T)
-                        pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
-                   
-
                     if (pkm is not T pk || !la.Valid)
                     {
                         var reason = result == "Timeout" ? $"That {spec} set took too long to generate." : $"I wasn't able to create a {spec} from that set.";
                         var imsg = $"Oops! {reason}";
                         if (result == "Failed")
                             imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)}";
-                        await FollowupAsync(imsg, ephemeral: true).ConfigureAwait(false);
+                        await FollowupAsync(imsg).ConfigureAwait(false);
                         return;
                     }
-                    if (pkm.RequiresHomeTracker() && !APILegality.AllowHOMETransferGeneration)
-                    {
-                        await FollowupAsync($"{SpeciesName.GetSpeciesName(pkm.Species, 2)}{(pkm.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pkm.Form, GameInfo.Strings, pkm.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game. You need to generate it in the correct origin game and transfer through Home.");
-                        return;
-                    }
+                    
                     pk.ResetPartyStats();
 
                     var sig = Context.User.GetFavor();
@@ -224,18 +217,12 @@ namespace SysBot.Pokemon.Discord
             var la = new LegalityAnalysis(pk);
             var spec = GameInfo.Strings.Species[pk.Species];
             //pkm = EntityConverter.ConvertToType(pkm, typeof(T), out _) ?? pkm;
-
-
-            if (pk is not T pkm || !la.Valid)
+            if (!la.Valid)
             {
-                var reason = $"I wasn't able to create a {spec} from those options.";
+                var reason = $"I wasn't able to create a {spec} from that set.";
                 var imsg = $"Oops! {reason}";
+                imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(new ShowdownSet(pk), sav, pk)}";
                 await FollowupAsync(imsg).ConfigureAwait(false);
-                return;
-            }
-            if (pk.RequiresHomeTracker() && APILegality.AllowHOMETransferGeneration)
-            {
-                await FollowupAsync($"{SpeciesName.GetSpeciesName(pk.Species,2)}{(pk.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pk.Form, GameInfo.Strings, pk.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game, You need to generate it in the correct origin game and transfer through Home.");
                 return;
             }
             await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User, lgcode).ConfigureAwait(false);
@@ -324,12 +311,12 @@ namespace SysBot.Pokemon.Discord
             var la = new LegalityAnalysis(pk);
             if (!la.Valid)
             {
-                await FollowupAsync($"{typeof(T).Name} attachment is not legal, Here's Why: {la.Report()}",ephemeral:true).ConfigureAwait(false);
-                return;
-            }
-            if (pk.RequiresHomeTracker() && !APILegality.AllowHOMETransferGeneration && pk is IHomeTrack { HasTracker:false})
-            {
-                await FollowupAsync($"{SpeciesName.GetSpeciesName(pk.Species, 2)}{(pk.Form != 0 ? $"-{ShowdownParsing.GetStringFromForm(pk.Form, GameInfo.Strings, pk.Species, EntityContext.Gen9)}" : "")} requires a Home Tracker to be in this Game. You need to generate it in the correct origin game and transfer through Home.");
+                var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
+                var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+                var reason =  $"This {SpeciesName.GetSpeciesName(pk.Species,2)} file is Illegal.";
+                var imsg = $"Oops! {reason}";
+                imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(new ShowdownSet(pk), sav, pk)}";
+                await FollowupAsync(imsg).ConfigureAwait(false);
                 return;
             }
             await QueueHelper<T>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
