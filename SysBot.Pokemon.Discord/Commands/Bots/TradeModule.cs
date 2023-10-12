@@ -38,7 +38,7 @@ namespace SysBot.Pokemon.Discord
                 var set = ShowdownUtil.ConvertToShowdown(content);
                 if(set == null)
                 {
-                    await FollowupAsync("Your text was in an incorrect format. Please go read ⁠<#872614034619367444> while you are muted for the next hour. Consider using the /simpletrade command once you are unmuted! <:happypip:872674980222107649> \nIf you feel this is in error DM the bot to appeal and santacrab will review.");
+                    await FollowupAsync("Your text was in an incorrect format. Please go read ⁠<id:guide> while you are muted for the next hour. Consider using the /simpletrade command once you are unmuted! <:happypip:872674980222107649> \nIf you feel this is in error DM the bot to appeal and santacrab will review.");
                     var user = (SocketGuildUser)Context.Interaction.User;
                     await user.SetTimeOutAsync(TimeSpan.FromHours(1));
                     return;
@@ -47,7 +47,7 @@ namespace SysBot.Pokemon.Discord
                 if (set.InvalidLines.Count != 0)
                 {
                     var msg = $"Unable to parse Showdown Set:\n{string.Join("\n", set.InvalidLines)}";
-                    msg += "\nDouble Check your spelling and text format. <#872614034619367444> for more info.";
+                    msg += "\nDouble Check your spelling and text format. <#id:guide> for more info.";
                     await FollowupAsync(msg, ephemeral: true).ConfigureAwait(false);
                     return;
                 }
@@ -97,7 +97,7 @@ namespace SysBot.Pokemon.Discord
                 {
                     LogUtil.LogSafe(ex, nameof(TradeModule<T>));
                     var msg = $"Oops! An unexpected problem happened with this Showdown Set:\n```{string.Join("\n", set.GetSetLines())}```";
-                    msg += "\nDouble Check your spelling and text format. <#872614034619367444> for more info."; 
+                    msg += "\nDouble Check your spelling and text format. <id:guide> for more info."; 
                     await FollowupAsync(msg,ephemeral:true).ConfigureAwait(false);
                     return;
                 }
@@ -111,7 +111,7 @@ namespace SysBot.Pokemon.Discord
                 await TradeAsyncAttach(PKM,code, sig, Context.User,lgcode).ConfigureAwait(false);
                 return;
             }
-            await FollowupAsync("You did not include any pokemon information, Please make sure the command boxes are filled out. See <#872614034619367444> for instructions and examples");
+            await FollowupAsync("You did not include any pokemon information, Please make sure the command boxes are filled out. See <id:guide> for instructions and examples");
         }
         public static List<simpletradeobject> simpletradecache = new();
         [SlashCommand("simpletrade","helps you build a pokemon with a simple form")]
