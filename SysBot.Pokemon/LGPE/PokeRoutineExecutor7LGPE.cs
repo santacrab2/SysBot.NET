@@ -32,7 +32,7 @@ namespace SysBot.Pokemon
         {
             var slotofs = GetSlotOffset(box, slot);
             var StoredLength = SlotSize - 0x1c;
-            await Connection.WriteBytesAsync(pk.EncryptedPartyData.Slice(0, StoredLength), (uint)slotofs, token);
+            await Connection.WriteBytesAsync(pk.EncryptedPartyData.AsSpan(0, StoredLength).ToArray(), (uint)slotofs, token);
             await Connection.WriteBytesAsync(pk.EncryptedPartyData.AsSpan(StoredLength).ToArray(), (uint)(slotofs + (ulong)StoredLength + 0x70),token);
 
         }

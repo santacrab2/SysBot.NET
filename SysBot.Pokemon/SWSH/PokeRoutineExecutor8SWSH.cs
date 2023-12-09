@@ -467,7 +467,7 @@ namespace SysBot.Pokemon
                 {
                     if (KCoordinates[i - 68] != 0 && KCoordinates[i - 68] != 255)
                     {
-                        var bytes = KCoordinates.Slice(i - 68, 56);
+                        var bytes = KCoordinates.AsSpan(i - 68, 56).ToArray();
                         j = 0;
                         i = last_index + 8;
                         last_index = i;
@@ -515,7 +515,7 @@ namespace SysBot.Pokemon
                 do
                 {
                     data = await Connection.ReadBytesAsync(offset, 56, token).ConfigureAwait(false);
-                    species = (Species)BitConverter.ToUInt16(data.Slice(0, 2), 0);
+                    species = (Species)BitConverter.ToUInt16(data.AsSpan(0, 2).ToArray(), 0);
                     offset += 192;
                     i++;
                 } while (target != 0 && species != 0 && target != species && i <= 40);
@@ -525,7 +525,7 @@ namespace SysBot.Pokemon
             else if (mondata != null)
             {
                 data = mondata;
-                species = (Species)BitConverter.ToUInt16(data.Slice(0, 2), 0);
+                species = (Species)BitConverter.ToUInt16(data.AsSpan(0, 2).ToArray(), 0);
             }
 
             if (data != null && data[20] == 1)
@@ -544,10 +544,10 @@ namespace SysBot.Pokemon
                     OT_Gender = TrainerData.Gender,
                     HT_Name = TrainerData.OT,
                     HT_Gender = TrainerData.Gender,
-                    Move1 = BitConverter.ToUInt16(data.Slice(48, 2), 0),
-                    Move2 = BitConverter.ToUInt16(data.Slice(50, 2), 0),
-                    Move3 = BitConverter.ToUInt16(data.Slice(52, 2), 0),
-                    Move4 = BitConverter.ToUInt16(data.Slice(54, 2), 0),
+                    Move1 = BitConverter.ToUInt16(data.AsSpan(48, 2).ToArray(), 0),
+                    Move2 = BitConverter.ToUInt16(data.AsSpan(50, 2).ToArray(), 0),
+                    Move3 = BitConverter.ToUInt16(data.AsSpan(52, 2).ToArray(), 0),
+                    Move4 = BitConverter.ToUInt16(data.AsSpan(54, 2).ToArray(), 0),
                     Version = 44,
                 };
                 pk.SetNature(data[8]);
@@ -561,7 +561,7 @@ namespace SysBot.Pokemon
 
                 FakeShiny shinyness = (FakeShiny)(data[6] + 1);
                 int ivs = data[18];
-                uint seed = BitConverter.ToUInt32(data.Slice(24, 4), 0);
+                uint seed = BitConverter.ToUInt32(data.AsSpan(24, 4).ToArray(), 0);
 
                 pk = CalculateFromSeed(pk, shinyness, ivs, seed);
 

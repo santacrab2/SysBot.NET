@@ -1,14 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>Net7</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.1.1" />
     <PackageReference Include="LibUsbDotNet" Version="2.2.29" />
   </ItemGroup>
-
 </Project>

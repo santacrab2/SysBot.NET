@@ -1,20 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>Net7</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Platforms>AnyCPU</Platforms>
     <Nullable>enable</Nullable>
-    <LangVersion>10</LangVersion>
+    <LangVersion>12</LangVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="PKHeX.Core" Version="23.10.11" />
+    <PackageReference Include="PKHeX.Core" Version="23.10.12" />
     <PackageReference Include="TwitchLib.Client" Version="3.3.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SysBot.Base\SysBot.Base.csproj" />
     <ProjectReference Include="..\SysBot.Pokemon\SysBot.Pokemon.csproj" />
   </ItemGroup>
-
 </Project>

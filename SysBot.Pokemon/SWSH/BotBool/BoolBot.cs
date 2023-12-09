@@ -166,7 +166,7 @@ namespace SysBot.Pokemon
                 do
                 {
                     byte[] currentspecies = await SwitchConnection.ReadBytesAsync(offset, 2, token).ConfigureAwait(false);
-                    species = (DexRecSpecies)BitConverter.ToUInt16(currentspecies.Slice(0, 2), 0);
+                    species = (DexRecSpecies)BitConverter.ToUInt16(currentspecies.AsSpan(0, 2).ToArray(), 0);
                     if (species != 0)
                         log += $"\n - {species}";
 

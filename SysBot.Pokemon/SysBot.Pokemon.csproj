@@ -1,31 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>Net7</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
-
   <ItemGroup>
     <None Remove="SWSH\BotDen\FlatbuffersResource\shieldEnc.bin" />
     <None Remove="SWSH\BotDen\FlatbuffersResource\swordEnc.bin" />
     <None Remove="SWSH\BotDen\flatc.exe" />
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="SWSH\BotDen\FlatbuffersResource\shieldEnc.bin" />
     <EmbeddedResource Include="SWSH\BotDen\FlatbuffersResource\swordEnc.bin" />
     <EmbeddedResource Include="SWSH\BotDen\flatc.exe" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="KdSoft.FlatBuffers" Version="1.12.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="PKHeX.Core" Version="23.10.11" />
+    <PackageReference Include="PKHeX.Core" Version="23.10.12" />
     <ProjectReference Include="..\SysBot.Base\SysBot.Base.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="deps\" />
   </ItemGroup>
@@ -37,5 +32,4 @@
       <HintPath>deps\SWSH_OWRNG_Generator.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>
