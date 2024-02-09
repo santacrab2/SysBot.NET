@@ -456,10 +456,11 @@ namespace SysBot.Pokemon.Discord
                 arg.Data.Components.ToList();
                 string species = components.First(x => x.CustomId == "species").Value;
                 string terat = components.First(x => x.CustomId == "tera").Value;
+                string scale = components.First(x => x.CustomId == "scale").Value;
                 string reward = components.First(x => x.CustomId == "reward").Value;
                 var chan = (ITextChannel)await _client.GetChannelAsync(872606380434026508);
 
-                await chan.SendMessageAsync($"Requestor: {arg.User.Mention}\nSpecies: {species}\nTeraType: {terat}\nReward Requests: {reward}\n");
+                await chan.SendMessageAsync($"Requestor: {arg.User.Mention}\nSpecies: {species}\nTeraType: {terat}\nScale: {scale}\nReward Requests: {reward}\n");
               
                 var therecordsarr = File.ReadAllLines($"{Hub.Config.Discord.terarequestfolder}/Tera-Raid-Request.txt");
                 var therecordslist = therecordsarr!=null ? therecordsarr.ToList():new();

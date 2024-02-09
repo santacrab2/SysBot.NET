@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Threading.Channels;
 using NLog.Fluent;
 using Discord.WebSocket;
+using System.Reflection.Metadata.Ecma335;
 
 namespace SysBot.Pokemon.Discord
 {
@@ -186,15 +187,12 @@ namespace SysBot.Pokemon.Discord
         [SlashCommand("terarequest","Displays a Form to fill out to request a Shiny Tera Raid to be Hosted")]
         public async Task Terarequest()
         {
-
             var teramodal = new ModalBuilder().WithCustomId("terarequest").WithTitle("Tera Raid Request");
             teramodal.AddTextInput("Species", "species", placeholder: "Species",required:false);
             teramodal.AddTextInput("Tera Type", "tera", placeholder: "Tera Type", required: false);
-            teramodal.AddTextInput("Rewards", "reward", TextInputStyle.Paragraph, placeholder: "Rewards will be fulfilled over species. Leave Blank for shinies.", required: false);
-            
-            
+            teramodal.AddTextInput("Scale", "scale", placeholder: "Any, XXXS, or XXXL", required: false);
+            teramodal.AddTextInput("Rewards", "reward", TextInputStyle.Paragraph, placeholder: "Rewards will be fulfilled over species/shiny. Leave Blank for shinies.", required: false);
             await RespondWithModalAsync(teramodal.Build());
-           
         }
         [SlashCommand("botrequest","Request a bot to be turned on")]
         public async Task botrequest()
@@ -204,19 +202,11 @@ namespace SysBot.Pokemon.Discord
                 .WithMaxValues(1)
                 .WithMinValues(1)
                 .WithPlaceholder("Select a Bot");
-            var bot = SysCord<T>.Runner.Bots.Find(z => z.Bot is RollingRaidBot);
-            if (typeof(T) != typeof(PB7))
                 menubuilder.AddOption("Articuno LGPE", "Articuno LGPE");
-            if (typeof(T) != typeof(PK8) || bot != null)
                 menubuilder.AddOption("Empoleon SWSH", "Empoleon SWSH");
-            if (typeof(T) != typeof(PB8))
                 menubuilder.AddOption("Spiritomb BDSP", "Spiritomb BDSP");
-            if (typeof(T) != typeof(PA8))
                 menubuilder.AddOption("Basculegion LA", "Basculegion LA");
-            if(typeof(T) != typeof(PK9))
                 menubuilder.AddOption("Klawf SV", "Klawf SV");
-            
-            if (bot == null)
                 menubuilder.AddOption("Empoleon's Shiny Dens", "Empoleon's Shiny Dens");
             var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
             await FollowupAsync("Choose the bot you would like",ephemeral: true, components: builder.Build());
