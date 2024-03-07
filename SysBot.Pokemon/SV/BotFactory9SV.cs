@@ -15,7 +15,8 @@ namespace SysBot.Pokemon
                 => new PokeTradeBotSV(Hub, cfg),
 
             PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
-            PokeRoutineType.EncounterLine => new LineBot(cfg,Hub),
+            PokeRoutineType.EncounterCamp => new LineBot(cfg,Hub),
+            PokeRoutineType.EncounterLine => new EncounterRun(cfg,Hub),
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
 
@@ -26,6 +27,7 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.Clone
                 or PokeRoutineType.Dump
                 or PokeRoutineType.EncounterLine
+                or PokeRoutineType.EncounterCamp
                 => true,
 
             PokeRoutineType.RemoteControl => true,

@@ -74,7 +74,7 @@
         OnlineLairBot = 6010,
      
         OverWorldRNG = 6014,
-       
+       EncounterCamp = 7000,
    
 
     }

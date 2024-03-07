@@ -184,34 +184,7 @@ namespace SysBot.Pokemon.Discord
 
         public static FilteredGameDataSource datasourcefiltered = new(new SAV9SV(), new GameDataSource(GameInfo.Strings));
 
-        [SlashCommand("terarequest","Displays a Form to fill out to request a Shiny Tera Raid to be Hosted")]
-        public async Task Terarequest()
-        {
-            var teramodal = new ModalBuilder().WithCustomId("terarequest").WithTitle("Tera Raid Request");
-            teramodal.AddTextInput("Species", "species", placeholder: "Species",required:false);
-            teramodal.AddTextInput("Tera Type", "tera", placeholder: "Tera Type", required: false);
-            teramodal.AddTextInput("Scale", "scale", placeholder: "Any, XXXS, or XXXL", required: false);
-            teramodal.AddTextInput("Rewards", "reward", TextInputStyle.Paragraph, placeholder: "Rewards will be fulfilled over species/shiny. Leave Blank for shinies.", required: false);
-            await RespondWithModalAsync(teramodal.Build());
-        }
-        [SlashCommand("botrequest","Request a bot to be turned on")]
-        public async Task botrequest()
-        {
-            await DeferAsync();
-            var menubuilder = new SelectMenuBuilder().WithCustomId("botmenu")
-                .WithMaxValues(1)
-                .WithMinValues(1)
-                .WithPlaceholder("Select a Bot");
-                menubuilder.AddOption("Articuno LGPE", "Articuno LGPE");
-                menubuilder.AddOption("Empoleon SWSH", "Empoleon SWSH");
-                menubuilder.AddOption("Spiritomb BDSP", "Spiritomb BDSP");
-                menubuilder.AddOption("Basculegion LA", "Basculegion LA");
-                menubuilder.AddOption("Klawf SV", "Klawf SV");
-                menubuilder.AddOption("Empoleon's Shiny Dens", "Empoleon's Shiny Dens");
-            var builder = new ComponentBuilder().WithSelectMenu(menubuilder);
-            await FollowupAsync("Choose the bot you would like",ephemeral: true, components: builder.Build());
-
-        }
+       
 
 
         [SlashCommand("respond", "responds to appeals")]

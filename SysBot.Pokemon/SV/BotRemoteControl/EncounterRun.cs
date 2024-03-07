@@ -7,12 +7,12 @@ using static SysBot.Base.SwitchButton;
 using System.Net.Sockets;
 namespace SysBot.Pokemon
 {
-    public class LineBot : PokeRoutineExecutor9SV
+    public class EncounterRun : PokeRoutineExecutor9SV
     {
         protected readonly PokeTradeHub<PK9> Hub;
-        public LineBot(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg)
+        public EncounterRun(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg)
         {
-            Hub= hub;
+            Hub = hub;
         }
 
         public override async Task MainLoop(CancellationToken token)
@@ -21,10 +21,12 @@ namespace SysBot.Pokemon
             while (!token.IsCancellationRequested)
             {
 
-                await Preparize(token);
-                await Click(Y,1500,token);
-                await Click(A,500,token);
-                await Task.Delay((int)Hub.Config.EncounterSWSH.onedayskip*1000);
+                await SetStick(SwitchStick.LEFT, 0, 30000, 5000, token);
+                await SetStick(SwitchStick.LEFT, 0, 0,0, token);
+                await Task.Delay(30000);
+                await SetStick(SwitchStick.LEFT, 0, -30000, 5000, token);
+                await SetStick(SwitchStick.LEFT, 0, 0, 0, token);
+                await Task.Delay(30000);
             }
         }
         public override async Task HardStop()
@@ -41,7 +43,7 @@ namespace SysBot.Pokemon
                 await Click(X, 5_000, token).ConfigureAwait(false);
                 Log("Attempting to enter picnic!");
                 await Click(A, 1000, token).ConfigureAwait(false);
-                await Click(A,10_000,token).ConfigureAwait(false);
+                await Click(A, 10_000, token).ConfigureAwait(false);
                 Log("Continuing the hunt..");
                 return;
             }
@@ -54,7 +56,7 @@ namespace SysBot.Pokemon
             {
                 var tries = 0;
                 Log("Not in picnic! Wrong menu? Attempting recovery.");
-                
+
                 await Click(B, 4_500, token).ConfigureAwait(false); // Not in picnic, press B to reset
                 while (!await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                 {
