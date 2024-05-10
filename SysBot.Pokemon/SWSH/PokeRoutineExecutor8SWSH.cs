@@ -52,7 +52,7 @@ namespace SysBot.Pokemon
             {
                 // Update PKM to the current save's handler data
                 DateTime Date = DateTime.Now;
-                pkm.Trade(sav, Date.Day, Date.Month, Date.Year);
+                //pkm.Trade(sav, Date.Day, Date.Month, Date.Year);
                 pkm.RefreshChecksum();
             }
             var ofs = GetBoxSlotOffset(box, slot);
@@ -132,7 +132,7 @@ namespace SysBot.Pokemon
             var sav = new SAV8SWSH();
             var info = sav.MyStatus;
             var read = await Connection.ReadBytesAsync(TrainerDataOffset, TrainerDataLength, token).ConfigureAwait(false);
-            read.CopyTo(info.Data, 0);
+            read.CopyTo(info.Data);
             return sav;
         }
 
@@ -535,22 +535,22 @@ namespace SysBot.Pokemon
                     Species = (ushort)species,
                     Form = data[2],
                     CurrentLevel = data[4],
-                    Met_Level = data[4],
-                    Nature = data[8],
-                    Gender = (data[10] == 1) ? 0 : 1,
-                    OT_Name = TrainerData.OT,
+                    MetLevel = data[4],
+                    Nature = (Nature)data[8],
+                    Gender = (data[10] == 1) ? (byte)0 : (byte)1,
+                    OriginalTrainerName = TrainerData.OT,
                     TID16 = TrainerData.TID16,
                     SID16 = TrainerData.SID16,
-                    OT_Gender = TrainerData.Gender,
-                    HT_Name = TrainerData.OT,
-                    HT_Gender = TrainerData.Gender,
+                    OriginalTrainerGender = TrainerData.Gender,
+                    HandlingTrainerName = TrainerData.OT,
+                    HandlingTrainerGender = TrainerData.Gender,
                     Move1 = BitConverter.ToUInt16(data.AsSpan(48, 2).ToArray(), 0),
                     Move2 = BitConverter.ToUInt16(data.AsSpan(50, 2).ToArray(), 0),
                     Move3 = BitConverter.ToUInt16(data.AsSpan(52, 2).ToArray(), 0),
                     Move4 = BitConverter.ToUInt16(data.AsSpan(54, 2).ToArray(), 0),
-                    Version = 44,
+                    Version = (GameVersion)44,
                 };
-                pk.SetNature(data[8]);
+                pk.SetNature((Nature)data[8]);
                 pk.SetAbility(data[12] - 1);
                 if (data[22] != 255)
                     pk.SetRibbonIndex((RibbonIndex)data[22]);

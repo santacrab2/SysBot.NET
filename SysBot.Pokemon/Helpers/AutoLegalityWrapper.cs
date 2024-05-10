@@ -43,10 +43,19 @@ namespace SysBot.Pokemon
             APILegality.PrioritizeGameVersion= cfg.PrioritizeGameVersion;
             APILegality.SetBattleVersion = cfg.SetBattleVersion;
             APILegality.Timeout = cfg.Timeout;
-            
 
-            if (!(APILegality.AllowHOMETransferGeneration = !cfg.EnableHOMETrackerCheck))
-                typeof(ParseSettings).GetProperty(nameof(ParseSettings.Gen8TransferTrackerNotPresent))!.SetValue(null, Severity.Invalid);
+
+            // As of February 2024, the default setting in PKHeX is Invalid for missing HOME trackers.
+            // If the host wants to allow missing HOME trackers, we need to override the default setting.
+            bool allowMissingHOME = !cfg.EnableHOMETrackerCheck;
+            APILegality.AllowHOMETransferGeneration = !allowMissingHOME;
+            if (allowMissingHOME)
+            {
+                // Property setter is private; need to use reflection to manually set the value.
+                var prop = typeof(ParseSettings).GetProperty(nameof(ParseSettings.HOMETransferTrackerNotPresent));
+                prop?.SetValue(null, Severity.Fishy);
+            }
+
 
             // We need all the encounter types present, so add the missing ones at the end.
             var missing = EncounterPriority.Except(cfg.PrioritizeEncounters);
@@ -71,7 +80,7 @@ namespace SysBot.Pokemon
 
             for (int i = 1; i < 9; i++)
             {
-                var versions = GameUtil.GetVersionsInGeneration(i,i);
+                var versions = GameUtil.GetVersionsInGeneration((byte)i,(GameVersion)i);
                 foreach (var v in versions)
                 {
                     var fallback = new SimpleTrainerInfo(v)
@@ -80,9 +89,9 @@ namespace SysBot.Pokemon
                         TID16 = TID,
                         SID16 = SID,
                         OT = OT,
-                        Generation = i,
+                        Generation = (byte)i,
                     };
-                    var exist = TrainerSettings.GetSavedTrainerData(v, i, fallback);
+                    var exist = TrainerSettings.GetSavedTrainerData((byte)v, (GameVersion)i, fallback);
                     if (exist is SimpleTrainerInfo) // not anything from files; this assumes ALM returns SimpleTrainerInfo for non-user-provided fake templates.
                         TrainerSettings.Register(fallback);
                     RecentTrainerCache.SetRecentTrainer(fallback);
@@ -108,14 +117,14 @@ namespace SysBot.Pokemon
         public static bool IsFixedOT(IEncounterTemplate t, PKM pkm) => t switch
         {
             IFixedTrainer { IsFixedTrainer: true } tr => true,
-            MysteryGift g => !g.EggEncounter && g switch
+            MysteryGift g => !g.IsEgg && g switch
             {
                 WC9 wc9 => wc9.GetHasOT(pkm.Language),
                 WA8 wa8 => wa8.GetHasOT(pkm.Language),
                 WB8 wb8 => wb8.GetHasOT(pkm.Language),
                 WC8 wc8 => wc8.GetHasOT(pkm.Language),
                 WB7 wb7 => wb7.GetHasOT(pkm.Language),
-                { Generation: >= 5 } gift => gift.OT_Name.Length > 0,
+                { Generation: >= 5 } gift => gift.OriginalTrainerName.Length > 0,
                 _ => true,
             },
             _ => false,
@@ -136,7 +145,7 @@ namespace SysBot.Pokemon
             throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
         }
 
-        public static ITrainerInfo GetTrainerInfo(int gen) => TrainerSettings.GetSavedTrainerData(gen);
+        public static ITrainerInfo GetTrainerInfo(int gen) => TrainerSettings.GetSavedTrainerData((byte)gen);
 
         public static PKM GetLegal(this ITrainerInfo sav, IBattleTemplate set, out string res)
         {

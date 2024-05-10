@@ -77,7 +77,7 @@ namespace SysBot.Pokemon
 
                 Log("Checking for a camper...");
                 PK8? camperMon = await GetCampPokemon(token).ConfigureAwait(false);
-                if (camperMon != null && string.IsNullOrEmpty(camperMon.OT_Name) && camperMon != comparison)
+                if (camperMon != null && string.IsNullOrEmpty(camperMon.OriginalTrainerName) && camperMon != comparison)
                 {
                     comparison = camperMon;
                     await SetStick(RIGHT, 0, 30_000, 1_000, token).ConfigureAwait(false);

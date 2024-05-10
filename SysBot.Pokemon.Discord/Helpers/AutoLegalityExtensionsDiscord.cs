@@ -70,7 +70,7 @@ namespace SysBot.Pokemon.Discord
            
             var set = ShowdownUtil.ConvertToShowdown(content);
             var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
-            var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+            var sav = SaveUtil.GetBlankSAV(trainer.Version, trainer.OT);
             await channel.ReplyWithLegalizedSetAsync(sav, set).ConfigureAwait(false);
         }
 

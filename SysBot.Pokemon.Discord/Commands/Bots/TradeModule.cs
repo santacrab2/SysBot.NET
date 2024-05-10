@@ -55,7 +55,7 @@ namespace SysBot.Pokemon.Discord
                 try
                 {
                     var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
-                    var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+                    var sav = SaveUtil.GetBlankSAV(trainer.Version, trainer.OT);
                     var pkm = sav.GetLegal(template, out var result);
                    
                     if (pkm is PB7)
@@ -121,7 +121,7 @@ namespace SysBot.Pokemon.Discord
             await DeferAsync(ephemeral: true);
             
             var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
-            var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+            var sav = SaveUtil.GetBlankSAV(trainer.Version, trainer.OT);
             var pk =(T) EntityBlank.GetBlank(sav);
             var datasource = new FilteredGameDataSource(sav, GameInfo.Sources);
             var cache = new simpletradeobject();
@@ -161,12 +161,12 @@ namespace SysBot.Pokemon.Discord
             if (!pk.PersonalInfo.Genderless)
             {
                 cache.currenttype = "Gender";
-                cache.opti = new string[] { "Male ♂", "Female ♀" };
+                cache.opti = [ "Male ♂", "Female ♀" ];
                 await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page = 0, cache.opti));
                 while (!cache.responded)
                     await Task.Delay(250);
                 cache.responded = false;
-                pk.Gender = cache.response.Data.Values.First() == "Male ♂" ? 0 : 1;
+                pk.Gender = cache.response.Data.Values.First() == "Male ♂" ? (byte)0 : (byte)1;
             }
             cache.currenttype = "Item";
             cache.opti = datasource.Items.Select(z => z.Text).ToArray();
@@ -182,7 +182,7 @@ namespace SysBot.Pokemon.Discord
             while (!cache.responded)
                 await Task.Delay(250);
             cache.responded = false;
-            pk.CurrentLevel = int.Parse(cache.response.Data.Values.First());
+            pk.CurrentLevel = byte.Parse(cache.response.Data.Values.First());
             cache.currenttype = "Ball";
             List<string> balllist = BallApplicator.GetLegalBalls(pk).Select(z => z.ToString()).ToList();
             balllist.Insert(0, "Any");
@@ -194,7 +194,7 @@ namespace SysBot.Pokemon.Discord
             if(cache.response.Data.Values.First() != "Any")
             {
                 var ball = BallApplicator.GetLegalBalls(pk).Where(z => z.ToString() == cache.response.Data.Values.First()).First();
-                pk.Ball = (int)ball;
+                pk.Ball = (byte)ball;
             }
             await Context.Interaction.DeleteOriginalResponseAsync();
             simpletradecache.Remove(cache);
@@ -312,7 +312,7 @@ namespace SysBot.Pokemon.Discord
             if (!la.Valid)
             {
                 var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
-                var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+                var sav = SaveUtil.GetBlankSAV(trainer.Version, trainer.OT);
                 var reason =  $"This {SpeciesName.GetSpeciesName(pk.Species,2)} file is Illegal.";
                 var imsg = $"Oops! {reason}";
                 imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(new ShowdownSet(pk), sav, pk)}";

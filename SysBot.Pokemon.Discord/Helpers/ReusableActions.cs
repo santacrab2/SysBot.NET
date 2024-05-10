@@ -86,7 +86,7 @@ namespace SysBot.Pokemon.Discord
                 else newShowdown[index] = "\nShiny: Star\r";
             }
 
-            var extra = new string[] { $"\nOT: {pkm.OT_Name}", $"\nTID: {pkm.DisplayTID:000000}", $"\nSID: {pkm.DisplaySID:0000}", $"\nOTGender: {(Gender)pkm.OT_Gender}", $"\nLanguage: {(LanguageID)pkm.Language}", $"{(pkm.IsEgg ? "\nIsEgg: Yes" : "")}" };
+            var extra = new string[] { $"\nOT: {pkm.OriginalTrainerName}", $"\nTID: {pkm.DisplayTID:000000}", $"\nSID: {pkm.DisplaySID:0000}", $"\nOTGender: {(Gender)pkm.OriginalTrainerGender}", $"\nLanguage: {(LanguageID)pkm.Language}", $"{(pkm.IsEgg ? "\nIsEgg: Yes" : "")}" };
             newShowdown.InsertRange(1, extra);
             return Format.Code(string.Join("", newShowdown).Trim());
         }

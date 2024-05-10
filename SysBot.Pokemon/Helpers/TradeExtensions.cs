@@ -82,9 +82,9 @@ namespace SysBot.Pokemon
         public static bool HasAdName(T pk, out string ad)
         {
             string pattern = @"(YT$)|(YT\w*$)|(Lab$)|(\.\w*$)|(TV$)|(PKHeX)|(FB:)|(AuSLove)|(ShinyMart)|(Blainette)|(\ com)|(\ org)|(\ net)|(2DOS3)|(PPorg)|(Tik\wok$)|(YouTube)|(IG:)|(TTV\ )|(Tools)|(JokersWrath)|(bot$)|(PKMGen)|(\.gg)|(\.ly)|(TheHighTable)";
-            bool ot = Regex.IsMatch(pk.OT_Name, pattern, RegexOptions.IgnoreCase);
+            bool ot = Regex.IsMatch(pk.OriginalTrainerName, pattern, RegexOptions.IgnoreCase);
             bool nick = Regex.IsMatch(pk.Nickname, pattern, RegexOptions.IgnoreCase);
-            ad = ot ? pk.OT_Name : nick ? pk.Nickname : "";
+            ad = ot ? pk.OriginalTrainerName : nick ? pk.Nickname : "";
             return ot || nick;
         }
 
@@ -93,9 +93,9 @@ namespace SysBot.Pokemon
             var dittoStats = new string[] { "atk", "spe", "spa" };
             var nickname = pkm.Nickname.ToLower();
             pkm.StatNature = pkm.Nature;
-            pkm.Met_Location = pkm is not PB8 ? 162 : 400;
+            pkm.MetLocation = pkm is not PB8 ? (ushort)162 : (ushort)400;
             if (pkm is PB8)
-                pkm.Met_Level = 29;
+                pkm.MetLevel = 29;
 
             pkm.Ball = 21;
             pkm.IVs = new int[] { 31, nickname.Contains(dittoStats[0]) ? 0 : 31, 31, nickname.Contains(dittoStats[1]) ? 0 : 31, nickname.Contains(dittoStats[2]) ? 0 : 31, 31 };
@@ -175,7 +175,7 @@ namespace SysBot.Pokemon
         public static PKM TrashBytes(PKM pkm, LegalityAnalysis? la = null)
         {
             var pkMet = (T)pkm.Clone();
-            if (pkMet.Version != (int)GameVersion.GO)
+            if (pkMet.Version != GameVersion.GO)
                 pkMet.MetDate = DateOnly.Parse("2020/10/20");
 
             var analysis = new LegalityAnalysis(pkMet);
@@ -197,7 +197,7 @@ namespace SysBot.Pokemon
         public static T CherishHandler(MysteryGift mg, ITrainerInfo info, int format)
         {
             var mgPkm = mg.ConvertToPKM(info);
-            mgPkm = EntityConverter.IsConvertibleToFormat(mgPkm, format) ? EntityConverter.ConvertToType(mgPkm, typeof(T), out _) : mgPkm;
+            mgPkm = EntityConverter.IsConvertibleToFormat(mgPkm, (byte)format) ? EntityConverter.ConvertToType(mgPkm, typeof(T), out _) : mgPkm;
             if (mgPkm != null)
             {
                 

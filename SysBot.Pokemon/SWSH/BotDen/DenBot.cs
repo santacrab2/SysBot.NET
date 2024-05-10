@@ -148,7 +148,7 @@ namespace SysBot.Pokemon
 
         private async Task<bool> SkipCorrection(int skips, CancellationToken token)
         {
-            var currentSeed = new RaidSpawnDetail(await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false), 0).Seed;
+            var currentSeed = new RaidSpawnDetail(await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false)).Seed;
             if (currentSeed == InitialSeed)
             {
                 Log("No frames were skipped. Ensure \"Synchronize Clock via Internet\" is enabled, are using sys-botbase that allows time change, and haven't used anything that shifts RAM. \"SkipDelay\" may also need to be increased.");
@@ -164,7 +164,7 @@ namespace SysBot.Pokemon
                     await PerformDaySkip(skips, token).ConfigureAwait(false);
                     if (token.IsCancellationRequested)
                         return false;
-                    currentSeed = new RaidSpawnDetail(await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false), 0).Seed;
+                    currentSeed = new RaidSpawnDetail(await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false)).Seed;
                 }
                 else if (skips < 0)
                 {
@@ -178,7 +178,7 @@ namespace SysBot.Pokemon
 
         private async Task<int> SkipCheck(int skips, int skipsDone, CancellationToken token)
         {
-            var currentSeed = new RaidSpawnDetail(await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false), 0).Seed;
+            var currentSeed = new RaidSpawnDetail(await DenData(RaidInfo.Settings.DenID, RaidInfo.Settings.DenType, token).ConfigureAwait(false)).Seed;
             var remaining = DenUtil.GetSkipsToTargetSeed(currentSeed, DestinationSeed, skips);
             bool dateRolled = remaining < skips - skipsDone;
             if (dateRolled)

@@ -699,7 +699,7 @@ namespace SysBot.Pokemon
 
             await Task.Delay(2_000, token).ConfigureAwait(false);
             var denData = await Connection.ReadBytesAsync(denOfs, 0x18, token).ConfigureAwait(false);
-            RaidInfo.Den = new RaidSpawnDetail(denData, 0);
+            RaidInfo.Den = new RaidSpawnDetail(denData);
             if (!RaidInfo.Den.WattsHarvested)
             {
                 softLock = false;
@@ -712,7 +712,7 @@ namespace SysBot.Pokemon
                 await StartGame(Hub.Config, token).ConfigureAwait(false);
 
                 denData = await Connection.ReadBytesAsync(denOfs, 0x18, token).ConfigureAwait(false);
-                RaidInfo.Den = new RaidSpawnDetail(denData, 0);
+                RaidInfo.Den = new RaidSpawnDetail(denData);
                 if (RaidInfo.Den.WattsHarvested)
                 {
                     await SaveGame(OverworldOffset, token).ConfigureAwait(false);
@@ -766,7 +766,7 @@ namespace SysBot.Pokemon
         private async Task<bool> CheckDen(CancellationToken token)
         {
             var denData = await Connection.ReadBytesAsync(denOfs, 0x18, token).ConfigureAwait(false);
-            RaidInfo.Den = new RaidSpawnDetail(denData, 0);
+            RaidInfo.Den = new RaidSpawnDetail(denData);
 
             if (!RaidInfo.Den.WattsHarvested)
                 await ClearWatts(token).ConfigureAwait(false);
@@ -804,7 +804,7 @@ namespace SysBot.Pokemon
 
             var shiny = shinyType == 1 ? "\nShiny: Star" : shinyType == 2 ? "\nShiny: Square" : "";
             var trainer = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            var sav = SaveUtil.GetBlankSAV((GameVersion)trainer.Game, trainer.OT);
+            var sav = SaveUtil.GetBlankSAV(trainer.Version, trainer.OT);
             var showdown = new ShowdownSet($"{speciesStr}{formStr}{(gmax ? "-Gmax" : "")}{shiny}");
             var regen = new RegenTemplate(showdown);
             raidPk = (PK8)sav.GetLegal(regen, out _);
@@ -832,7 +832,7 @@ namespace SysBot.Pokemon
             RaidInfo.DenID = denID;
 
             var denData = await Connection.ReadBytesAsync(denOfs, 0x18, token).ConfigureAwait(false);
-            RaidInfo.Den = new RaidSpawnDetail(denData, 0);
+            RaidInfo.Den = new RaidSpawnDetail(denData);
             if (!RaidInfo.Den.WattsHarvested)
             {
                 Log("For correct operation, start the bot with Watts cleared. If Watts are cleared and you see this message, make sure you've entered the correct den ID. Stopping routine...");

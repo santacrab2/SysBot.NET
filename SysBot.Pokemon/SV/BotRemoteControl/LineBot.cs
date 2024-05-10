@@ -37,10 +37,8 @@ namespace SysBot.Pokemon
             while (!token.IsCancellationRequested)
             {
                 Log("Navigating to picnic..");
-                await Click(X, 500, token);
-                await Click(X, 5_000, token).ConfigureAwait(false);
+                await Click(X, 1_000, token).ConfigureAwait(false);
                 Log("Attempting to enter picnic!");
-                await Click(A, 1000, token).ConfigureAwait(false);
                 await Click(A,10_000,token).ConfigureAwait(false);
                 Log("Continuing the hunt..");
                 return;
