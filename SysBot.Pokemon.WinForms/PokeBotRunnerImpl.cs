@@ -1,6 +1,7 @@
 ﻿using PKHeX.Core;
 using SysBot.Pokemon.Discord;
 using SysBot.Pokemon.Twitch;
+using SysBot.Pokemon.Web;
 using SysBot.Pokemon.WinForms;
 using SysBot.Pokemon.YouTube;
 using System.Threading;
@@ -18,12 +19,13 @@ namespace SysBot.Pokemon
 
         private TwitchBot<T>? Twitch;
         private YouTubeBot<T>? YouTube;
-
+        private static WebBot<T>? Web;
         protected override void AddIntegrations()
         {
             AddDiscordBot(Hub.Config.Discord.Token);
             AddTwitchBot(Hub.Config.Twitch);
             AddYouTubeBot(Hub.Config.YouTube);
+            AddWebBot(Hub.Config.Web);
         }
 
         private void AddTwitchBot(TwitchSettings config)
@@ -70,6 +72,19 @@ namespace SysBot.Pokemon
                 return;
             var bot = new SysCord<T>(this);
             Task.Run(() => bot.MainAsync(apiToken, CancellationToken.None));
+        }
+        private void AddWebBot(WebSettings config)
+        {
+            if (string.IsNullOrWhiteSpace(config.URIEndpoint))
+                return;
+            if (Web != null)
+                return; // already created
+
+            if (string.IsNullOrEmpty(config.URIEndpoint))
+                return;
+
+            Web = new WebBot<T>(Hub.Config.Web, Hub);
+            
         }
     }
 }

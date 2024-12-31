@@ -90,19 +90,7 @@ namespace SysBot.Pokemon
                     continue;
                 }
 
-                var la = new LegalityAnalysis(dest);
-                if (!la.Valid)
-                {
-                    var reason = la.Report();
-                    LogUtil.LogInfo($"SKIPPED: Provided file is not legal: {dest.FileName} -- {reason}", nameof(PokemonPool<T>));
-                    continue;
-                }
-
-                if (DisallowRandomRecipientTrade(dest, la.EncounterMatch))
-                {
-                    LogUtil.LogInfo("Provided file was loaded but can't be Surprise Traded: " + dest.FileName, nameof(PokemonPool<T>));
-                    surpriseBlocked++;
-                }
+                
 
                 if (Settings.Legality.ResetHOMETracker && dest is IHomeTrack h)
                     h.Tracker = 0;

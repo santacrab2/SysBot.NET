@@ -22,6 +22,11 @@ namespace SysBot.Pokemon.Discord
 
             try
             {
+                if (set.Species == (ushort)Species.Meloetta && set.Shiny)
+                {
+                    ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Fishy;
+                    APILegality.AllowHOMETransferGeneration = true;
+                }
                 var template = AutoLegalityWrapper.GetTemplate(set);
                 var pkm = sav.GetLegal(template, out var result);
                 if (pkm is PB7)
@@ -44,11 +49,21 @@ namespace SysBot.Pokemon.Discord
                     if (result == "Failed")
                         imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)}";
                     await channel.Interaction.FollowupAsync(imsg).ConfigureAwait(false);
+                    if (set.Species == (ushort)Species.Meloetta && set.Shiny)
+                    {
+                        ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Invalid;
+                        APILegality.AllowHOMETransferGeneration = false;
+                    }
                     return;
                 }
 
                 var msg = $"Here's your ({result}) legalized PKM for {spec} ({la.EncounterOriginal.Name})!";
                 await channel.SendPKMAsync(pkm, msg + $"\n{ReusableActions.GetFormattedShowdownText(pkm)}").ConfigureAwait(false);
+                if (set.Species == (ushort)Species.Meloetta && set.Shiny)
+                {
+                    ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Invalid;
+                    APILegality.AllowHOMETransferGeneration = false;
+                }
             }
             catch (Exception ex)
             {

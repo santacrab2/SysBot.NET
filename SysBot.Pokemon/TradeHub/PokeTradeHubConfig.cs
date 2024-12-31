@@ -95,5 +95,8 @@ namespace SysBot.Pokemon
         [Category(Integration), Description("Allows favored users to join the queue with a more favorable position than unfavored users.")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public FavoredPrioritySettings Favoritism { get; set; } = new();
+        [Category(Integration), Description("idk")]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public WebSettings Web { get; set; } = new();
     }
 }

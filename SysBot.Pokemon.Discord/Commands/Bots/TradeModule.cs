@@ -54,6 +54,11 @@ namespace SysBot.Pokemon.Discord
 
                 try
                 {
+                    if (set.Species == (ushort)Species.Meloetta && set.Shiny)
+                    {
+                        ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Fishy;
+                        APILegality.AllowHOMETransferGeneration = true;
+                    }
                     var trainer = AutoLegalityWrapper.GetTrainerInfo<T>();
                     var sav = SaveUtil.GetBlankSAV(trainer.Version, trainer.OT);
                     var pkm = sav.GetLegal(template, out var result);
@@ -81,6 +86,11 @@ namespace SysBot.Pokemon.Discord
                         if (result == "Failed")
                             imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(template, sav, pkm)}";
                         await FollowupAsync(imsg).ConfigureAwait(false);
+                        if (set.Species == (ushort)Species.Meloetta && set.Shiny)
+                        {
+                            ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Invalid;
+                            APILegality.AllowHOMETransferGeneration = false;
+                        }
                         return;
                     }
                     
@@ -89,6 +99,11 @@ namespace SysBot.Pokemon.Discord
                     var sig = Context.User.GetFavor();
                
                     await AddTradeToQueueAsync(code, Context.User.Username, pk, sig, Context.User,lgcode).ConfigureAwait(false);
+                    if (pk.Species == (ushort)Species.Meloetta && pk.IsShiny)
+                    {
+                        ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Invalid;
+                        APILegality.AllowHOMETransferGeneration = false;
+                    }
                     return;
                 }
 #pragma warning disable CA1031 // Do not catch general exception types
@@ -307,7 +322,11 @@ namespace SysBot.Pokemon.Discord
                 await FollowupAsync("Provided Pokémon content is blocked from trading!",ephemeral:true).ConfigureAwait(false);
                 return;
             }
-
+            if (pk.Species == (ushort)Species.Meloetta && pk.IsShiny)
+            {
+                ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Fishy;
+                APILegality.AllowHOMETransferGeneration = true;
+            }
             var la = new LegalityAnalysis(pk);
             if (!la.Valid)
             {
@@ -317,9 +336,19 @@ namespace SysBot.Pokemon.Discord
                 var imsg = $"Oops! {reason}";
                 imsg += $"\n{AutoLegalityWrapper.GetLegalizationHint(new ShowdownSet(pk), sav, pk)}";
                 await FollowupAsync(imsg).ConfigureAwait(false);
+                if (pk.Species == (ushort)Species.Meloetta && pk.IsShiny)
+                {
+                    ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Invalid;
+                    APILegality.AllowHOMETransferGeneration = false;
+                }
                 return;
             }
             await QueueHelper<T>.AddToQueueAsync(Context, code, trainerName, sig, pk, PokeRoutineType.LinkTrade, PokeTradeType.Specific, usr,lgcode).ConfigureAwait(false);
+            if (pk.Species == (ushort)Species.Meloetta && pk.IsShiny)
+            {
+                ParseSettings.Settings.HOMETransfer.HOMETransferTrackerNotPresent = Severity.Invalid;
+                APILegality.AllowHOMETransferGeneration = false;
+            }
         }
     }
 }
