@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 
-namespace SysBot.Pokemon
-{
-    public class EncounterSettings : IBotStateSettings, ICountSettings
-    {
-        private const string Counts = nameof(Counts);
-        private const string Encounter = nameof(Encounter);
-        private const string Settings = nameof(Settings);
-        public override string ToString() => "Encounter Bot SWSH Settings";
+namespace SysBot.Pokemon;
 
-        [Category(Encounter), Description("The method used by the Line and Reset bots to encounter Pokémon.")]
-        public EncounterMode EncounteringType { get; set; } = EncounterMode.VerticalLine;
+public class EncounterSettings : IBotStateSettings, ICountSettings
+{
+    private const string Counts = nameof(Counts);
+    private const string Encounter = nameof(Encounter);
+    private const string Settings = nameof(Settings);
+    public override string ToString() => "Encounter Bot SWSH Settings";
+
+    [Category(Encounter), Description("The method used by the Line and Reset bots to encounter Pokémon.")]
+    public EncounterMode EncounteringType { get; set; } = EncounterMode.VerticalLine;
 
        
 
@@ -70,42 +70,41 @@ namespace SysBot.Pokemon
         private int _completedEggs;
         private int _completedFossils;
 
-        [Category(Counts), Description("Encountered Wild Pokémon")]
-        public int CompletedEncounters
-        {
-            get => _completedWild;
-            set => _completedWild = value;
-        }
+    [Category(Counts), Description("Encountered Wild Pokémon")]
+    public int CompletedEncounters
+    {
+        get => _completedWild;
+        set => _completedWild = value;
+    }
 
-        [Category(Counts), Description("Encountered Legendary Pokémon")]
-        public int CompletedLegends
-        {
-            get => _completedLegend;
-            set => _completedLegend = value;
-        }
+    [Category(Counts), Description("Encountered Legendary Pokémon")]
+    public int CompletedLegends
+    {
+        get => _completedLegend;
+        set => _completedLegend = value;
+    }
 
-        [Category(Counts), Description("Eggs Retrieved")]
-        public int CompletedEggs
-        {
-            get => _completedEggs;
-            set => _completedEggs = value;
-        }
+    [Category(Counts), Description("Eggs Retrieved")]
+    public int CompletedEggs
+    {
+        get => _completedEggs;
+        set => _completedEggs = value;
+    }
 
+    [Category(Counts), Description("Fossil Pokémon Revived")]
+    public int CompletedFossils
+    {
+        get => _completedFossils;
+        set => _completedFossils = value;
+    }
 
-        [Category(Counts), Description("Fossil Pokémon Revived")]
-        public int CompletedFossils
-        {
-            get => _completedFossils;
-            set => _completedFossils = value;
-        }
+    [Category(Counts), Description("When enabled, the counts will be emitted when a status check is requested.")]
+    public bool EmitCountsOnStatusCheck { get; set; }
 
-        [Category(Counts), Description("When enabled, the counts will be emitted when a status check is requested.")]
-        public bool EmitCountsOnStatusCheck { get; set; }
-
-        public int AddCompletedEncounters() => Interlocked.Increment(ref _completedWild);
-        public int AddCompletedLegends() => Interlocked.Increment(ref _completedLegend);
-        public int AddCompletedEggs() => Interlocked.Increment(ref _completedEggs);
-        public int AddCompletedFossils() => Interlocked.Increment(ref _completedFossils);
+    public int AddCompletedEncounters() => Interlocked.Increment(ref _completedWild);
+    public int AddCompletedLegends() => Interlocked.Increment(ref _completedLegend);
+    public int AddCompletedEggs() => Interlocked.Increment(ref _completedEggs);
+    public int AddCompletedFossils() => Interlocked.Increment(ref _completedFossils);
 
         public IEnumerable<string> GetNonZeroCounts()
         {

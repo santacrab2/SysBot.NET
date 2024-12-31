@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using System;
 using Discord.Interactions;
 using PKHeX.Core;

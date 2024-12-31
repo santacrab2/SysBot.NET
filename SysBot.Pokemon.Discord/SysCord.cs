@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -26,18 +26,18 @@ namespace SysBot.Pokemon.Discord
         public static PokeTradeHubConfig HubConfig { get; internal set; } = default!;
     }
 
-    public sealed class SysCord<T> where T : PKM, new()
-    {
-        public static PokeBotRunner<T> Runner { get; private set; } = default!;
+public sealed class SysCord<T> where T : PKM, new()
+{
+    public static PokeBotRunner<T> Runner { get; private set; } = default!;
 
         public static DiscordSocketClient _client;
         private readonly DiscordManager Manager;
         public readonly PokeTradeHub<T> Hub;
 
-        // Keep the CommandService and DI container around for use with commands.
-        // These two types require you install the Discord.Net.Commands package.
-        private readonly CommandService _commands;
-        private readonly IServiceProvider _services;
+    // Keep the CommandService and DI container around for use with commands.
+    // These two types require you install the Discord.Net.Commands package.
+    private readonly CommandService _commands;
+    private readonly IServiceProvider _services;
 
         // Bot listens to channel messages to reply with a ShowdownSet whenever a PKM file is attached (not with a command).
         private bool ConvertPKMToShowdownSet { get; } = true;
@@ -45,14 +45,14 @@ namespace SysBot.Pokemon.Discord
         // Track loading of Echo/Logging channels so they aren't loaded multiple times.
         private bool MessageChannelsLoaded { get; set; }
 
-        public SysCord(PokeBotRunner<T> runner)
-        {
-            Runner = runner;
-            Hub = runner.Hub;
-            Manager = new DiscordManager(Hub.Config.Discord);
+    public SysCord(PokeBotRunner<T> runner)
+    {
+        Runner = runner;
+        Hub = runner.Hub;
+        Manager = new DiscordManager(Hub.Config.Discord);
 
-            SysCordSettings.Manager = Manager;
-            SysCordSettings.HubConfig = Hub.Config;
+        SysCordSettings.Manager = Manager;
+        SysCordSettings.HubConfig = Hub.Config;
 
             _client = new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -65,68 +65,68 @@ namespace SysBot.Pokemon.Discord
                 MessageCacheSize = 100,
             });
 
-            _commands = new CommandService(new CommandServiceConfig
-            {
-                // Again, log level:
-                LogLevel = LogSeverity.Info,
+        _commands = new CommandService(new CommandServiceConfig
+        {
+            // Again, log level:
+            LogLevel = LogSeverity.Info,
 
                 // This makes commands get run on the task thread pool instead on the websocket read thread.
                 // This ensures long running logic can't block the websocket connection.
                 //DefaultRunMode = Hub.Config.Discord.AsyncCommands ? RunMode.Async : RunMode.Sync,
 
-                // There's a few more properties you can set,
-                // for example, case-insensitive commands.
-                CaseSensitiveCommands = false,
-            });
+            // There's a few more properties you can set,
+            // for example, case-insensitive commands.
+            CaseSensitiveCommands = false,
+        });
 
-            // Subscribe the logging handler to both the client and the CommandService.
-            _client.Log += Log;
-            _commands.Log += Log;
+        // Subscribe the logging handler to both the client and the CommandService.
+        _client.Log += Log;
+        _commands.Log += Log;
 
-            // Setup your DI container.
-            _services = ConfigureServices();
-        }
+        // Setup your DI container.
+        _services = ConfigureServices();
+    }
 
-        // If any services require the client, or the CommandService, or something else you keep on hand,
-        // pass them as parameters into this method as needed.
-        // If this method is getting pretty long, you can separate it out into another file using partials.
-        private static IServiceProvider ConfigureServices()
-        {
-            var map = new ServiceCollection();//.AddSingleton(new SomeServiceClass());
+    // If any services require the client, or the CommandService, or something else you keep on hand,
+    // pass them as parameters into this method as needed.
+    // If this method is getting pretty long, you can separate it out into another file using partials.
+    private static ServiceProvider ConfigureServices()
+    {
+        var map = new ServiceCollection();//.AddSingleton(new SomeServiceClass());
 
-            // When all your required services are in the collection, build the container.
-            // Tip: There's an overload taking in a 'validateScopes' bool to make sure
-            // you haven't made any mistakes in your dependency graph.
-            return map.BuildServiceProvider();
-        }
+        // When all your required services are in the collection, build the container.
+        // Tip: There's an overload taking in a 'validateScopes' bool to make sure
+        // you haven't made any mistakes in your dependency graph.
+        return map.BuildServiceProvider();
+    }
 
-        // Example of a logging handler. This can be reused by add-ons
-        // that ask for a Func<LogMessage, Task>.
+    // Example of a logging handler. This can be reused by add-ons
+    // that ask for a Func<LogMessage, Task>.
 
-        private static Task Log(LogMessage msg)
-        {
-            var text = $"[{msg.Severity,8}] {msg.Source}: {msg.Message} {msg.Exception}";
-            Console.ForegroundColor = GetTextColor(msg.Severity);
-            Console.WriteLine($"{DateTime.Now,-19} {text}");
-            Console.ResetColor();
+    private static Task Log(LogMessage msg)
+    {
+        var text = $"[{msg.Severity,8}] {msg.Source}: {msg.Message} {msg.Exception}";
+        Console.ForegroundColor = GetTextColor(msg.Severity);
+        Console.WriteLine($"{DateTime.Now,-19} {text}");
+        Console.ResetColor();
 
-            LogUtil.LogText($"SysCord: {text}");
+        LogUtil.LogText($"SysCord: {text}");
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
+    }
 
-        private static ConsoleColor GetTextColor(LogSeverity sv) => sv switch
-        {
-            LogSeverity.Critical => ConsoleColor.Red,
-            LogSeverity.Error => ConsoleColor.Red,
+    private static ConsoleColor GetTextColor(LogSeverity sv) => sv switch
+    {
+        LogSeverity.Critical => ConsoleColor.Red,
+        LogSeverity.Error => ConsoleColor.Red,
 
-            LogSeverity.Warning => ConsoleColor.Yellow,
-            LogSeverity.Info => ConsoleColor.White,
+        LogSeverity.Warning => ConsoleColor.Yellow,
+        LogSeverity.Info => ConsoleColor.White,
 
-            LogSeverity.Verbose => ConsoleColor.DarkGray,
-            LogSeverity.Debug => ConsoleColor.DarkGray,
-            _ => Console.ForegroundColor,
-        };
+        LogSeverity.Verbose => ConsoleColor.DarkGray,
+        LogSeverity.Debug => ConsoleColor.DarkGray,
+        _ => Console.ForegroundColor,
+    };
 
         public async Task MainAsync(string apiToken, CancellationToken token)
         {
@@ -138,8 +138,8 @@ namespace SysBot.Pokemon.Discord
             await _client.LoginAsync(TokenType.Bot, apiToken).ConfigureAwait(false);
             await _client.StartAsync().ConfigureAwait(false);
 
-            var app = await _client.GetApplicationInfoAsync().ConfigureAwait(false);
-            Manager.Owner = app.Owner.Id;
+        var app = await _client.GetApplicationInfoAsync().ConfigureAwait(false);
+        Manager.Owner = app.Owner.Id;
 
             // Wait infinitely so your bot actually stays connected.
             await MonitorStatusAsync(token).ConfigureAwait(false);
@@ -156,29 +156,29 @@ namespace SysBot.Pokemon.Discord
         {
             var assembly = Assembly.GetExecutingAssembly();
 
-            await _commands.AddModulesAsync(assembly, _services).ConfigureAwait(false);
-            var genericTypes = assembly.DefinedTypes.Where(z => z.IsSubclassOf(typeof(ModuleBase<SocketCommandContext>)) && z.IsGenericType);
-            foreach (var t in genericTypes)
-            {
-                var genModule = t.MakeGenericType(typeof(T));
-                await _commands.AddModuleAsync(genModule, _services).ConfigureAwait(false);
-            }
-            var modules = _commands.Modules.ToList();
+        await _commands.AddModulesAsync(assembly, _services).ConfigureAwait(false);
+        var genericTypes = assembly.DefinedTypes.Where(z => z.IsSubclassOf(typeof(ModuleBase<SocketCommandContext>)) && z.IsGenericType);
+        foreach (var t in genericTypes)
+        {
+            var genModule = t.MakeGenericType(typeof(T));
+            await _commands.AddModuleAsync(genModule, _services).ConfigureAwait(false);
+        }
+        var modules = _commands.Modules.ToList();
 
-            var blacklist = Hub.Config.Discord.ModuleBlacklist
-                .Replace("Module", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(z => z.Trim()).ToList();
+        var blacklist = Hub.Config.Discord.ModuleBlacklist
+            .Replace("Module", "").Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(z => z.Trim()).ToList();
 
-            foreach (var module in modules)
-            {
-                var name = module.Name;
-                name = name.Replace("Module", "");
-                var gen = name.IndexOf('`');
-                if (gen != -1)
-                    name = name[..gen];
-                if (blacklist.Any(z => z.Equals(name, StringComparison.OrdinalIgnoreCase)))
-                    await _commands.RemoveModuleAsync(module).ConfigureAwait(false);
-            }
+        foreach (var module in modules)
+        {
+            var name = module.Name;
+            name = name.Replace("Module", "");
+            var gen = name.IndexOf('`');
+            if (gen != -1)
+                name = name[..gen];
+            if (blacklist.Any(z => z.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                await _commands.RemoveModuleAsync(module).ConfigureAwait(false);
+        }
 
             // Subscribe a handler to see if a message invokes a command.
           
@@ -242,8 +242,8 @@ namespace SysBot.Pokemon.Discord
                     return;
             }
 
-            await TryHandleMessageAsync(msg).ConfigureAwait(false);
-        }
+        await TryHandleMessageAsync(msg).ConfigureAwait(false);
+    }
 
         private async Task TryHandleMessageAsync(SocketMessage msg)
         {
@@ -260,42 +260,42 @@ namespace SysBot.Pokemon.Discord
             }
         }
 
-        private async Task<bool> TryHandleCommandAsync(SocketUserMessage msg, int pos)
+    private async Task<bool> TryHandleCommandAsync(SocketUserMessage msg, int pos)
+    {
+        // Create a Command Context.
+        var context = new SocketCommandContext(_client, msg);
+
+        // Check Permission
+        var mgr = Manager;
+        if (!mgr.CanUseCommandUser(msg.Author.Id))
         {
-            // Create a Command Context.
-            var context = new SocketCommandContext(_client, msg);
-
-            // Check Permission
-            var mgr = Manager;
-            if (!mgr.CanUseCommandUser(msg.Author.Id))
-            {
-                await msg.Channel.SendMessageAsync("You are not permitted to use this command.").ConfigureAwait(false);
-                return true;
-            }
-            if (!mgr.CanUseCommandChannel(msg.Channel.Id) && msg.Author.Id != mgr.Owner)
-            {
-                if (Hub.Config.Discord.ReplyCannotUseCommandInChannel)
-                    await msg.Channel.SendMessageAsync("You can't use that command here.").ConfigureAwait(false);
-                return true;
-            }
-
-            // Execute the command. (result does not indicate a return value, 
-            // rather an object stating if the command executed successfully).
-            var guild = msg.Channel is SocketGuildChannel g ? g.Guild.Name : "Unknown Guild";
-            await Log(new LogMessage(LogSeverity.Info, "Command", $"Executing command from {guild}#{msg.Channel.Name}:@{msg.Author.Username}. Content: {msg}")).ConfigureAwait(false);
-            var result = await _commands.ExecuteAsync(context, pos, _services).ConfigureAwait(false);
-
-            if (result.Error == CommandError.UnknownCommand)
-                return false;
-
-            // Uncomment the following lines if you want the bot
-            // to send a message if it failed.
-            // This does not catch errors from commands with 'RunMode.Async',
-            // subscribe a handler for '_commands.CommandExecuted' to see those.
-            if (!result.IsSuccess)
-                await msg.Channel.SendMessageAsync(result.ErrorReason).ConfigureAwait(false);
+            await msg.Channel.SendMessageAsync("You are not permitted to use this command.").ConfigureAwait(false);
             return true;
         }
+        if (!mgr.CanUseCommandChannel(msg.Channel.Id) && msg.Author.Id != mgr.Owner)
+        {
+            if (Hub.Config.Discord.ReplyCannotUseCommandInChannel)
+                await msg.Channel.SendMessageAsync("You can't use that command here.").ConfigureAwait(false);
+            return true;
+        }
+
+        // Execute the command. (result does not indicate a return value, 
+        // rather an object stating if the command executed successfully).
+        var guild = msg.Channel is SocketGuildChannel g ? g.Guild.Name : "Unknown Guild";
+        await Log(new LogMessage(LogSeverity.Info, "Command", $"Executing command from {guild}#{msg.Channel.Name}:@{msg.Author.Username}. Content: {msg}")).ConfigureAwait(false);
+        var result = await _commands.ExecuteAsync(context, pos, _services).ConfigureAwait(false);
+
+        if (result.Error == CommandError.UnknownCommand)
+            return false;
+
+        // Uncomment the following lines if you want the bot
+        // to send a message if it failed.
+        // This does not catch errors from commands with 'RunMode.Async',
+        // subscribe a handler for '_commands.CommandExecuted' to see those.
+        if (!result.IsSuccess)
+            await msg.Channel.SendMessageAsync(result.ErrorReason).ConfigureAwait(false);
+        return true;
+    }
 
         private async Task MonitorStatusAsync(CancellationToken token)
         {
@@ -317,12 +317,12 @@ namespace SysBot.Pokemon.Discord
                                 {
                                    
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(channel);
-                                    if (districhan.Name.Contains("✅"))
+                                    if (districhan.Name.Contains("?"))
                                     {
 
                                         var role = districhan.Guild.EveryoneRole;
                                         await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny));
-                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("?", "?"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(),z=>z.Value == (int)game.Version).Text} Trade Bot is Offline");
@@ -339,10 +339,10 @@ namespace SysBot.Pokemon.Discord
                                
                                     var cid = ulong.Parse(chStrings);
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(cid);
-                                    if (districhan.Name.Contains("✅"))
+                                    if (districhan.Name.Contains("?"))
                                     {
 
-                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("✅", "❌"));
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("?", "?"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(), z => z.Value == (int)game.Version).Text} Raid Bot is Offline");
@@ -363,11 +363,11 @@ namespace SysBot.Pokemon.Discord
                                 foreach (var chan in Hub.Config.Discord.announcementchannels)
                                 {
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(chan);
-                                    if (districhan.Name.Contains("❌"))
+                                    if (districhan.Name.Contains("?"))
                                     {
                                         var role = districhan.Guild.EveryoneRole;
                                         await districhan.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Allow));
-                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("?", "?"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(), z => z.Value == (int)game.Version).Text} Trade Bot is Online");
@@ -386,10 +386,10 @@ namespace SysBot.Pokemon.Discord
                                 {
                                     var cid = ulong.Parse(chan);
                                     var districhan = (ITextChannel)await SysCord<T>._client.GetChannelAsync(cid);
-                                    if (districhan.Name.Contains("❌"))
+                                    if (districhan.Name.Contains("?"))
                                     {
 
-                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("❌", "✅"));
+                                        await districhan.ModifyAsync(prop => prop.Name = districhan.Name.Replace("?", "?"));
                                         var offembed = new EmbedBuilder();
                                         var game = AutoLegalityWrapper.GetTrainerInfo<T>();
                                         offembed.AddField($"{_client.CurrentUser.Username} Bot Announcement", $"{Array.Find<ComboItem>(GameInfo.VersionDataSource.ToArray(), z => z.Value == (int)game.Version).Text} Raid Bot is Online");
@@ -431,16 +431,16 @@ namespace SysBot.Pokemon.Discord
             if (MessageChannelsLoaded)
                 return;
 
-            // Restore Echoes
-            EchoModule.RestoreChannels(_client, Hub.Config.Discord);
+        // Restore Echoes
+        EchoModule.RestoreChannels(_client, Hub.Config.Discord);
 
-            // Restore Logging
-            LogModule.RestoreLogging(_client, Hub.Config.Discord);
-            TradeStartModule<T>.RestoreTradeStarting(_client);
+        // Restore Logging
+        LogModule.RestoreLogging(_client, Hub.Config.Discord);
+        TradeStartModule<T>.RestoreTradeStarting(_client);
 
-            // Don't let it load more than once in case of Discord hiccups.
-            await Log(new LogMessage(LogSeverity.Info, "LoadLoggingAndEcho()", "Logging and Echo channels loaded!")).ConfigureAwait(false);
-            MessageChannelsLoaded = true;
+        // Don't let it load more than once in case of Discord hiccups.
+        await Log(new LogMessage(LogSeverity.Info, "LoadLoggingAndEcho()", "Logging and Echo channels loaded!")).ConfigureAwait(false);
+        MessageChannelsLoaded = true;
 
             var game = Hub.Config.Discord.BotGameStatus;
             if (!string.IsNullOrWhiteSpace(game))

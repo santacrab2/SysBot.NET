@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon
 {
@@ -22,7 +22,6 @@ namespace SysBot.Pokemon
         public IReadOnlyList<long> IsConnectedPointer             { get; } = new long[] { 0x4739648, 0x30 };
         public IReadOnlyList<long> OverworldPointer               { get; } = new long[] { 0x473ade0, 0x160, 0xE8, 0x28 };
 
-        public const int BoxFormatSlotSize = 0x158;
-        public const ulong LibAppletWeID = 0x010000000000100a; // One of the process IDs for the news.
-    }
+    public const int BoxFormatSlotSize = 0x158;
+    public const ulong LibAppletWeID = 0x010000000000100a; // One of the process IDs for the news.
 }

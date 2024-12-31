@@ -8,36 +8,34 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Windows.Input;
 
+namespace SysBot.Pokemon;
 
-
-namespace SysBot.Pokemon
+public static class ShowdownUtil
 {
-    public static class ShowdownUtil 
+    /// <summary>
+    /// Converts a single line to a showdown set
+    /// </summary>
+    /// <param name="setstring">single string</param>
+    /// <returns>ShowdownSet object</returns>
+    public static ShowdownSet? ConvertToShowdown(string setstring)
     {
-        /// <summary>
-        /// Converts a single line to a showdown set
-        /// </summary>
-        /// <param name="setstring">single string</param>
-        /// <returns>ShowdownSet object</returns>
-        public static ShowdownSet? ConvertToShowdown(string setstring)
+        // LiveStreams remove new lines, so we are left with a single line set
+        var restorenick = string.Empty;
+
+        var nickIndex = setstring.LastIndexOf(')');
+        if (nickIndex > -1)
         {
-            // LiveStreams remove new lines, so we are left with a single line set
-            var restorenick = string.Empty;
+            restorenick = setstring[..(nickIndex + 1)];
+            if (restorenick.TrimStart().StartsWith('('))
+                return null;
+            setstring = setstring[(nickIndex + 1)..];
+        }
 
-            var nickIndex = setstring.LastIndexOf(')');
-            if (nickIndex > -1)
-            {
-                restorenick = setstring[..(nickIndex + 1)];
-                if (restorenick.TrimStart().StartsWith("("))
-                    return null;
-                setstring = setstring[(nickIndex + 1)..];
-            }
-
-            foreach (string i in splittables)
-            {
-                if (setstring.Contains(i))
-                    setstring = setstring.Replace(i, $"\r\n{i}");
-            }
+        foreach (string i in splittables)
+        {
+            if (setstring.Contains(i))
+                setstring = setstring.Replace(i, $"\r\n{i}");
+        }
 
             var finalset = restorenick + setstring;
             

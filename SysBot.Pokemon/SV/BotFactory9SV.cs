@@ -2,17 +2,17 @@
 using System;
 using PKHeX.Core;
 
-namespace SysBot.Pokemon
+namespace SysBot.Pokemon;
+
+public sealed class BotFactory9SV : BotFactory<PK9>
 {
-    public sealed class BotFactory9SV : BotFactory<PK9>
+    public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PK9> Hub, PokeBotState cfg) => cfg.NextRoutineType switch
     {
-        public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PK9> Hub, PokeBotState cfg) => cfg.NextRoutineType switch
-        {
-            PokeRoutineType.FlexTrade or PokeRoutineType.Idle
-                or PokeRoutineType.LinkTrade
-                or PokeRoutineType.Clone
-                or PokeRoutineType.Dump
-                => new PokeTradeBotSV(Hub, cfg),
+        PokeRoutineType.FlexTrade or PokeRoutineType.Idle
+            or PokeRoutineType.LinkTrade
+            or PokeRoutineType.Clone
+            or PokeRoutineType.Dump
+            => new PokeTradeBotSV(Hub, cfg),
 
             PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
             PokeRoutineType.EncounterCamp => new LineBot(cfg,Hub),
@@ -30,9 +30,8 @@ namespace SysBot.Pokemon
                 or PokeRoutineType.EncounterCamp
                 => true,
 
-            PokeRoutineType.RemoteControl => true,
+        PokeRoutineType.RemoteControl => true,
 
-            _ => false,
-        };
-    }
+        _ => false,
+    };
 }

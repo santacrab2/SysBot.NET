@@ -1,12 +1,12 @@
 ﻿using SysBot.Base;
 
-namespace SysBot.Pokemon
+namespace SysBot.Pokemon;
+
+public class ProgramConfig : BotList<PokeBotState>
 {
-    public class ProgramConfig : BotList<PokeBotState>
-    {
-        public ProgramMode Mode { get; set; } = ProgramMode.SV;
-        public PokeTradeHubConfig Hub { get; set; } = new();
-    }
+    public ProgramMode Mode { get; set; } = ProgramMode.SV;
+    public PokeTradeHubConfig Hub { get; set; } = new();
+}
 
     public enum ProgramMode
     {

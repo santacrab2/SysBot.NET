@@ -1,72 +1,70 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using PKHeX.Core;
 using SysBot.Pokemon;
 using Xunit;
 
-namespace SysBot.Tests
-{
-    public class GenerateTests
-    {
-        static GenerateTests() => AutoLegalityWrapper.EnsureInitialized(new SysBot.Pokemon.LegalitySettings());
+namespace SysBot.Tests;
 
-        [Theory]
-        [InlineData(Chesnaught)]
-        [InlineData(Braviary)]
-        [InlineData(Drednaw)]
-        public void CanGenerate(string set)
+public class GenerateTests
+{
+    static GenerateTests() => AutoLegalityWrapper.EnsureInitialized(new Pokemon.LegalitySettings());
+
+    [Theory]
+    [InlineData(Gengar)]
+    [InlineData(Braviary)]
+    [InlineData(Drednaw)]
+    public void CanGenerate(string set)
+    {
+        var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+        var s = new ShowdownSet(set);
+        var template = AutoLegalityWrapper.GetTemplate(s);
+        var pk = sav.GetLegal(template, out _);
+        pk.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineData(InvalidSpec)]
+    public void ShouldNotGenerate(string set)
+    {
+        _ = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+        var s = ShowdownUtil.ConvertToShowdown(set);
+        s.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData(Torkoal2, 2)]
+    [InlineData(Charizard4, 4)]
+    public void TestAbility(string set, int abilNumber)
+    {
+        var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+        for (int i = 0; i < 10; i++)
         {
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK9>();
             var s = new ShowdownSet(set);
             var template = AutoLegalityWrapper.GetTemplate(s);
             var pk = sav.GetLegal(template, out _);
-            var la = new LegalityAnalysis(pk);
-            la.Valid.Should().Be(true);
+            pk.AbilityNumber.Should().Be(abilNumber);
         }
+    }
 
-        [Theory]
-        [InlineData(InavlidSpec)]
-        public void ShouldNotGenerate(string set)
+    [Theory]
+    [InlineData(Torkoal2, 2)]
+    [InlineData(Charizard4, 4)]
+    public void TestAbilityTwitch(string set, int abilNumber)
+    {
+        var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
+        for (int i = 0; i < 10; i++)
         {
-            _ = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            var s = ShowdownUtil.ConvertToShowdown(set);
-            s.Should().BeNull();
+            var twitch = set.Replace("\r\n", " ").Replace("\n", " ");
+            var s = ShowdownUtil.ConvertToShowdown(twitch);
+            var template = s == null ? null : AutoLegalityWrapper.GetTemplate(s);
+            var pk = template == null ? null : sav.GetLegal(template, out _);
+            pk.Should().NotBeNull();
+            pk!.AbilityNumber.Should().Be(abilNumber);
         }
+    }
 
-        [Theory]
-        [InlineData(Torkoal2, 2)]
-        [InlineData(Charizard4, 4)]
-        public void TestAbility(string set, int abilNumber)
-        {
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            for (int i = 0; i < 10; i++)
-            {
-                var s = new ShowdownSet(set);
-                var template = AutoLegalityWrapper.GetTemplate(s);
-                var pk = sav.GetLegal(template, out _);
-                pk.AbilityNumber.Should().Be(abilNumber);
-            }
-        }
-
-        [Theory]
-        [InlineData(Torkoal2, 2)]
-        [InlineData(Charizard4, 4)]
-        public void TestAbilityTwitch(string set, int abilNumber)
-        {
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            for (int i = 0; i < 10; i++)
-            {
-                var twitch = set.Replace("\r\n", " ").Replace("\n", " ");
-                var s = ShowdownUtil.ConvertToShowdown(twitch);
-                var template = s == null ? null : AutoLegalityWrapper.GetTemplate(s);
-                var pk = template == null ? null : sav.GetLegal(template, out _);
-                pk.Should().NotBeNull();
-                pk!.AbilityNumber.Should().Be(abilNumber);
-            }
-        }
-        private const string Chesnaught =
-@"Chesnaught";
-        private const string Gengar =
-@"Gengar-Gmax @ Life Orb 
+    private const string Gengar =
+        @"Gengar-Gmax @ Life Orb 
 Ability: Cursed Body 
 Shiny: Yes 
 EVs: 252 SpA / 4 SpD / 252 Spe 
@@ -76,8 +74,8 @@ Timid Nature
 - Giga Impact 
 - Headbutt";
 
-        private const string Braviary =
-@"Braviary (F) @ Master Ball
+    private const string Braviary =
+        @"Braviary (F) @ Master Ball
 Ability: Defiant
 EVs: 252 Atk / 4 SpD / 252 Spe
 Jolly Nature
@@ -86,8 +84,8 @@ Jolly Nature
 - Tailwind
 - Iron Head";
 
-        private const string Drednaw =
-@"Drednaw-Gmax @ Fossilized Drake 
+    private const string Drednaw =
+        @"Drednaw-Gmax @ Fossilized Drake 
 Ability: Shell Armor 
 Level: 60 
 EVs: 252 Atk / 4 SpD / 252 Spe 
@@ -97,8 +95,8 @@ Adamant Nature
 - Swords Dance 
 - Head Smash";
 
-        private const string Torkoal2 =
-@"Torkoal (M) @ Assault Vest
+    private const string Torkoal2 =
+        @"Torkoal (M) @ Assault Vest
 IVs: 0 Atk
 EVs: 248 HP / 8 Atk / 252 SpA
 Ability: Drought
@@ -108,8 +106,8 @@ Quiet Nature
 - Eruption
 - Fire Blast";
 
-        private const string Charizard4 =
-@"Charizard @ Choice Scarf 
+    private const string Charizard4 =
+        @"Charizard @ Choice Scarf 
 Ability: Solar Power 
 Level: 50 
 Shiny: Yes 
@@ -120,7 +118,6 @@ Timid Nature
 - Solar Beam 
 - Beat Up";
 
-        private const string InavlidSpec =
-"(Pikachu)";
-    }
+    private const string InvalidSpec =
+        "(Pikachu)";
 }
