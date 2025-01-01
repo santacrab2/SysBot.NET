@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Globalization;
@@ -64,15 +64,16 @@ namespace SysBot.Pokemon
             }
 
             var clone = pk.Clone();
-            var legalBalls = BallApplicator.GetLegalBalls(pk).ToList();
-            if (!legalBalls.Contains(Ball.Master))
+            Span<Ball> legalBalls = [];
+            BallApplicator.GetLegalBalls(legalBalls, pk);
+            if (!legalBalls.ToArray().Contains(Ball.Master))
             {
                 showdownList.Insert(1, "Ball: Master");
                 set = new ShowdownSet(string.Join("\n", showdownList));
                 templ = AutoLegalityWrapper.GetTemplate(set);
                 pk = (T)sav.GetLegal(templ, out res);
                 if (res == "Regenerated" && pk.Species == clone.Species)
-                    legalBalls.Add(Ball.Master);
+                    legalBalls.ToArray().Append(Ball.Master);
             }
             return legalBalls.ToArray();
         }

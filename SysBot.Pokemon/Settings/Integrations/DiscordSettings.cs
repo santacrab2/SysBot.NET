@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Collections.Generic;
 
 namespace SysBot.Pokemon;
@@ -103,4 +103,4 @@ public class DiscordSettings
         [Category(Channels)]
         public ulong pingroleid { get; set; } = 0;
     }
-}
+

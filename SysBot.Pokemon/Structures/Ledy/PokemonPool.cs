@@ -16,7 +16,7 @@ public class PokemonPool<T>(BaseConfig Settings) : List<T>
     public readonly Dictionary<string, LedyRequest<T>> Files = [];
     private int Counter;
 
-        public PokemonPool(BaseConfig settings) => Settings = settings;
+        
 
         public T GetRandomPoke()
         {

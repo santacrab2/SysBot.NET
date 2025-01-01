@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using PKHeX.Core;
@@ -199,16 +199,19 @@ namespace SysBot.Pokemon.Discord
             cache.responded = false;
             pk.CurrentLevel = byte.Parse(cache.response.Data.Values.First());
             cache.currenttype = "Ball";
-            List<string> balllist = BallApplicator.GetLegalBalls(pk).Select(z => z.ToString()).ToList();
-            balllist.Insert(0, "Any");
-            cache.opti = balllist.ToArray();
+            Span<Ball> balllist = [];
+            BallApplicator.GetLegalBalls(balllist,pk);
+            List<Ball> balls = balllist.ToArray().ToList();
+            List<string> ballstring = balllist.ToArray().Select(z => z.ToString()).ToList();
+            ballstring.Insert(0, "Any");
+            cache.opti = [..ballstring];
             await Context.Interaction.ModifyOriginalResponseAsync(z => z.Components = compo(cache.currenttype, cache.page = 0, cache.opti));
             while (!cache.responded)
                 await Task.Delay(250);
             cache.responded = false;
             if(cache.response.Data.Values.First() != "Any")
             {
-                var ball = BallApplicator.GetLegalBalls(pk).Where(z => z.ToString() == cache.response.Data.Values.First()).First();
+                var ball = balls.Where(z => z.ToString() == cache.response.Data.Values.First()).First();
                 pk.Ball = (byte)ball;
             }
             await Context.Interaction.DeleteOriginalResponseAsync();

@@ -67,72 +67,97 @@ public static class AutoLegalityWrapper
         if (Directory.Exists(externalSource))
             TrainerSettings.LoadTrainerDatabaseFromPath(externalSource);
 
-            for (int i = 1; i < 9; i++)
-            {
-                var versions = GameUtil.GetVersionsInGeneration((byte)i,(GameVersion)i);
-                foreach (var v in versions)
-                {
-                    var fallback = new SimpleTrainerInfo(v)
-                    {
-                        Language = lang,
-                        TID16 = TID,
-                        SID16 = SID,
-                        OT = OT,
-                        Generation = (byte)i,
-                    };
-                    var exist = TrainerSettings.GetSavedTrainerData((byte)v, (GameVersion)i, fallback);
-                    if (exist is SimpleTrainerInfo) // not anything from files; this assumes ALM returns SimpleTrainerInfo for non-user-provided fake templates.
-                        TrainerSettings.Register(fallback);
-                    RecentTrainerCache.SetRecentTrainer(fallback);
-                }
-            }
+        // Seed the Trainer Database with enough fake save files so that we return a generation sensitive format when needed.
+        var fallback = GetDefaultTrainer(cfg);
+        for (byte generation = 1; generation <= PKX.Generation; generation++)
+        {
+            var versions = GameUtil.GetVersionsInGeneration(generation, PKX.Version);
+            foreach (var version in versions)
+                RegisterIfNoneExist(fallback, generation, version);
         }
+        // Manually register for LGP/E since Gen7 above will only register the 3DS versions.
+        RegisterIfNoneExist(fallback, 7, GameVersion.GP);
+        RegisterIfNoneExist(fallback, 7, GameVersion.GE);
+    }
 
-        private static void InitializeCoreStrings()
+    private static SimpleTrainerInfo GetDefaultTrainer(LegalitySettings cfg)
+    {
+        var OT = cfg.GenerateOT;
+        if (OT.Length == 0)
+            OT = "Blank"; // Will fail if actually left blank.
+        var fallback = new SimpleTrainerInfo(GameVersion.Any)
         {
-            var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName[..2];
-            LocalizationUtil.SetLocalization(typeof(LegalityCheckStrings), lang);
-            LocalizationUtil.SetLocalization(typeof(MessageStrings), lang);
-            RibbonStrings.ResetDictionary(GameInfo.Strings.ribbons);
-            ParseSettings.ChangeLocalizationStrings(GameInfo.Strings.movelist, GameInfo.Strings.specieslist);
-           
-            
-        }
-        public static bool CanBeTraded(this PKM pkm)
-        {
-            return !FormInfo.IsFusedForm(pkm.Species, pkm.Form, pkm.Format);
-        }
-
-        public static bool IsFixedOT(IEncounterTemplate t, PKM pkm) => t switch
-        {
-            IFixedTrainer { IsFixedTrainer: true } tr => true,
-            MysteryGift g => !g.IsEgg && g switch
-            {
-                WC9 wc9 => wc9.GetHasOT(pkm.Language),
-                WA8 wa8 => wa8.GetHasOT(pkm.Language),
-                WB8 wb8 => wb8.GetHasOT(pkm.Language),
-                WC8 wc8 => wc8.GetHasOT(pkm.Language),
-                WB7 wb7 => wb7.GetHasOT(pkm.Language),
-                { Generation: >= 5 } gift => gift.OriginalTrainerName.Length > 0,
-                _ => true,
-            },
-            _ => false,
+            Language = (byte)cfg.GenerateLanguage,
+            TID16 = cfg.GenerateTID16,
+            SID16 = cfg.GenerateSID16,
+            OT = OT,
+            Generation = 0,
         };
+        return fallback;
+    }
 
-        public static ITrainerInfo GetTrainerInfo<T>() where T : PKM, new()
+    private static void RegisterIfNoneExist(SimpleTrainerInfo fallback, byte generation, GameVersion version)
+    {
+        fallback = new SimpleTrainerInfo(version)
         {
-            if (typeof(T) == typeof(PK8))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.SWSH, 8);
-            if (typeof(T) == typeof(PB8))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.BDSP, 8);
-            if (typeof(T) == typeof(PA8))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.PLA, 8);
-            if (typeof(T) == typeof(PB7))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.GG, 7);
-            if (typeof(T) == typeof(PK9))
-                return TrainerSettings.GetSavedTrainerData(GameVersion.SV, 9);
-            throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
-        }
+            Language = fallback.Language,
+            TID16 = fallback.TID16,
+            SID16 = fallback.SID16,
+            OT = fallback.OT,
+            Generation = generation,
+        };
+        var exist = TrainerSettings.GetSavedTrainerData(version, generation, fallback);
+        if (exist is SimpleTrainerInfo) // not anything from files; this assumes ALM returns SimpleTrainerInfo for non-user-provided fake templates.
+            TrainerSettings.Register(fallback);
+    }
+
+    private static void InitializeCoreStrings()
+    {
+        var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName[..2];
+        LocalizationUtil.SetLocalization(typeof(LegalityCheckStrings), lang);
+        LocalizationUtil.SetLocalization(typeof(MessageStrings), lang);
+        RibbonStrings.ResetDictionary(GameInfo.Strings.ribbons);
+        ParseSettings.ChangeLocalizationStrings(GameInfo.Strings.movelist, GameInfo.Strings.specieslist);
+    }
+
+    public static bool CanBeTraded(this PKM pkm)
+    {
+        if (pkm.IsNicknamed && StringsUtil.IsSpammyString(pkm.Nickname))
+            return false;
+        if (StringsUtil.IsSpammyString(pkm.OriginalTrainerName) && !IsFixedOT(new LegalityAnalysis(pkm).EncounterOriginal, pkm))
+            return false;
+        return !FormInfo.IsFusedForm(pkm.Species, pkm.Form, pkm.Format);
+    }
+
+    public static bool IsFixedOT(IEncounterTemplate t, PKM pkm) => t switch
+    {
+        IFixedTrainer { IsFixedTrainer: true } => true,
+        MysteryGift g => !g.IsEgg && g switch
+        {
+            WC9 wc9 => wc9.GetHasOT(pkm.Language),
+            WA8 wa8 => wa8.GetHasOT(pkm.Language),
+            WB8 wb8 => wb8.GetHasOT(pkm.Language),
+            WC8 wc8 => wc8.GetHasOT(pkm.Language),
+            WB7 wb7 => wb7.GetHasOT(pkm.Language),
+            { Generation: >= 5 } gift => gift.OriginalTrainerName.Length > 0,
+            _ => true,
+        },
+        _ => false,
+    };
+
+    public static ITrainerInfo GetTrainerInfo<T>() where T : PKM, new()
+    {
+        if (typeof(T) == typeof(PK8))
+            return TrainerSettings.GetSavedTrainerData(GameVersion.SWSH, 8);
+        if (typeof(T) == typeof(PB8))
+            return TrainerSettings.GetSavedTrainerData(GameVersion.BDSP, 8);
+        if (typeof(T) == typeof(PA8))
+            return TrainerSettings.GetSavedTrainerData(GameVersion.PLA, 8);
+        if (typeof(T) == typeof(PK9))
+            return TrainerSettings.GetSavedTrainerData(GameVersion.SV, 9);
+
+        throw new ArgumentException("Type does not have a recognized trainer fetch.", typeof(T).Name);
+    }
 
     public static ITrainerInfo GetTrainerInfo(byte gen) => TrainerSettings.GetSavedTrainerData(gen);
 
@@ -141,9 +166,9 @@ public static class AutoLegalityWrapper
         var result = sav.GetLegalFromSet(set);
         res = result.Status switch
         {
-            LegalizationResult.Regenerated     => "Regenerated",
-            LegalizationResult.Failed          => "Failed",
-            LegalizationResult.Timeout         => "Timeout",
+            LegalizationResult.Regenerated => "Regenerated",
+            LegalizationResult.Failed => "Failed",
+            LegalizationResult.Timeout => "Timeout",
             LegalizationResult.VersionMismatch => "VersionMismatch",
             _ => "",
         };

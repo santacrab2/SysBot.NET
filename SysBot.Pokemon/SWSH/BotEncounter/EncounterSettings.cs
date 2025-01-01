@@ -1,4 +1,4 @@
-﻿using SysBot.Base;
+using SysBot.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
@@ -139,4 +139,4 @@ public class EncounterSettings : IBotStateSettings, ICountSettings
             Brilliant
         }
     }
-}
+

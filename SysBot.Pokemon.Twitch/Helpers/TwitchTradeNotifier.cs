@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Linq;
@@ -106,10 +106,10 @@ public class TwitchTradeNotifier<T> : IPokeTradeNotifier<T> where T : PKM, new()
                 Client.SendWhisper(Username, message);
                 break;
         }
+    }
 
         public void SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string title, string message)
         {
             throw new NotImplementedException();
         }
-    }
 }

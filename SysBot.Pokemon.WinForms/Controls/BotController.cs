@@ -4,14 +4,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Discord;
-using PKHeX.Core;
-using SysBot.Pokemon.Discord;
 
 namespace SysBot.Pokemon.WinForms;
 
 public partial class BotController : UserControl
 {
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public PokeBotState State { get; private set; } = new();
     private IPokeBotRunner? Runner;
     public EventHandler? Remove;

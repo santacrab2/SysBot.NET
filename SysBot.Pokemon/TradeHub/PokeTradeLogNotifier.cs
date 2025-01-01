@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Linq;
@@ -46,6 +46,11 @@ public class PokeTradeLogNotifier<T> : IPokeTradeNotifier<T> where T : PKM, new(
     {
         LogUtil.LogInfo($"Notifying {info.Trainer.TrainerName} about their {GameInfo.GetStrings(1).Species[result.Species]}", routine.Connection.Label);
         LogUtil.LogInfo(message, routine.Connection.Label);
+    }
+
+    void IPokeTradeNotifier<T>.SendNotification(PokeRoutineExecutor<T> routine, PokeTradeDetail<T> info, string title, string message)
+    {
+        throw new NotImplementedException();
     }
 
     public Action<PokeRoutineExecutor<T>>? OnFinish { get; set; }

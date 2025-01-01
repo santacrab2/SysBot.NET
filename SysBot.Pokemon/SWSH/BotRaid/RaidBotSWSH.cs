@@ -53,7 +53,7 @@ public class RaidBotSWSH(PokeBotState Config, PokeTradeHub<PK8> Hub) : PokeRouti
 
     private async Task InnerLoop(CancellationToken token)
     {
-        while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.RaidBot)
+        while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.RaidBotSWSH)
         {
             Config.IterateNextRoutine();
             addFriends = false;

@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Pokemon.Discord;
 using SysBot.Pokemon.Twitch;
 using SysBot.Pokemon.Web;
@@ -87,4 +87,4 @@ public class PokeBotRunnerImpl<T> : PokeBotRunner<T> where T : PKM, new()
             
         }
     }
-}
+

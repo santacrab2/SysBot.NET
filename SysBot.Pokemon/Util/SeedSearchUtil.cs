@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -93,6 +93,7 @@ public static class SeedSearchUtil
             }
             rng = origrng;
         }
+    }
 
         public static void SpecificSeedSearch(DenUtil.RaidData raidInfo, out long frames, out ulong seedRes, out ulong threeDay, out string ivSpread, CancellationToken token)
         {
@@ -273,4 +274,4 @@ public static class SeedSearchUtil
 
         private static bool CharMatch(uint stat, Characteristics characteristic) => characteristic == Characteristics.Any || (uint)characteristic == stat;
     }
-}
+

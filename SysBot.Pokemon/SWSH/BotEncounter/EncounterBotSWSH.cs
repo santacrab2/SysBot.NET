@@ -14,8 +14,8 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
     protected readonly PokeTradeHub<PK8> Hub;
     private readonly IDumper DumpSetting;
     private readonly EncounterSettings Settings;
-    private readonly int[] DesiredMinIVs;
-    private readonly int[] DesiredMaxIVs;
+    private readonly uint[] DesiredMinIVs;
+    private readonly uint[] DesiredMaxIVs;
     public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 

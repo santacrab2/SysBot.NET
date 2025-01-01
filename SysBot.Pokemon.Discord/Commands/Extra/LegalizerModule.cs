@@ -18,7 +18,7 @@ namespace SysBot.Pokemon.Discord
 
         [SlashCommand("convert", "Tries to convert the Showdown Set to pkm data.")]
 
-        public async Task ConvertShowdown([Summary("PokemonText")]string content, int gen=0)
+        public async Task ConvertShowdown([Summary("PokemonText")]string content, byte gen=0)
         {
             await DeferAsync();
             if (gen == 0)

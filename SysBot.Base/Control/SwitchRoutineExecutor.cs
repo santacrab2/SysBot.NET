@@ -114,7 +114,7 @@ public abstract class SwitchRoutineExecutor<T> : RoutineExecutor<T> where T : cl
         NESLeft = 9,    ///< NES left controller.
         NESRight = 10,   ///< NES right controller.
         SNES = 11,   ///< SNES controller
-        PokeBallPlus = 12,  ///< Poké Ball Plus controller.
+        PokeBallPlus = 12,  ///< PokÃ© Ball Plus controller.
         ProController3 = 13,  ///< Pro Controller and Gc controller.
         ProController4 = 15,  ///< Pro Controller and Gc controller.
         DebugPad = 17,  ///< DebugPad
@@ -124,4 +124,3 @@ public abstract class SwitchRoutineExecutor<T> : RoutineExecutor<T> where T : cl
         N64 = 22,  ///< N64 controller
         SegaGenesis = 28,   ///< Sega Genesis controller
     }
-}

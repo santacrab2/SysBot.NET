@@ -4,8 +4,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static SysBot.Base.SwitchOffsetType;
-using System.Text;
+using static SysBot.Base.SwitchOffsetTypeUtil;
 
 namespace SysBot.Base;
 
@@ -163,4 +162,3 @@ public sealed class SwitchUSBAsync(int Port) : SwitchUSB(Port), ISwitchConnectio
             throw new NotImplementedException();
         }
     }
-}

@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SysBot.Base;
@@ -14,4 +14,4 @@ public interface IConsoleConnectionAsync : IConsoleConnection
         Task WriteBytesAsync(byte[] data, uint offset, CancellationToken token);
         Task<byte[]> Screengrab(CancellationToken token);
     }
-}
+

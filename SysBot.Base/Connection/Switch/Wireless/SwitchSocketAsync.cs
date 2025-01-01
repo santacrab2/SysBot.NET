@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -261,4 +262,3 @@ public sealed class SwitchSocketAsync : SwitchSocket, ISwitchConnectionAsync
         public async Task ResetTime(CancellationToken token) => await SendAsync(SwitchCommand.ResetTime(), token).ConfigureAwait(false);
 
     }
-}

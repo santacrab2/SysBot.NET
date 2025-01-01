@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 
 namespace SysBot.Pokemon;
@@ -53,4 +53,4 @@ public sealed class BotFactory8SWSH : BotFactory<PK8>
             _ => false,
         };
     }
-}
+

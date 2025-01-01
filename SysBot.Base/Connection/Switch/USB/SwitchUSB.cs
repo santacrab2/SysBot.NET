@@ -174,6 +174,7 @@ public abstract class SwitchUSB : IConsoleConnection
             }
             return buffer;
         }
+    }
 
         protected byte[] GetScreenshot()
         {
@@ -203,7 +204,7 @@ public abstract class SwitchUSB : IConsoleConnection
                 return buffer;
             }
         }
-    }
+    
 
     protected void Write(ICommandBuilder b, ReadOnlySpan<byte> data, ulong offset)
     {

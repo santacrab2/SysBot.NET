@@ -355,4 +355,4 @@ public static class SwitchCommand
         public static byte[] ResetTime(bool crlf = true) => Encode("resetTime", crlf);
 
     }
-}
+

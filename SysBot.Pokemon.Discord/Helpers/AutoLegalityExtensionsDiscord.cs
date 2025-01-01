@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
 using Discord.Interactions;
 using PKHeX.Core;
@@ -73,7 +73,7 @@ namespace SysBot.Pokemon.Discord
             }
         }
 
-        public static async Task ReplyWithLegalizedSetAsync(this SocketInteractionContext channel, string content, int gen)
+        public static async Task ReplyWithLegalizedSetAsync(this SocketInteractionContext channel, string content, byte gen)
         {
             var set = ShowdownUtil.ConvertToShowdown(content);
             var sav = AutoLegalityWrapper.GetTrainerInfo(gen);

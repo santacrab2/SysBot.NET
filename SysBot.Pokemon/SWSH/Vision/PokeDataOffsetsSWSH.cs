@@ -133,4 +133,3 @@ public class PokeDataOffsetsSWSH
             _ => throw new ArgumentException("Trainer TID/SID offset is not available for this trade method.", nameof(tradeMethod)),
         };
     }
-}

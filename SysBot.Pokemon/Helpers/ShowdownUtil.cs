@@ -1,4 +1,4 @@
-﻿using NLog.Fluent;
+using NLog.Fluent;
 using PKHeX.Core;
 using PKHeX.Core.AutoMod;
 using SysBot.Base;
@@ -246,4 +246,4 @@ public static class ShowdownUtil
             "Rash Nature", "Relaxed Nature", "Sassy Nature", "Serious Nature", "Timid Nature"
         };
     }
-}
+

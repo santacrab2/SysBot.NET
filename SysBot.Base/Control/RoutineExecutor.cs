@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,4 +49,4 @@ public abstract class RoutineExecutor<T>(IConsoleBotManaged<IConsoleConnection, 
         public abstract Task SetController(ControllerType Controller,CancellationToken token);
       
     }
-}
+

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
@@ -99,4 +99,3 @@ public sealed class PokeTradeHubConfig : BaseConfig
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public WebSettings Web { get; set; } = new();
     }
-}

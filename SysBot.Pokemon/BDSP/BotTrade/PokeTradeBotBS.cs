@@ -788,4 +788,4 @@ public class PokeTradeBotBS(PokeTradeHub<PB8> Hub, PokeBotState Config) : PokeRo
 
        
     }
-}
+

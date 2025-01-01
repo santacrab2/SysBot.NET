@@ -1,4 +1,4 @@
-﻿using SysBot.Base;
+using SysBot.Base;
 
 namespace SysBot.Pokemon;
 
@@ -17,4 +17,4 @@ public class ProgramConfig : BotList<PokeBotState>
         LGPE=4,
         SV = 5,
     }
-}
+

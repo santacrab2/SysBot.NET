@@ -166,7 +166,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
         }
     }
 
-    private Task WaitForQueueStep(int waitCounter, CancellationToken token)
+    private async Task WaitForQueueStep(int waitCounter, CancellationToken token)
     {
         if (waitCounter == 0)
         {
@@ -179,7 +179,7 @@ public class PokeTradeBotSV(PokeTradeHub<PK9> Hub, PokeBotState Config) : PokeRo
             if (waitCounter % interval == interval - 1 && Hub.Config.AntiIdle)
                 await Click(B, 1_000, token).ConfigureAwait(false);
             else
-            await Task.Delay(1_000, token).ConfigureAwait(false);
+                await Task.Delay(1_000, token).ConfigureAwait(false);
         }
 
     protected virtual (PokeTradeDetail<PK9>? detail, uint priority) GetTradeData(PokeRoutineType type)

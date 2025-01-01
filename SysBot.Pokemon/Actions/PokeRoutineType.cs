@@ -51,7 +51,7 @@ public enum PokeRoutineType
         /// <summary> Attempts to fix advert names and minor legality issues of what a trade partner shows. </summary>
         FixOT = 6002,
 
-        /// <summary> Discord mini-game that generates random Pokémon. </summary>
+        /// <summary> Discord mini-game that generates random PokÃ©mon. </summary>
         TradeCord = 6003,
 
         /// <summary> Automates Dynamax Adventures. </summary>
@@ -83,4 +83,4 @@ public enum PokeRoutineType
     {
         public static bool IsTradeBot(this PokeRoutineType type) => type is (>=PokeRoutineType.FlexTrade and <= PokeRoutineType.Dump) || type is PokeRoutineType.FixOT or PokeRoutineType.TradeCord or PokeRoutineType.EtumrepDump;
     }
-}
+

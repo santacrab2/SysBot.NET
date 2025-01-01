@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,4 +36,3 @@ public interface ISwitchConnectionAsync : IConsoleConnectionAsync
         Task ResetTime(CancellationToken token);
         Task DaySkip(CancellationToken token);
     }
-}

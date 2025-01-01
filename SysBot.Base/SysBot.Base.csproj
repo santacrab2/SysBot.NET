@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Platforms>AnyCPU</Platforms>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+  </PropertyGroup>
 	<ItemGroup>
     <PackageReference Include="NLog" Version="5.2.8" />
     <PackageReference Include="LibUsbDotNet" Version="2.2.29" />

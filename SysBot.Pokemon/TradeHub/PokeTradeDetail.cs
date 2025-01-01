@@ -1,11 +1,11 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
-using System.Threading;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SysBot.Pokemon;
 
-public class PokeTradeDetail<TPoke>(TPoke TradeData, PokeTradeTrainerInfo Trainer, IPokeTradeNotifier<TPoke> Notifier, PokeTradeType Type, int Code, bool IsFavored = false) : IEquatable<PokeTradeDetail<TPoke>>, IFavoredEntry where TPoke : PKM, new()
+public class PokeTradeDetail<TPoke>(TPoke TradeData, PokeTradeTrainerInfo Trainer, IPokeTradeNotifier<TPoke> Notifier, PokeTradeType Type, int Code, List<pictocodes> lgcode, bool IsFavored = false) : IEquatable<PokeTradeDetail<TPoke>>, IFavoredEntry where TPoke : PKM, new()
 {
     // ReSharper disable once StaticMemberInGenericType
     /// <summary> Global variable indicating the amount of trades created. </summary>
@@ -41,23 +41,11 @@ public class PokeTradeDetail<TPoke>(TPoke TradeData, PokeTradeTrainerInfo Traine
     /// <summary> Indicates if the trade failed at least once and is being tried again. </summary>
     public bool IsRetry;
 
-        /// <summary> Indicates if the trade data is currently being traded. </summary>
-        public bool IsProcessing;
-        public List<pictocodes> LGPETradeCode;
+    /// <summary> Indicates if the trade data is currently being traded. </summary>
+    public bool IsProcessing;
+    public List<pictocodes> LGPETradeCode = lgcode;
 
-        public PokeTradeDetail(TPoke pkm, PokeTradeTrainerInfo info, IPokeTradeNotifier<TPoke> notifier, PokeTradeType type, int code, List<pictocodes> lgcode, bool favored = false)
-        {
-            ID = Interlocked.Increment(ref CreatedCount) % 3000;
-            Code = code;
-            TradeData = pkm;
-            Trainer = info;
-            Notifier = notifier;
-            Type = type;
-            Time = DateTime.Now;
-            IsFavored = favored;
-            LGPETradeCode = lgcode;
-        }
-
+        
         public void TradeInitialize(PokeRoutineExecutor<TPoke> routine) => Notifier.TradeInitialize(routine, this);
         public void TradeSearching(PokeRoutineExecutor<TPoke> routine) => Notifier.TradeSearching(routine, this);
         public void TradeCanceled(PokeRoutineExecutor<TPoke> routine, PokeTradeResult msg) => Notifier.TradeCanceled(routine, this, msg);
@@ -111,4 +99,3 @@ public class PokeTradeDetail<TPoke>(TPoke TradeData, PokeTradeTrainerInfo Traine
         Jigglypuff,
         Diglett
     }
-}
